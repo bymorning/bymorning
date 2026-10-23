@@ -1,0 +1,130 @@
+.error-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-height: 240px;
+  padding: 10px 12px 10px 10px;
+  overflow-y: auto;
+  border: 0;
+  border-radius: 6px;
+  color: var(--color-text-base);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 440;
+  line-height: 20px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.error-card::before {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  inset-inline-start: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--color-danger-fg);
+  content: "";
+}
+
+.policy-error-card {
+  max-height: none;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.policy-error-card h3,
+.policy-error-card p,
+.policy-error-card dl,
+.policy-error-card dd {
+  margin: 0;
+}
+
+.policy-error-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.policy-error-card dl {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.policy-error-card dl > div {
+  display: flex;
+  min-width: 0;
+  gap: 5px;
+}
+
+.policy-error-card dt {
+  font-weight: 600;
+}
+
+.policy-error-card a {
+  width: fit-content;
+  color: var(--color-text-base);
+  font-weight: 530;
+}
+
+.provider-error-card {
+  max-height: none;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  white-space: normal;
+}
+
+.provider-error-card > p,
+.provider-error-card [data-slot="execution-error-card-content"] p {
+  margin: 0;
+}
+
+.provider-error-card [data-slot="execution-error-card-recovery"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.provider-error-card [data-slot="execution-error-card-recovery"] button,
+.provider-error-card [data-slot="execution-error-card-recovery"] a {
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  color: var(--color-text-base);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 530;
+  cursor: pointer;
+}
+
+.provider-error-card [data-slot="execution-error-card-trigger"] {
+  display: flex;
+  width: 100%;
+  height: 24px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 12px;
+}
+
+.provider-error-card pre {
+  max-height: 180px;
+  margin: 4px 0 0;
+  padding: 8px;
+  overflow: auto;
+  border-radius: 4px;
+  color: var(--color-text-base);
+  background: var(--color-bg-layer-1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+}

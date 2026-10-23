@@ -1,0 +1,16 @@
+import { render } from "solid-js/web"
+import "@bymorning/ui/theme-preload.js"
+import "@bymorning/ui/styles.css"
+import "@bymorning/session-ui/tokens.css"
+import "@bymorning/session-ui/styles.css"
+import { App } from "@/app.js"
+import "@/base.css"
+import "@/shell/shell.css"
+import "@/shell/titlebar/titlebar.css"
+import "@/shell/routes/status.css"
+import "@/home/route.css"
+import "@/home/sessions/navigation.css"
+import "@/session/session.css"
+import "@/session/files/file-browser.css"
+
+render(() => <App />, document.getElementById("root")!)

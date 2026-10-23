@@ -1,0 +1,85 @@
+---
+title: Usage
+description: Connect to the AI and MCP Gateways, then review Workspace usage.
+---
+
+ByMorning exposes one Gateway for Model inference and one for Workspace Tools. Create a Service Account key before connecting an external client.
+
+## AI Gateway
+
+Open **AI Gateway → Quick Start** to copy a base URL and configure your client. Send the Service Account key as a bearer token.
+
+| Format | Endpoint | What it does |
+| --- | --- | --- |
+| OpenAI Models | `GET /inference/openai/v1/models` | Lists Models available to the authenticated Workspace. |
+| OpenAI Chat Completions | `POST /inference/openai/v1/chat/completions` | Accepts OpenAI chat requests and supports streaming. |
+| OpenAI Responses | `POST /inference/openai/v1/responses` | Accepts OpenAI Responses requests and supports streaming. |
+| Anthropic Messages | `POST /inference/anthropic/v1/messages` | Accepts Anthropic Messages requests and supports streaming. |
+| Google Generate | `POST /inference/google/v1beta/models/{model}:generateContent` | Generates a complete Google-format response. |
+| Google Stream Generate | `POST /inference/google/v1beta/models/{model}:streamGenerateContent` | Streams a Google-format response. |
+
+Use the complete Provider-qualified Model ID returned by the Models endpoint. The AI Gateway translates supported requests to the selected Provider while preserving messages, Tool calls and results, streaming, usage, and failures.
+
+The AI Gateway does not create a Session. If you include Tool definitions, it can return Tool calls in the selected caller format, but your client must execute those Tools and send their results in a follow-up request. Use the MCP Gateway when the external client should discover and run ByMorning's Workspace Tools.
+
+Unsupported features fail explicitly instead of being dropped. Stateful response references, server-executed Provider Tools, strict Tool validation, and Provider-specific controls are not portable across every destination.
+
+## MCP Gateway
+
+Connect an MCP client to `POST /mcp` using MCP Streamable HTTP. The endpoint supports OAuth discovery, or you can authenticate with a ByMorning Service Account key.
+
+| MCP operation | What it does |
+| --- | --- |
+| `initialize` | Negotiates the MCP connection and client capabilities. |
+| `tools/list` | Returns the Tools available to the authenticated caller. |
+| `tools/call` | Invokes one listed Tool with validated arguments. |
+
+The MCP Gateway exposes custom Workspace Tools and Tools imported from outbound MCP servers. Built-in Agent Tools are not exposed.
+
+### Tools
+
+Tools configured with `codemode: false` appear directly by their effective names. Other admitted Tools appear through the shared `execute` Code Mode Tool and its catalog.
+
+Workspace Permission rules filter the catalog and protect execution:
+
+- **Allow** permits the matching action and resource.
+- **Ask** fails closed because an external MCP call cannot pause for Session approval.
+- **Deny** blocks the call. A wholly denied Tool is omitted from the exposed catalog.
+- Code Mode calls need permission for both the outer `execute` action and the selected Tool action.
+
+Some Tools can request additional input. ByMorning uses native MCP elicitation when the client supports it. Other clients receive a pending browser or model-handled response; model-handled flows continue through `mcp_resume`.
+
+The `/api/mcp/server/*` endpoints manage outbound MCP servers that supply Tools to ByMorning. They do not replace the inbound `/mcp` Tool Gateway endpoint.
+
+See [Permissions](/configure/permissions) to control Tool access and [Integrations](/configure/integrations) to connect outbound MCP servers.
+
+## Overview
+
+Open **AI Gateway → Overview** to see Model usage over the last 7, 30, or 90 days. The overview starts at 30 days.
+
+Each view reports:
+
+- **Invocations** — recorded Model calls
+- **Total tokens** — input, output, reasoning, cache-read, and cache-write tokens
+- **Spend** — known USD cost for those calls
+
+The daily invocations chart shows call volume by date. Scroll the chart horizontally when the selected period is wider than the available space.
+
+## Tokens
+
+Use **Token breakdown** to separate input, output, reasoning, cache-read, and cache-write tokens.
+
+## Models and users
+
+| Table | Grouping | Measures |
+| --- | --- | --- |
+| **Usage by model** | Recorded Model name | Invocations, total tokens, and spend |
+| **Usage by user** | Workspace User ID | Invocations, total tokens, and spend |
+
+Both tables use the same selected period as the overview metrics and chart.
+
+## Incomplete prices
+
+Spend is a known subtotal when one or more recorded calls do not have complete Model pricing. ByMorning then displays **at least $…** instead of a final cost.
+
+If no invocations were recorded in the selected period, the overview shows an empty state.

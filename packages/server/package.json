@@ -1,0 +1,44 @@
+{
+  "name": "@bymorning/server",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "bun run script/build.mjs",
+    "smoke:image": "sh test/image-smoke.sh",
+    "test:image": "sh test/image-security.sh",
+    "test:boot": "sh test/image-boot.sh",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bymorning/admin": "workspace:*",
+    "@bymorning/core": "workspace:*",
+    "@bymorning/gateway": "workspace:*",
+    "@bymorning/plugin": "workspace:*",
+    "@bymorning/observability": "workspace:*",
+    "@bymorning/protocol": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "@bymorning/util": "workspace:*",
+    "@effect/platform-node": "catalog:",
+    "@effect/sql-pg": "catalog:",
+    "drizzle-orm": "catalog:",
+    "effect": "catalog:",
+    "sst": "catalog:",
+    "tsx": "catalog:",
+    "jsonc-parser": "^3.3.1",
+    "oauth4webapi": "catalog:"
+  },
+  "devDependencies": {
+    "@bymorning/testing": "workspace:*",
+    "@effect/vitest": "catalog:",
+    "@modelcontextprotocol/client": "2.3.1",
+    "@bymorning/client": "workspace:*",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

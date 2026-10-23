@@ -1,0 +1,37 @@
+[data-component="form-frame"] {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+[data-slot="form-fields"] {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="form-fields"] {
+  padding: 0;
+}
+
+[data-slot="form-fields"][data-layout="paired"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-slot="form-error"] {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-danger-fg);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+@media (max-width: 600px) {
+  [data-slot="form-fields"][data-layout="paired"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

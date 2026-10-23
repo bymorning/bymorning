@@ -1,0 +1,21 @@
+# Dependency update automation. Actions are pinned by commit SHA; dependabot
+# keeps those pins current (it bumps the SHA and the version comment together).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  # bun.lock is a Bun lockfile; dependabot's npm ecosystem updates the
+  # package.json manifests and the lockfile is refreshed by the maintainer
+  # with `bun install` when merging (CI enforces --frozen-lockfile).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    ignore:
+      # Catalog versions are managed centrally in the root package.json;
+      # effect-rc lines move in lockstep and are bumped deliberately.
+      - dependency-name: "effect"
+      - dependency-name: "@effect/*"

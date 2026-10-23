@@ -1,0 +1,1347 @@
+---
+title: Plugins
+description: Extend ByMorning with hooks, transforms, Tools, and durable state.
+---
+
+Plugins extend one Workspace with trusted server code. Use the Promise API unless your implementation already uses Effect.
+
+```ts title="plugin/example.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.example",
+  async setup(context) {
+    await context.storage.set("loaded", true)
+  },
+})
+```
+
+A Plugin definition has a unique `id`, a `setup(context)` function, optional `scope`, optional non-secret `configuration`, and optional `tui` inventory metadata. `scope: "workspace"` selects the shared Workspace host; omission retains member scope. `tui` has no established runtime behavior today.
+
+<Callout type="warning" title="Plugins are trusted code">
+Plugin modules run unsandboxed, in process, with the ByMorning server's operating-system access. Review every local file and package before enabling it. Tool sandboxing limits a Tool implementation; it does not sandbox the plugin that registered the Tool.
+</Callout>
+
+## Load
+
+Choose Project discovery for code stored with a Project. Use Workspace configuration for packages and other server-local files.
+
+### Project
+
+ByMorning loads only these Project entrypoints:
+
+- `plugin/<name>.ts`
+- `plugin/<name>/index.ts`
+
+Files deeper under `plugin/` are support modules. They are not separate plugins. A module may export `plugin` or `default`; ByMorning checks the named `plugin` export first.
+
+```ts title="plugin/audit/index.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export const plugin = Plugin.define({
+  id: "project.audit",
+  setup(context) {
+    console.log(context.location.projectID)
+  },
+})
+```
+
+A successful Project write anywhere below `plugin/` rematerializes that Project's complete plugin subtree. Project plugins load after configured external plugins, in Project creation order and then lexical entrypoint order.
+
+### Sources
+
+Add packages, files, options, and selectors to the ordered `plugins` array in [Workspace configuration](/configure/workspace-configuration).
+
+```jsonc title="Workspace configuration"
+{
+  "plugins": [
+    "@acme/audit-plugin@1.2.3",
+    "./plugins/local.ts",
+    "/srv/bymorning/plugins/review.ts",
+    "file:///opt/bymorning/plugin.ts",
+    { "package": "company.review", "options": { "mode": "strict" } },
+    "-company.legacy",
+    "-company.*",
+    "company.review",
+    "*",
+  ],
+}
+```
+
+Operations run from first to last:
+
+| Entry | Behavior |
+| --- | --- |
+| `"target"` | Enable a definition with that known ID, or import the target as a package or path. |
+| `{ "package": "target", "options": { ... } }` | Configure a known definition or import a target with options. |
+| `"-id"` | Disable an exact definition already known at that point. |
+| `"-prefix.*"` | Disable matching known definitions. |
+| `"*"` / `"-*"` | Enable or disable every known definition. |
+
+- Positive `*`, `prefix.*`, and reserved `bymorning.*` or `core.*` values are selectors, not package names.
+- A later positive selector can re-enable a definition.
+- Re-enabling a previously loaded external ID with object form does not replace that external definition's original options.
+- IDs must remain unique across the active Workspace.
+- Configured external targets activate in the order each target first appears. Removing and later re-adding the same target does not move its position.
+- Built-in ordering remains host-defined; selectors only change which known definitions are enabled.
+
+Provider Integration built-ins are independently selectable as `core.provider.bymorning`, `core.provider.openai`, `core.provider.anthropic`, `core.provider.google`, `core.provider.opencode`, `core.provider.fireworks`, and `core.provider.amazon-bedrock`. Use `-core.provider.*` to disable all of them.
+
+### Packages
+
+Core loads no vendor package automatically. The shipped apps package Context7, Atlassian, and Slack without enabling them. Add the plugins you need to Workspace configuration:
+
+```jsonc title="Workspace configuration"
+{
+  "plugins": [
+    "@bymorning/plugin-context7",
+    "@bymorning/plugin-atlassian",
+    "@bymorning/plugin-slack",
+  ],
+}
+```
+
+Context7 contributes its Integration and remote MCP server. Atlassian contributes its remote MCP server. Slack contributes its Integration and remote MCP server. The shipped apps enable Google Gmail Tools separately.
+
+### Resolution
+
+Configured targets resolve on the server:
+
+1. Absolute paths and `file://` URLs resolve to server-local files.
+2. Relative paths resolve from the Config document that declares them.
+3. Virtual production Workspace configuration has no file location, so its relative paths resolve from the server process working directory.
+4. Package specifications resolve from the running installation first.
+5. If absent, ByMorning can install the package specification into its plugin cache with `bun add --ignore-scripts` and resolve it there.
+
+The fallback needs Bun, registry access, and a writable cache. Dependency lifecycle scripts never run. A package resolves its `./server` export before its root export.
+
+- Configured local entrypoint files are watched directly.
+- Package targets and transitive imports of a configured local entrypoint are not watched.
+- Change the configured target or options, or restart the server, after changing an unwatched dependency.
+- Invalidation does not cross server processes.
+
+### Updates
+
+Package sources in plugin inventory include the installed `version`. They include `outdated: true` after ByMorning finds a newer registry revision, and `updating: true` while it installs an update. ByMorning checks package sources in inventory every 24 hours and can install an available update into the plugin cache.
+
+- The target must be a `package` source in that Workspace.
+- Setting server startup `installPackage: false` disables package checks and updates.
+- There is no HTTP Plugin inventory or update API.
+
+## Options
+
+`context.options` contains normalized, non-secret activation input. Project plugins receive `{}`. Object-form configured plugins receive their options, and changing those options creates a new generation.
+
+```ts title="plugins/review.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "company.review",
+  configuration: {
+    title: "Review policy",
+    description: "Configure review behavior for this Workspace.",
+    fields: [
+      { key: "strict", type: "boolean", title: "Strict reviews", default: true },
+      { key: "audiences", type: "string", title: "Audience", optionsKey: "audiences" },
+    ],
+    optionSets: {
+      audiences: [
+        { value: "developers", label: "Developers" },
+        { value: "operators", label: "Operators" },
+      ],
+    },
+  },
+  async setup(context) {
+    const strict = context.options.strict === true
+    await context.session.hook("context", (event) => {
+      if (strict) event.system.push({ type: "text", text: "Treat every warning as actionable." })
+    })
+  },
+})
+```
+
+Forms support non-secret string, number, integer, boolean, and multiselect fields. Field defaults apply before the form is saved. `optionSets` let string fields share choices through `optionsKey`; a field cannot set both `options` and `optionsKey`, and every key must resolve in the same definition.
+
+- Saving a valid form updates Workspace configuration and waits for plugin activation.
+- If activation fails, ByMorning restores the previous configuration.
+- Form metadata and normalized values appear in plugin inventory.
+- `secret` and `external` fields are invalid. Put API keys, OAuth clients, access tokens, and refresh tokens in an Integration.
+
+#### Reference
+
+```ts
+interface PluginDefinition {
+  readonly id: string
+  readonly tui?: boolean
+  readonly configuration?: {
+    readonly title: string
+    readonly description?: string
+    readonly fields: readonly [PluginConfigurationField, ...PluginConfigurationField[]]
+    readonly optionSets?: Readonly<Record<string, readonly FormOption[]>>
+  }
+  readonly setup: (context: Context) => Promise<Cleanup | void> | Cleanup | void
+}
+
+type PluginOptions = Readonly<Record<string, unknown>>
+type Cleanup = () => Promise<void> | void
+```
+
+## Trust
+
+Treat plugin options, inventory fields, logs, errors, Tool metadata, returned content, and test snapshots as public to Workspace operators. Never put credentials in them.
+
+- The public context is deliberately narrow. It has no generic HTTP, configuration, job, or raw-storage service.
+- Use native `fetch` or a plugin-owned HTTP client.
+- Internal Core service injection is not a public package or Project plugin API.
+
+## Lifecycle
+
+ByMorning owns one activation Scope per plugin generation. Await every registration in `setup` so it is installed before setup finishes.
+
+```ts title="plugin/lifecycle.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.lifecycle",
+  async setup(context) {
+    const registration = await context.session.hook("context", (event) => {
+      event.system.push({ type: "text", text: "Review correctness before style." })
+    })
+
+    const timer = setInterval(() => console.log("plugin active"), 60_000)
+    return async () => {
+      await registration.dispose()
+      clearInterval(timer)
+    }
+  },
+})
+```
+
+Registrations return idempotent `dispose()` operations for early removal. Unload, replacement, or Workspace shutdown closes the generation Scope and removes registrations automatically. Return cleanup only for plugin-owned resources such as timers and sockets.
+
+- When the desired Plugin sequence or generation changes, ByMorning replaces generations in deterministic activation order.
+- Inference reload pauses admission and drains active invocations before closing the previous activation. Long streams can delay reload.
+- If replacement setup fails, ByMorning attempts to reactivate the previous generation.
+- A failed import or invalid module export happens before setup and cannot use that same restoration path.
+- Failures appear in inventory; required inference Plugin failures block admission.
+- A failed Project entrypoint does not stop discovery of unrelated entrypoints.
+- ByMorning does not automatically retry failed imports, setup, cleanup, hooks, transforms, Tools, or provider executions.
+- A later source/configuration reconciliation or an explicit domain `reload()` is required where applicable.
+- Concurrent plugin activation is serialized; domain rebuilds also publish a committed result rather than a partial editor.
+- Do not rely on cleanup success to protect critical external state. Cleanup failures are ignored while the old Scope closes.
+
+## Context
+
+`app`, `location`, and `options` describe this activation, not every Session the plugin can access.
+
+```ts
+console.log(context.app.name, context.app.version, context.app.channel)
+console.log(context.location.workspaceID, context.location.projectID)
+console.log(context.options)
+```
+
+`location.workspaceID` identifies the owning Workspace. A Plugin declaring `scope: "workspace"` activates once per Workspace from Workspace configuration and receives the reduced context: `app`, `options`, `location.workspaceID`, `catalog`, `gateway`, `session.hook`, `tool.hook`, and `storage`.
+
+- Omitting `scope`, or declaring `scope: "member"`, retains the member host and its full context.
+- Project-discovered Plugins remain member-hosted; `location.projectID` records their source.
+- Project File Tools remain bound to their source Project, and instruction files can explicitly carry Project provenance.
+- Sessions and inbound MCP compose Workspace hooks first, then member hooks. LLM Gateway uses Workspace hooks only.
+
+#### Reference
+
+```ts
+interface App {
+  readonly name: string
+  readonly version: string
+  readonly channel: string
+}
+
+interface Location {
+  readonly workspaceID: Workspace.ID
+  readonly projectID?: Project.ID
+}
+```
+
+## Transforms
+
+Transforms synchronously edit a fresh domain editor. ByMorning replays active transforms in registration order, so later transforms see earlier changes.
+
+```ts
+const registration = await context.agent.transform((editor) => {
+  editor.update("reviewer", (agent) => {
+    agent.instructions = "Review correctness, regressions, and missing tests."
+  })
+  editor.default("reviewer")
+})
+
+await context.agent.reload()
+await registration.dispose()
+```
+
+Keep transform callbacks synchronous, cheap, deterministic, and repeatable. Load external values before registering. When captured external state changes, update that state and await the domain's `reload()`.
+
+- Reload reconstructs the whole domain from its base and every active transform; it does not rerun plugin setup.
+- Disposing a transform reconstructs the domain without it.
+- A thrown transform callback fails that rebuild. There is no automatic retry.
+- Overlapping reload requests are coordinated, and each caller waits for a rebuild covering its request.
+
+#### Reference
+
+```ts
+interface Registration {
+  dispose(): Promise<void>
+}
+
+type Transform<Editor> = (callback: (editor: Editor) => void) => Promise<Registration>
+```
+
+## API
+
+The default `@bymorning/plugin` entrypoint exposes the following intentional context. Client-like operations are bound to the activating Workspace; they are not an unauthenticated cross-Workspace control plane.
+
+- Use the generated [API reference](/api) for complete transport input and output schemas.
+- The short examples in the domain sections are `setup(context)` body fragments. Paste them into the Promise plugin shape at the start of this page, and keep any shown imports at module scope.
+
+### Inventory
+
+Read active and failed definitions with `plugin.list`. Configuration mutation is intentionally absent from plugin context.
+
+```ts
+const plugins = await context.plugin.list()
+console.log(plugins.map((plugin) => [plugin.id, plugin.status, plugin.source]))
+```
+
+Inventory includes `builtin`, `package`, `local`, `project`, and host-created `sdk` provenance. `tui` is inventory-only metadata with no established server behavior.
+
+#### Reference
+
+```ts
+interface PluginDomain {
+  list(): Promise<readonly PluginInfo[]>
+}
+```
+
+### Instructions
+
+Contribute durable instruction files or mark the complete discovery source unavailable.
+
+```ts
+await context.instruction.transform((editor) => {
+  editor.add({ path: "company/review.md", content: "Review correctness before style." })
+})
+
+const files = await context.instruction.list(context.location.projectID)
+await context.instruction.reload()
+```
+
+A file without `projectID` applies Workspace-wide. A file with `projectID` applies only when that Project's Session context loads instructions. Workspace-wide files render first, followed by matching Project files, preserving transform insertion order. `update` and `remove` identify a file by both path and optional Project ID.
+
+- Call `editor.unavailable()` for a transient source failure.
+- Before initial admission it blocks the instruction baseline.
+- After admission it retains the prior value instead of asserting removal.
+- An available empty list means prior discovered instructions no longer apply.
+
+#### Reference
+
+```ts
+interface InstructionDomain {
+  list(projectID?: Project.ID): Promise<readonly InstructionFile[]>
+  transform(callback: (editor: InstructionEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface InstructionEditor {
+  list(): readonly InstructionFile[]
+  add(file: { path: string; content: string; projectID?: Project.ID }): void
+  update(path: string, projectID: Project.ID | undefined, edit: (file: InstructionFile) => void): void
+  remove(path: string, projectID: Project.ID | undefined): void
+  unavailable(): void
+}
+```
+
+### Sessions
+
+Create a root Session for a Project or a child Session from a parent. Then read it, select an Agent or Model, submit work, interrupt it, rename it, or wait for completion.
+
+```ts
+const projectID = context.location.projectID
+if (projectID) {
+  const session = await context.session.create({ projectID })
+  await context.session.prompt({ sessionID: session.id, text: "Review the current changes" })
+  await context.session.wait({ sessionID: session.id })
+}
+```
+
+`prompt`, `generate`, `command`, and `synthetic` are distinct Session input paths. `generate` returns generated text. `interrupt` requests a user interruption. These calls use the same focused inputs and outputs as their named operations in the [API reference](/api).
+
+#### Reference
+
+```ts
+interface SessionDomain {
+  create(input: Session.CreateInput | ChildSessionCreateInput): Promise<Session.Info>
+  get(input: { sessionID: Session.ID }): Promise<Session.Detail>
+  switchAgent(input: SessionSwitchAgentInput): Promise<void>
+  switchModel(input: SessionSwitchModelInput): Promise<void>
+  prompt(input: SessionPromptInput): Promise<SessionPromptOutput>
+  generate(input: SessionGenerateInput): Promise<{ text: string }>
+  command(input: SessionCommandInput): Promise<SessionCommandOutput>
+  synthetic(input: SessionSyntheticInput): Promise<SessionSyntheticOutput>
+  interrupt(input: { sessionID: Session.ID }): Promise<void>
+  rename(input: SessionRenameInput): Promise<void>
+  wait(input: { sessionID: Session.ID }): Promise<void>
+  hook: SessionHook
+}
+
+interface ChildSessionCreateInput {
+  readonly parentID: Session.ID
+  readonly title?: Session.Title
+  readonly agent?: Agent.ID
+  readonly model?: Model.Ref
+}
+```
+
+### Agents
+
+Use persisted operations to list, get, create, and update Agents. Use transforms for lifecycle-scoped creation or edits, removal, and default selection. `editor.update` creates a missing Agent with host defaults before applying your callback.
+
+```ts
+const agents = await context.agent.list()
+const reviewer = agents.find((agent) => agent.id === "reviewer")
+if (reviewer) await context.agent.get({ id: reviewer.id })
+
+await context.agent.transform((editor) => {
+  editor.update("reviewer", (agent) => {
+    agent.description = "Reviews changes for correctness."
+  })
+})
+```
+
+#### Reference
+
+```ts
+interface AgentDomain {
+  list(): Promise<readonly Agent.Info[]>
+  get(input: { id: Agent.ID }): Promise<Agent.Info>
+  create(input: AgentCreateInput): Promise<Agent.Info>
+  update(input: AgentUpdateInput): Promise<Agent.Info>
+  transform(callback: (editor: AgentEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface AgentEditor {
+  list(): readonly Agent.Info[]
+  get(id: string): Agent.Info | undefined
+  default(id: string | undefined): void
+  update(id: string, edit: (agent: Agent.Info) => void): void
+  remove(id: string): void
+}
+```
+
+### Catalog
+
+List currently available Providers and Models. A catalog transform can inspect, update, or remove Provider and Model records and select the default Model. `editor.provider.update` creates a missing disabled Provider record before applying your callback. This changes catalog metadata; it does not install a Provider SDK or Integration. `editor.model.update` upserts: it creates a missing Model, and a missing parent Provider starts disabled. Workspace-configured [custom Models](/configure/models#custom-models) apply after Plugin contributions.
+
+```ts
+const providers = await context.catalog.provider.list()
+const models = await context.catalog.model.list()
+
+await context.catalog.transform((editor) => {
+  editor.model.update("anthropic", "claude-sonnet-4", (model) => {
+    model.name = "Claude Sonnet"
+  })
+  editor.model.default.set("anthropic", "claude-sonnet-4")
+})
+```
+
+#### Reference
+
+```ts
+interface CatalogDomain {
+  provider: { list(): Promise<readonly Provider.Info[]> }
+  model: { list(): Promise<readonly Model.Info[]> }
+  transform(callback: (editor: CatalogEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface CatalogEditor {
+  provider: {
+    list(): readonly CatalogProviderRecord[]
+    get(providerID: string): CatalogProviderRecord | undefined
+    update(providerID: string, edit: (provider: Provider.Info) => void): void
+    remove(providerID: string): void
+  }
+  model: {
+    get(providerID: string, modelID: string): Model.Info | undefined
+    update(providerID: string, modelID: string, edit: (model: Model.Info) => void): void
+    remove(providerID: string, modelID: string): void
+    default: {
+      get(): { providerID: string; modelID: string } | undefined
+      set(providerID: string, modelID: string): void
+    }
+  }
+}
+```
+
+### Commands
+
+List Commands and create, edit, or remove lifecycle-scoped definitions. `editor.update` creates a missing Command with an empty template before applying your callback. The editor intentionally has no separate `add` operation.
+
+```ts
+const commands = await context.command.list()
+await context.command.transform((editor) => {
+  editor.update("review", (command) => {
+    command.description = "Review the current changes"
+  })
+  editor.remove("legacy")
+})
+await context.command.reload()
+```
+
+#### Reference
+
+```ts
+interface CommandDomain {
+  list(): Promise<readonly Command.Info[]>
+  transform(callback: (editor: CommandEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface CommandEditor {
+  list(): readonly Command.Info[]
+  get(name: string): Command.Info | undefined
+  update(name: string, edit: (command: Command.Info) => void): void
+  remove(name: string): void
+}
+```
+
+### Skills
+
+Persist Skills with `list`, `get`, `create`, `update`, and `delete`. Use a transform for lifecycle-scoped add, update, or removal.
+
+```ts
+import { Skill } from "@bymorning/plugin"
+
+await context.skill.transform((editor) => {
+  editor.add({
+    id: Skill.ID.make("skl_00000000000000000000000001"),
+    name: "Review work",
+    description: "Review the current work for correctness.",
+    instructions: "Check correctness, regressions, and missing tests.",
+  })
+})
+```
+
+#### Reference
+
+```ts
+interface SkillDomain {
+  list(): Promise<readonly Skill.Info[]>
+  get(input: { skillID: Skill.ID }): Promise<Skill.Info>
+  create(input: SkillCreateInput): Promise<Skill.Info>
+  update(input: SkillUpdateInput): Promise<Skill.Info>
+  delete(input: { skillID: Skill.ID }): Promise<void>
+  transform(callback: (editor: SkillEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface SkillEditor {
+  list(): readonly Skill.Info[]
+  add(skill: Skill.Info): void
+  update(id: string, edit: (skill: Skill.Info) => void): void
+  remove(id: string): void
+}
+```
+
+### References
+
+List resolved References or transform local and Git sources.
+
+```ts
+const references = await context.reference.list()
+await context.reference.transform((editor) => {
+  editor.add("handbook", { type: "local", path: "/workspace/docs/handbook" })
+  editor.add("standards", { type: "git", repository: "https://github.com/acme/standards.git" })
+  editor.remove("legacy")
+})
+```
+
+#### Reference
+
+```ts
+interface ReferenceDomain {
+  list(): Promise<readonly Reference.Info[]>
+  transform(callback: (editor: ReferenceEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface ReferenceEditor {
+  list(): readonly (readonly [string, Reference.LocalSource | Reference.GitSource])[]
+  add(name: string, source: Reference.LocalSource | Reference.GitSource): void
+  remove(name: string): void
+}
+```
+
+### Tools
+
+Register sandbox or trusted-host Tools through `tool.transform`. There is no `tool.register` method.
+
+```ts title="plugin/echo.ts"
+import { Plugin } from "@bymorning/plugin"
+import { Schema } from "effect"
+
+export default Plugin.define({
+  id: "project.echo",
+  async setup(context) {
+    await context.tool.transform((editor) => {
+      editor.add({
+        name: "echo",
+        description: "Echo text back to the caller.",
+        input: Schema.Struct({ text: Schema.String }),
+        output: Schema.String,
+        execution: "sandbox",
+        implementation: {
+          type: "inline",
+          language: "typescript",
+          body: "return { output: input.text, content: input.text }",
+        },
+      })
+    })
+  },
+})
+```
+
+Registration accepts three variants:
+
+- `execution: "sandbox"` with an inline `python`, `javascript`, or `typescript` implementation.
+- `execution: "sandbox"` with a `project-file` implementation. Only a Project plugin may use this variant; ByMorning reads that Project file at execution time.
+- a host Tool with an async `execute(input, context)` callback. Host Tools have no execution discriminator.
+
+Input and output accept Effect Schema, Standard Schema with JSON Schema support, or raw JSON Schema. ByMorning validates registration and input. A registration must define exactly one of `execute` and `implementation`; invalid registrations are logged and skipped without displacing the last valid value.
+
+- Tool names normalize characters other than letters, digits, `_`, and `-` to `_`.
+- An optional dotted `options.namespace` becomes underscore-separated in the effective name.
+- Names and namespace segments must start with a letter and be at most 64 characters.
+- Normalized duplicate names follow replay precedence.
+- The direct name `execute` is reserved when `codemode: false`.
+- `options.codemode` defaults to Code Mode projection. Set it to `false` to advertise the Tool directly.
+- `pinned` is available only for Code Mode Tools.
+- The same prepared Tool snapshot supplies Sessions and inbound MCP; built-in Tools remain excluded from inbound MCP.
+- The projection does not grant Permission; see the [Permission model](/developer-reference/permission-model) and [Inbound MCP](/agent/inbound-mcp).
+
+For a host Tool, choose one stable `options.permission` action. If omitted, ByMorning uses the effective Tool name. Call `execution.permission()` immediately before every sensitive side effect and pass exact resources. Sandbox Tools assert the action automatically with resource `*`. Use `execution.progress()` for JSON-safe progress metadata.
+
+```ts
+await context.tool.transform((editor) => {
+  editor.add({
+    name: "read_status",
+    description: "Read the Acme service status.",
+    input: { type: "object", properties: {}, additionalProperties: false },
+    options: { namespace: "acme", permission: "acme_status_read", codemode: false },
+    async execute(_input, execution) {
+      await execution.permission({
+        action: "acme_status_read",
+        resources: ["https://status.acme.example"],
+        save: ["https://status.acme.example"],
+      })
+      await execution.progress({ phase: "request" })
+      const response = await fetch("https://status.acme.example")
+      if (!response.ok) {
+        return { content: `Status request failed: ${response.status}`, metadata: { status: response.status } }
+      }
+      return { content: await response.text() }
+    },
+  })
+})
+```
+
+Promise host Tool callbacks return `ToolResult`. Any thrown or rejected value, including `Tool.Error`, is currently a defect. Return a valid result for a recoverable outcome, or use an Effect Tool callback when you need the typed `Tool.Error` failure channel. Promise execute-before hooks can also return `Tool.Error` before execution starts.
+
+- Unmatched Permissions default to `ask`.
+- A Session can request approval, but inbound MCP cannot; `ask` and `deny` both fail closed there. See the [Permission model](/developer-reference/permission-model).
+- Tool transforms replay in registration order against a fresh editor.
+- Use `list` and `get` to inspect admitted executable Tools, `namespace` to describe a Code Mode namespace, and `add`, `update`, or `remove` to edit Tools.
+- `update` cannot rename a Tool or move its namespace.
+- Call `context.tool.reload()` after changing external state captured by a transform. Reload preserves precedence.
+- Disposing a registration is idempotent and reveals earlier active definitions.
+
+Each model request captures a prepared Tool snapshot: definitions, the optional Code Mode catalog, and their paired executor. Later registrations affect the next request, not the captured executor.
+
+- Sessions and inbound MCP use the same preparation algorithm, with caller-specific Permissions and the builtin exclusion described above.
+- A snapshot does not freeze credentials or remote connection availability.
+- Tool execution receives a read-only `caller` and call `id`.
+- Narrow `caller.type` before using Session fields: a `session` caller has `sessionID`, `messageID`, `agent`, and `projectID`; a `gateway` caller has `userID` and an optional `projectID`.
+- Gateway execution does not fabricate Session identity.
+- Session Tool hooks retain their flat Session identifiers, Tool name, call ID, and input; they do not receive requested or effective Model snapshots.
+- Use the separate gateway hooks for inbound MCP.
+
+Register operations from an OpenAPI document with `context.tool.openapi(options)`. This scoped registration returns `operationNames`, `skipped` operations, and `dispose()`. Supply a namespace, Permission prefix, expected origin, document, and explicit authentication:
+
+```ts
+const registration = await context.tool.openapi({
+  namespace: "acme",
+  permissionPrefix: "acme",
+  expectedOrigin: "https://status.acme.example",
+  authentication: { type: "none" },
+  spec: {
+    openapi: "3.0.3",
+    info: { title: "Acme status", version: "1.0.0" },
+    servers: [{ url: "https://status.acme.example" }],
+    paths: {
+      "/status": {
+        get: {
+          operationId: "read_status",
+          responses: { "200": { description: "Current status" } },
+        },
+      },
+    },
+  },
+})
+```
+
+For authenticated operations, use `authentication: { type: "integration", integrationID, schemes }` with an existing Integration and explicit security-scheme mappings.
+
+- Supported mappings are `bearer`, `apiKey`, and `basic`; `basic.username` names a credential-configuration field, not a literal username.
+- The host resolves the current member's Connection at invocation and never creates an Integration or authentication method for you.
+- Unsupported operations appear in `skipped`.
+- Invalid setup rejects with a secret-free `OpenAPI.Error`; missing credentials fail closed with `Tool.Error`.
+- The host enforces the expected origin, rejects redirects, and applies a 30-second timeout.
+
+#### Reference
+
+```ts
+import type { OpenAPI, Plugin, Tool } from "@bymorning/plugin"
+import type { Types } from "effect"
+
+type Editor = Parameters<Parameters<Plugin.Context["tool"]["transform"]>[0]>[0]
+type HostTool = Omit<ReturnType<Editor["list"]>[number], "id">
+type SandboxTool = Tool.SandboxRegistration
+type ToolHook = Plugin.Context["tool"]["hook"]
+type Registration = { dispose(): Promise<void> }
+
+interface ToolDomain {
+  transform(callback: (editor: ToolEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+  openapi(options: OpenAPI.Options): Promise<OpenAPI.Summary & Registration>
+  hook: ToolHook
+}
+
+interface ToolEditor {
+  list(): readonly (HostTool & { readonly id: string })[]
+  get(id: string): (HostTool & { readonly id: string }) | undefined
+  namespace(value: Tool.Namespace): void
+  add(tool: HostTool | SandboxTool): void
+  update(id: string, update: (tool: Types.Mutable<HostTool>) => void): void
+  remove(id: string): void
+}
+
+interface ToolExecutionContext {
+  readonly caller: Tool.Caller
+  readonly id: Tool.CallID
+  progress(metadata: Tool.Metadata): Promise<void>
+  permission(request: {
+    action: string
+    resources: readonly string[]
+    save?: readonly string[]
+    metadata?: Readonly<Record<string, unknown>>
+  }): Promise<void>
+}
+
+type ToolResult = {
+  readonly output?: unknown
+  readonly content?: string | readonly Tool.Content[]
+  readonly metadata?: Readonly<Record<string, unknown>>
+}
+```
+
+### Policy
+
+Register typed callbacks through `session.hook` and `gateway.hook`. Use `model.request` for routing and request customization; use `model.invoke` for admission after final destination resolution. The former `context.policy` domain and managed rule language are retired.
+
+- Keep permanent Tool permissions with Permission, monetary restrictions with Budget, activity limits with Limiter, accounting with Usage, and durable guidance with Instruction.
+- Shared hard caps remain in `Config.gateway`.
+- Routing and other Plugin-owned choices use each Plugin's existing `configuration` form.
+
+See [Inference hooks](/developer-reference/inference-hooks) for copy-pasteable examples, usage observers, cancellation, and reload, and [Policy migration](/developer-reference/policy-language) for retained definitions.
+
+### Integrations
+
+Register an Integration when execution needs credentials. `editor.update(id, callback)` creates a missing Integration or edits an existing one; there is no Integration `add`.
+
+```ts title="plugin/acme.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.acme",
+  async setup(context) {
+    await context.integration.transform((editor) => {
+      editor.update("acme", (integration) => {
+        integration.name = "Acme"
+      })
+      editor.method.update({
+        integrationID: "acme",
+        method: { type: "key", label: "API key" },
+      })
+    })
+  },
+})
+```
+
+Public transforms may register `key`, `oauth`, `command`, and `env` methods. They may list and remove host-owned `aws-sigv4` and `env-group` methods, but cannot register them.
+
+- OAuth registrations provide `authorize`, optional `refresh`, and optional credential `label` callbacks.
+- `oauth.callback.register()` returns a callback URI, state, expiry, and a Promise for the callback response.
+- The operational client surface can list/get Integrations; connect key or AWS SigV4 credentials; and start, inspect, complete, or cancel OAuth and command attempts.
+- OAuth client `put/remove` and Integration `wellknown` methods are host-only and intentionally absent from plugin context.
+- `connect.awsSigV4` is available, but regional AWS connection credentials remain host-owned: `connection.resolve()` returns `undefined` for `regional-credential` and `regional-env` connections.
+
+Resolve credentials at execution time. Do not capture them during setup.
+
+```ts
+const acme = (await context.integration.list()).find((integration) => integration.id === "acme")
+if (acme) {
+  const connection = await context.integration.connection.active(acme.id)
+  const credential = connection ? await context.integration.connection.resolve(connection) : undefined
+  console.log(credential?.type)
+}
+```
+
+#### Reference
+
+```ts
+interface IntegrationDomain {
+  list(): Promise<readonly Integration.Info[]>
+  get(input: { integrationID: Integration.ID }): Promise<Integration.Info | undefined>
+  connect: {
+    key(input: IntegrationConnectKeyInput): Promise<void>
+    awsSigV4(input: IntegrationConnectAwsSigV4Input): Promise<void>
+  }
+  oauth: {
+    callback: { register(): Promise<IntegrationOAuthCallbackRegistration> }
+    connect(input: IntegrationOAuthConnectInput): Promise<IntegrationAttempt>
+    status(input: IntegrationAttemptInput): Promise<IntegrationAttemptStatus>
+    complete(input: IntegrationOAuthCompleteInput): Promise<void>
+    cancel(input: IntegrationAttemptInput): Promise<void>
+  }
+  command: {
+    connect(input: IntegrationCommandConnectInput): Promise<IntegrationCommandAttempt>
+    status(input: IntegrationAttemptInput): Promise<IntegrationCommandAttemptStatus>
+    cancel(input: IntegrationAttemptInput): Promise<void>
+  }
+  connection: {
+    active(integrationID: string): Promise<Connection.Info | undefined>
+    resolve(connection: Connection.Info): Promise<Credential.Value | undefined>
+  }
+  transform(callback: (editor: IntegrationEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface IntegrationEditor {
+  list(): readonly { id: string; name: string }[]
+  get(id: string): { id: string; name: string } | undefined
+  update(id: string, edit: (integration: { id: string; name: string }) => void): void
+  remove(id: string): void
+  method: {
+    list(integrationID: string): readonly IntegrationMethod[]
+    update(input: KeyMethod | OAuthMethod | CommandMethod | EnvMethod): void
+    remove(integrationID: string, method: IntegrationMethod): void
+  }
+}
+```
+
+### MCP
+
+Transform remote outbound MCP server definitions and inspect sanitized connection status.
+
+```ts title="plugin/docs-mcp.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.docs-mcp",
+  async setup(context) {
+    await context.mcp.transform((editor) => {
+      editor.set("docs", {
+        type: "remote",
+        url: "https://mcp.example.com/mcp",
+        oauth: { scope: "tools.read" },
+        timeout: { startup: 30_000, catalog: 30_000 },
+      })
+    })
+  },
+})
+```
+
+A remote definition supports `url`, string `headers`, `disabled`, `enabled`, `codemode`, `timeout.startup`, `timeout.catalog`, `timeout.execution`, and `oauth`. OAuth defaults on; set `oauth: false` for another authentication policy. Do not embed secrets in headers from plugin options. Use an Integration.
+
+- `mcp.list()` returns only names, public URLs, status, errors, and optional Integration IDs. It never returns headers or OAuth credentials.
+- Unloading the sole contributor disconnects its server.
+- Outbound MCP Tools remain subject to Permissions.
+- Set `codemode: false` when the server supplies its own Code Mode Tool and should stay directly visible.
+
+#### Reference
+
+```ts
+interface MCPDomain {
+  list(): Promise<readonly MCP.Server[]>
+  transform(callback: (editor: MCP.Editor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface MCPEditor {
+  list(): readonly [string, MCPRemoteConfig][]
+  get(name: string): MCPRemoteConfig | undefined
+  set(name: string, config: MCPRemoteConfig): void
+  update(name: string, edit: (config: MCPRemoteConfig) => void): void
+  remove(name: string): void
+}
+```
+
+### Search
+
+List providers, execute a query, add providers, and choose a default.
+
+```ts
+const providers = await context.websearch.providers()
+const response = await context.websearch.query({ query: "ByMorning plugins", providerID: providers[0]?.id })
+
+await context.websearch.transform((editor) => {
+  editor.add({
+    id: "internal",
+    name: "Internal search",
+    async execute({ query }, { signal }) {
+      const response = await fetch(`https://search.acme.example/?q=${encodeURIComponent(query)}`, { signal })
+      if (!response.ok) throw new Error(`Search failed: ${response.status}`)
+      return [{ url: response.url, title: query, content: await response.text(), time: {} }]
+    },
+  })
+  editor.default.set("internal")
+})
+```
+
+The initial default is the literal selection `"random"`, which chooses randomly among registered providers for each defaulted query. Set `false` to disable default search; callers can still request a specific provider. Missing selection, unknown provider, disabled default, provider failure, and invalid provider results reject the Promise. The execution callback receives an abort signal and must return schema-valid results.
+
+#### Reference
+
+```ts
+interface WebSearchDomain {
+  providers(): Promise<readonly WebSearch.Provider[]>
+  query(input: { query: string; providerID?: WebSearch.ID }): Promise<WebSearch.Response>
+  transform(callback: (editor: WebSearchEditor) => void): Promise<Registration>
+  reload(): Promise<void>
+}
+
+interface WebSearchEditor {
+  add(provider: {
+    id: string
+    name: string
+    execute(input: { query: string }, context: { signal: AbortSignal }): Promise<readonly WebSearch.Result[]>
+  }): void
+  default: {
+    get(): string | false | undefined
+    set(selection: string | false): void
+  }
+}
+```
+
+### Events
+
+Consume the safe Workspace inventory stream in a background task and stop it during cleanup.
+
+```ts title="plugin/events.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.events",
+  setup(context) {
+    const iterator = context.event.subscribe()[Symbol.asyncIterator]()
+    const consume = async () => {
+      for (;;) {
+        const next = await iterator.next()
+        if (next.done) return
+        console.log(next.value.type)
+      }
+    }
+    const task = consume().catch((error) => console.error("plugin event stream failed", error))
+
+    return async () => {
+      await iterator.return?.()
+      await task
+    }
+  },
+})
+```
+
+Do not `await` the infinite loop in setup. The plugin projection is intentionally narrow: Agent `created`/`updated`, plugin `added`/`updated`, Integration `updated`/`connection.updated`, and `config.updated`. It is not a Session transcript stream. The iterator has no signal parameter, so retain it and call `return()` during cleanup as shown.
+
+#### Reference
+
+```ts
+interface EventDomain {
+  subscribe(): AsyncIterable<WorkspaceInventoryEvent>
+}
+```
+
+### Storage
+
+Store JSON values in a durable namespace keyed by Workspace ID and plugin ID.
+
+```ts
+await context.storage.set("settings", { strict: true })
+const settings = await context.storage.get("settings")
+
+let after: string | undefined
+for (;;) {
+  const page = await context.storage.scan({ prefix: "cache/", after, limit: 100 })
+  for (const entry of page.entries) console.log(entry.key, entry.value)
+  if (!page.next) break
+  after = page.next
+}
+
+await context.storage.remove("settings")
+```
+
+Keys are private to the plugin identity within this Workspace. `scan` returns matching keys in lexical order. Pass `next` back as `after`; the next page starts strictly after it.
+
+<Callout type="warning">
+  Always pass an explicit positive `limit`. The current implementation treats omitted `limit` as an empty slice even though the type marks it optional. This is a documented workaround, not a default page size.
+</Callout>
+
+#### Reference
+
+```ts
+interface StorageDomain {
+  get(key: string): Promise<Json | undefined>
+  set(key: string, value: Json): Promise<void>
+  remove(key: string): Promise<void>
+  scan(options: { prefix: string; after?: string; limit?: number }): Promise<{
+    entries: readonly { key: string; value: Json }[]
+    next?: string
+  }>
+}
+```
+
+## Hooks
+
+Hooks run at live operation boundaries. ByMorning awaits them sequentially in registration order, and later callbacks see earlier in-place mutations. A failed hook stops the operation and skips later hooks. Hooks are not retried automatically.
+
+### Gateway
+
+Use `gateway.tool.execute.before` and `gateway.tool.execute.after` to inspect inbound MCP Tool calls. These hooks are separate from Session Tool hooks. They expose the authenticated `userID`, gateway Tool name, and call ID, but no Session, Agent, or Model identity.
+
+```ts title="plugin/gateway-policy.ts"
+import { Plugin, Tool } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.gateway-policy",
+  async setup(context) {
+    await context.gateway.hook("tool.execute.before", (event) => {
+      if (event.tool === "execute") {
+        return new Tool.Error({ message: "Code Mode is disabled through inbound MCP." })
+      }
+    })
+  },
+})
+```
+
+The before hook runs before gateway Permission checks, input decoding, or execution. It can replace raw `input` or return `Tool.Error` to reject an expected call. The after hook runs when execution succeeds or returns `Tool.Error`; it can replace `result` or `error`. Code Mode produces an outer `execute` call and a separate call for each projected operation, each with its own call ID.
+
+#### Reference
+
+```ts
+interface GatewayHook {
+  (name: "tool.execute.before", callback: (event: GatewayToolExecuteBefore) =>
+    Tool.Error | void | Promise<Tool.Error | void>): Promise<Registration>
+  (name: "tool.execute.after", callback: (event: GatewayToolExecuteAfter) =>
+    void | Promise<void>): Promise<Registration>
+}
+
+interface GatewayToolExecuteBefore {
+  readonly id: Tool.CallID
+  readonly userID: User.ID
+  readonly tool: string
+  input: unknown
+}
+```
+
+### Session
+
+`session.context` runs after durable context, messages, and available Tools are assembled and immediately before inference dispatch. Its edits affect only that outgoing call, not persisted history.
+
+```ts
+await context.session.hook("context", (event) => {
+  event.system.push({ type: "text", text: "Keep the review focused on correctness." })
+  delete event.tools.write
+})
+```
+
+- Deleting a Tool prevents its execution for that request; a call to the removed name is rejected before Tool hooks run.
+- A provider-visible rename still resolves to the original registration and effective name during execution.
+- Editing the advertised input schema does not replace the registration's input validation.
+
+`session.model.request` runs for each physical inference purpose: `assistant`, `generate`, `compaction`, or `title`. `requestedModel` is the Session's logical selection. Mutable `model` is the effective destination. You can also change `baseURL` and headers. The optional provider filter is checked against the callback-time effective provider, after earlier hooks may have rerouted it.
+
+```ts
+await context.session.hook(
+  "model.request",
+  (event) => {
+    event.headers["x-plugin"] = "company.review"
+  },
+  { providerID: "openai" },
+)
+```
+
+`session.http.request` runs at the physical HTTP boundary and can replace `request`. `session.http.response` can replace `response`. Request and response bodies are one-shot streams; clone before reading or install a replacement body.
+
+```ts
+await context.session.hook("http.request", (event) => {
+  event.request = new Request(event.request, {
+    headers: { ...Object.fromEntries(event.request.headers), "x-session-id": event.sessionID },
+  })
+})
+```
+
+#### Reference
+
+```ts
+type SessionHookName = "context" | "model.request" | "http.request" | "http.response"
+
+type SessionHook = (
+  name: SessionHookName,
+  callback: (event: SessionHookEvent) => Promise<void> | void,
+  options?: { providerID?: string },
+) => Promise<Registration>
+
+interface SessionContextEvent {
+  readonly sessionID: Session.ID
+  readonly messageID?: Message.ID
+  readonly agent: Agent.ID
+  readonly requestedModel: Model.Ref
+  readonly model: Model.Ref
+  system: SystemPart[]
+  messages: Message[]
+  tools: Record<string, { description: string; input: JsonSchema }>
+}
+```
+
+### Shell
+
+`shell.create.before` runs immediately before process creation. Mutate the command, working directory, timeout, executable, or environment.
+
+```ts
+await context.shell.hook("create.before", (event) => {
+  event.timeout = Math.min(event.timeout, 60_000)
+  event.env.COMPANY_ENV = "development"
+})
+```
+
+#### Reference
+
+```ts
+interface ShellDomain {
+  hook(name: "create.before", callback: (event: {
+    command: string
+    cwd: string
+    timeout: number
+    shell: string
+    env: Record<string, string | undefined>
+  }) => Promise<void> | void): Promise<Registration>
+}
+```
+
+### Tool
+
+`tool.execute.before` runs before the Tool is resolved, Permission policy is admitted, input is decoded, or implementation executes. It can replace raw input. Return a `Tool.Error` to reject expected execution from a Promise plugin; throwing or rejecting is a plugin defect.
+
+```ts
+import { Tool } from "@bymorning/plugin"
+
+await context.tool.hook("execute.before", (event) => {
+  if (event.tool === "shell") return new Tool.Error({ message: "Shell is disabled." })
+})
+```
+
+`tool.execute.after` runs after a decoded Tool invocation succeeds or returns `Tool.Error`. It can replace `result` or `error`. A successful replacement is validated before delivery. An after-hook defect fails the call.
+
+```ts
+await context.tool.hook("execute.after", (event) => {
+  if (event.status === "completed") {
+    event.result = { ...event.result, metadata: { ...event.result.metadata, observed: true } }
+  }
+  if (event.status === "error") {
+    event.error = new Tool.Error({ message: `Tool failed: ${event.error.message}` })
+  }
+})
+```
+
+The before event's mutable input becomes the after event's read-only input. Identity fields remain the request snapshots described in [Tools](#tools).
+
+#### Reference
+
+```ts
+interface ToolHook {
+  (name: "execute.before", callback: (event: ToolExecuteBefore) =>
+    Tool.Error | void | Promise<Tool.Error | void>): Promise<Registration>
+  (name: "execute.after", callback: (event: ToolExecuteAfter) =>
+    void | Promise<void>): Promise<Registration>
+}
+```
+
+### AI SDK
+
+`aisdk.sdk` can supply or replace a loaded provider SDK. `aisdk.language` can supply or replace an AI SDK `LanguageModelV3`. Both are typed and accept the same callback-time Provider filter as Session model hooks.
+
+<Callout type="warning" title="Not invoked by production inference">
+The current production inference path does not call either AI SDK hook. Treat these registrations as intentionally exposed but unavailable at runtime until production composition invokes them. Use Session hooks for behavior that must run today.
+</Callout>
+
+#### Reference
+
+```ts
+interface AISDKDomain {
+  hook(
+    name: "sdk" | "language",
+    callback: (event: AISDKHookEvent) => Promise<void> | void,
+    options?: { providerID?: string },
+  ): Promise<Registration>
+}
+```
+
+## Errors
+
+A Promise method rejects when validation or runtime work fails. Handle errors at the boundary that can recover. Do not catch and silently continue during setup if the plugin cannot operate correctly; let inventory report the failed generation.
+
+- Setup and import failures have no automatic retry.
+- Transform and reload failures have no automatic retry.
+- Hooks run sequentially, not concurrently, and stop on the first failure.
+- Tool calls and web-search provider executions may run concurrently across Sessions. Keep callback state concurrency-safe.
+- Effect Tool callbacks and Promise execute-before hooks use `Tool.Error` for expected user-facing failures. Promise host Tool callback rejections are defects.
+- Web-search provider errors and invalid results become request failures.
+- Cleanup runs once per closed generation, but ByMorning ignores cleanup failure while continuing teardown.
+
+The host coordinates registry rebuilds and plugin activation. It does not make your timers, sockets, mutable caches, OAuth callbacks, or remote writes idempotent.
+
+## Effect
+
+Import `Plugin` from `@bymorning/plugin/effect` when setup and callbacks naturally use Effect. The plugin's `effect(context)` runs in a `Scope`; public methods return `Effect`, event subscription returns `Stream`, and registrations require that Scope.
+
+```ts title="plugin/effect-example.ts"
+import { Plugin, Tool } from "@bymorning/plugin/effect"
+import { Effect } from "effect"
+
+export default Plugin.define({
+  id: "project.effect-example",
+  effect: (context) =>
+    context.tool
+      .hook("execute.before", (event) =>
+        event.tool === "shell"
+          ? Effect.fail(new Tool.Error({ message: "Shell is disabled." }))
+          : Effect.void,
+      )
+      .pipe(Effect.asVoid),
+})
+```
+
+Effect differences are deliberate:
+
+- `effect` must have a `never` error channel. Handle expected setup errors or turn unrecoverable ones into defects.
+- Hook callbacks return Effects. Fail Tool or gateway execute-before hooks with `Tool.Error`; other public hook error channels are `never`.
+- `Registration.dispose` is an `Effect<void>` rather than a Promise function.
+- `event.subscribe()` is an Effect `Stream`, not an `AsyncIterable`.
+- Scope closure removes registrations and runs Effect finalizers.
+
+Promise plugins should not call `fromPromise`. It is loader adapter infrastructure that preserves Scope and batching behavior for the default API.
+
+## OpenAPI
+
+Use `context.tool.openapi` to register representable operations from an OpenAPI document. The
+adapter references an existing Integration when authentication is needed; it never creates
+an Integration or credential method.
+
+```ts title="plugin/openapi.ts"
+import { Plugin } from "@bymorning/plugin"
+
+const spec = {
+  openapi: "3.1.0",
+  info: { title: "Status API", version: "1.0.0" },
+  servers: [{ url: "https://status.acme.example" }],
+  paths: {},
+} as const
+
+export default Plugin.define({
+  id: "project.status-api",
+  async setup(context) {
+    await context.tool.openapi({
+      namespace: "status",
+      permissionPrefix: "status",
+      spec,
+      authentication: { type: "none" },
+      expectedOrigin: "https://status.acme.example",
+    })
+  },
+})
+```
+
+The helper supports `none`, API key/bearer, and basic authentication. For authenticated
+operations, pass an existing Integration reference and scheme mapping. It resolves the
+current member's Connection during execution, rejects requests whose origin differs from
+`expectedOrigin`, rejects redirects, applies a request timeout, and returns operation names
+plus skipped OpenAPI operations. The returned registration can be disposed like any other
+Tool registration.
+
+#### Reference
+
+```ts
+interface ToolDomain {
+  openapi(options: OpenAPI.Options): Promise<OpenAPI.Summary & { dispose(): Promise<void> }>
+}
+```
+
+## Distribute
+
+A package exports the same named `plugin` or default definition as a Project file. Provide `./server` when the package has another root entrypoint.
+
+```json title="package.json"
+{
+  "name": "@acme/bymorning-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/index.ts"
+  }
+}
+```
+
+Pin package versions in production. ByMorning can cache-install an unresolved package specification with scripts disabled, but it does not verify that package code is safe.
+
+- `@bymorning/plugin` is currently `private: true` and version `0.0.0` in the ByMorning workspace.
+- Do not claim public registry availability or general third-party publication support.
+- A separate package plugin works only in a distribution that provides the authoring/runtime dependency.
+- Use documented root imports. Package wildcard exports such as `@bymorning/plugin/promise/*`, `@bymorning/plugin/effect/*`, and other internal subpaths exist for workspace composition; they are not a stable public contract.
+
+## Security
+
+A plugin is trusted server code, while Permissions govern individual Tool actions. Neither boundary substitutes for the other.
+
+- Review plugin source and lock package versions before activation.
+- Keep secrets in Integration credentials, never options, storage intended for ordinary JSON state, logs, errors, metadata, inventory, or snapshots.
+- Resolve the active Integration connection inside each execution so credential rotation and disconnection take effect.
+- Validate every remote response and Tool input. Restrict outbound destinations explicitly.
+- Prefer sandbox Tools when server-process access is unnecessary.
+- Call Permission immediately before each host side effect. Registration alone grants nothing.
+- Remember that Project plugin contributions are mostly Workspace-wide.
+- Do not expose context methods as a generic remote control plane.
+
+## Exports
+
+Use only the documented root exports and context domains as the supported contract.
+
+| Surface | Intentional exports or capabilities |
+| --- | --- |
+| `@bymorning/plugin` | `Plugin`, `MCP`, documented option/storage/instruction/gateway types, schema namespaces (`Agent`, `Command`, `Connection`, `Credential`, `Integration`, `Model`, `Provider`, `Reference`, `Skill`, `Tool`, `User`, `WebSearch`) |
+| `@bymorning/plugin/effect` | The same schema namespaces and metadata types, plus `OpenAPI`; Effect-native `Plugin` and context |
+| Context identity | `app`, `location`, `options` |
+| Inventory/context | `plugin.list`, `instruction` |
+| Client + transforms | `agent`, `catalog`, `command`, `skill`, `reference`, `integration`, `mcp`, `websearch` |
+| Runtime | `session`, `tool`, `gateway`, `event`, `storage`, `shell`, `aisdk` |
+
+Intentionally unavailable APIs include mutable Provider management, Command addition, generic HTTP/config/job/raw-storage services, OAuth client mutation, Integration well-known discovery, host-only Integration method registration, a plugin-wide reload operation, and production invocation of AI SDK hooks. Use the [API reference](/api), [provider Integration guide](/developer-reference/provider-integration-plugins), [Integration authentication guide](/developer-reference/integration-authentication), [Permission model](/developer-reference/permission-model), and [Inference hooks](/developer-reference/inference-hooks) for adjacent contracts.

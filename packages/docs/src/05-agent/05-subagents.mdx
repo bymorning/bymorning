@@ -1,0 +1,23 @@
+---
+title: Subagents
+description: Delegate work to child Sessions.
+hidden: true
+---
+
+Subagents run delegated tasks in child Sessions. Their work stays linked to the parent so you can inspect it without mixing every detail into the parent transcript.
+
+## Delegate
+
+Type `@subagent` in the composer to show available non-primary Agents, then select one and describe the task. You can also type `@` and choose an Agent from the **Agents** group.
+
+When the Agent delegates, the transcript shows the subagent name, task description, and state such as **Running**, **Completed**, or **Cancelled**. Select the linked row to open its child Session. The child header links back to its parent.
+
+Subagent choices appear only when the Workspace exposes eligible Agents. A child Session cannot create another subagent or use the top-level background workflow.
+
+## Background
+
+While a top-level Session is blocked on active subagent work, use **Continue in background** or press Ctrl+B. ByMorning lets the delegated work continue and releases the parent.
+
+The parent header then shows **1 task in background** or the current task count. Open that summary to see each working task, then select **Open** to enter its child Session. Completed, failed, or cancelled background work leaves the active-background summary.
+
+Use [Sessions](/agent/sessions) to inspect the transcript and [Tools and permissions](/agent/tools-and-permissions) to review requested actions.

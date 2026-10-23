@@ -1,0 +1,31 @@
+[data-component="message-action"] {
+  display: flex;
+  min-height: 24px;
+  margin-top: 4px;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  will-change: opacity;
+}
+
+[data-component="message-action"][data-owner="user"] {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+[data-component="message-action"][data-owner="assistant"] {
+  justify-content: flex-start;
+}
+
+[data-component="message-action"][data-owner="assistant"][data-interrupted] {
+  width: 100%;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+[data-component="message-action"]:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}

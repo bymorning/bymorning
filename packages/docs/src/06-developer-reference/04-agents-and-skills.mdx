@@ -1,0 +1,222 @@
+---
+title: Agents and Skills
+description: Persist Workspace Agents and Skills through the public HTTP and Promise client APIs.
+---
+
+The Agent and Skill APIs save Workspace-owned definitions. Use these APIs when a definition must survive a page reload or server restart.
+
+```ts title="client.ts"
+import { ByMorning } from "@bymorning/client"
+
+export const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+export const workspaceID = workspace.id
+```
+
+The examples use the generated Promise client. Requests use the authenticated Workspace selected by `workspace`.
+
+This repository marks `@bymorning/client` and `@bymorning/schema` as private workspace packages. Use these examples only when your ByMorning distribution exposes both packages. Otherwise, call the HTTP operations below and use the [generated API reference](/api) for the authoritative schemas.
+
+## Agents
+
+Create an Agent by supplying its stable ID and complete execution profile.
+
+```ts title="create-agent.ts"
+import { ByMorning } from "@bymorning/client"
+import * as Agent from "@bymorning/schema/agent"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const reviewer = await client.agent.create({
+  workspace: workspace.id,
+  id: Agent.ID.make("reviewer"),
+  name: Agent.Name.make("Reviewer"),
+  description: "Reviews changes before merge.",
+  instructions: "Review correctness, regressions, and missing tests.",
+  mode: "all",
+  hidden: false,
+  steps: 8,
+  permissions: []
+})
+
+console.log(reviewer.id)
+```
+
+An Agent has these important fields:
+
+| Field | Constraint and behavior |
+| --- | --- |
+| `id` | Stable Workspace-local identity. You choose it during creation and cannot change it. |
+| `name` | Non-empty display name. It cannot begin with the reserved `agt_` prefix. |
+| `instructions` | System instructions applied when the Agent runs. |
+| `model` | Optional `{ provider, id, variant? }`. The referenced Provider and Model must be available when you create or update the Agent. |
+| `description` | Optional display description. |
+| `mode` | `primary` selects top-level work, `subagent` selects delegated work, and `all` supports both. |
+| `hidden` | Keeps the Agent out of normal selection and default resolution. It remains available from `get`. |
+| `color` | Optional presentation value. |
+| `steps` | `null` for no Agent Step limit, or an integer from `1` through `2147483647`. At the limit, Tools are disabled for the final response. |
+| `permissions` | Ordered Agent Permission rules. See the [Permission model](/developer-reference/permission-model). |
+
+Creation fails if the ID already belongs to an effective Agent, including an Agent contributed by a plugin. It also fails if the selected Model is unavailable.
+
+### Update
+
+List the effective Agent catalog or get one Agent by ID. Update requires every mutable field because it fully replaces the stored profile.
+
+```ts title="update-agent.ts"
+import { ByMorning } from "@bymorning/client"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const current = (await client.agent.list({ workspace: workspace.id })).find(
+  (agent) => agent.id === "reviewer"
+)
+
+if (!current) throw new Error("Reviewer Agent is unavailable")
+
+const updated = await client.agent.update({
+  workspace: workspace.id,
+  id: current.id,
+  name: current.name,
+  instructions: `${current.instructions}\nReport severity for every finding.`,
+  ...(current.model ? { model: current.model } : {}),
+  ...(current.description !== undefined ? { description: current.description } : {}),
+  mode: current.mode,
+  hidden: current.hidden,
+  ...(current.color !== undefined ? { color: current.color } : {}),
+  steps: current.steps,
+  permissions: current.permissions
+})
+
+console.log(updated)
+```
+
+`list` and `get` read the effective catalog after plugin transforms. A plugin can add, modify, or remove an Agent in that catalog, so a plugin contribution with the same ID shadows the persisted value on reads. `list` places the current default-resolution candidate first and preserves catalog order for the remaining Agents. `create` and `update` write persisted records; `update` returns not found for an ID that exists only as a non-built-in plugin contribution. The three built-in IDs (see [Built-in Agents](#built-in-agents)) are the one exception: `update` upserts for those, because a built-in Agent has no record until an administrator's first save creates one.
+
+### One primary Agent
+
+ByMorning ships exactly one built-in primary Agent, `default`, the Agent a participant runs a Session under. Every Agent created through `create` must have mode `subagent`; `create` refuses any other mode. `update` refuses a payload whose `mode` differs from the current one, so a Subagent an administrator creates never becomes a second selectable Agent that way.
+
+Subagents are what the Default Agent delegates to. Give each one a `description`, because that is what the Default Agent reads when deciding whether to hand over the work.
+
+A plugin may still contribute a primary Agent through `context.agent.transform`; plugin code is trusted and is not subject to the create rule.
+
+### Built-in Agents
+
+ByMorning ships the `default`, `general`, and `explore` Agents. Each ships without a Workspace record, and `create` reports a conflict for their IDs because they are already in the effective catalog. Save one with `update` instead: the first save writes the record that replaces its shipped definition.
+
+```ts title="override-default-agent.ts"
+import { ByMorning } from "@bymorning/client"
+import * as Agent from "@bymorning/schema/agent"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const current = await client.agent.get({ workspace: workspace.id, id: Agent.DefaultID })
+
+await client.agent.update({
+  workspace: workspace.id,
+  id: current.id,
+  name: current.name,
+  instructions: "Answer as our propulsion team's analyst. State assumptions and units with every number.",
+  mode: current.mode,
+  hidden: current.hidden,
+  steps: current.steps,
+  permissions: current.permissions
+})
+```
+
+A saved record replaces the shipped definition entirely, so send every field you want the Agent to keep. `delete` removes the record and restores the shipped definition.
+
+```ts title="reset-default-agent.ts"
+await client.agent.delete({ workspace: workspace.id, id: Agent.DefaultID })
+```
+
+Only Workspace administrators may save or reset a built-in Agent. `delete` also removes an ordinary persisted Agent, reports not found for an ID that is not in the effective catalog, and succeeds without changes for an effective Agent that has no record.
+
+`Info.overridden` is present only for one of the three built-in IDs: `true` once a Workspace record replaces the shipped definition, `false` while the shipped definition is still in effect. It is absent for every other Agent, including one contributed by another plugin. Check it before offering to reset a built-in Agent.
+
+A plugin contribution still shadows a saved record. An Agent contributed by a plugin other than the shipped built-ins therefore keeps its contributed definition even after a record is written for the same ID.
+
+### Default
+
+Set `default_agent` in Workspace configuration after the Agent exists. It is a selection preference, not part of the Agent record.
+
+```ts title="set-default-agent.ts"
+import { ByMorning } from "@bymorning/client"
+import * as Agent from "@bymorning/schema/agent"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const reviewer = await client.agent.get({
+  workspace: workspace.id,
+  id: Agent.ID.make("reviewer")
+})
+
+await client["api.config"].update({
+  workspace: workspace.id,
+  default_agent: reviewer.id
+})
+```
+
+Default resolution uses the configured Agent only when it is visible and has mode `primary` or `all`. A hidden or `subagent`-only target is skipped. ByMorning then falls back to the built-in Default Agent when selectable, followed by the first visible primary-capable Agent. Plugins can also set the effective default through an Agent transform.
+
+## Skills
+
+Create a Skill with its display content. ByMorning generates its immutable Workspace-local ID.
+
+```ts title="manage-skill.ts"
+import { ByMorning } from "@bymorning/client"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const created = await client.skill.create({
+  workspace: workspace.id,
+  name: "Release notes",
+  description: "Editor release notes from merged changes.",
+  instructions: "Group changes by user impact and link each pull request."
+})
+
+const updated = await client.skill.update({
+  workspace: workspace.id,
+  skillID: created.id,
+  name: created.name,
+  description: created.description,
+  instructions: `${created.instructions}\nEnd with upgrade guidance.`
+})
+
+await client.skill.delete({ workspace: workspace.id, skillID: updated.id })
+```
+
+`name` must be non-empty. `description` and `instructions` may be empty strings. Updating a Skill fully replaces all three mutable fields. Deleting it removes only the persisted record.
+
+As with Agents, `list` and `get` read the effective catalog after plugin transforms. A plugin can add, modify, or remove a Skill, and a plugin contribution with the same ID shadows the persisted value on reads. Persisted Skills retain insertion order; plugin-only Skills follow the order in which transforms add them. A mutation cannot update or delete a Skill that exists only through a plugin.
+
+## HTTP
+
+Use the [generated API reference](/api) for authoritative payload, response, authentication, and error schemas.
+
+| Resource | Operations |
+| --- | --- |
+| Agent | `GET /api/agent`, `GET /api/agent/:id`, `POST /api/agent`, `PUT /api/agent/:id` |
+| Skill | `GET /api/skill`, `GET /api/skill/:skillID`, `POST /api/skill`, `PUT /api/skill/:skillID`, `DELETE /api/skill/:skillID` |
+| Default Agent | `GET /api/config`, `PUT /api/config` with `default_agent` |
+
+Every operation accepts the optional `workspace` query parameter. In a multi-Workspace application, send it explicitly rather than relying on an implicit Workspace selection.

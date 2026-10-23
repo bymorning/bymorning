@@ -1,0 +1,85 @@
+import { Plugin, Tool } from "@bymorning/plugin/effect"
+import { Effect, Schema } from "effect"
+
+const SCOPE = [
+  "openid",
+  "email",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/gmail.send",
+  "https://www.googleapis.com/auth/gmail.labels",
+  "https://www.googleapis.com/auth/calendar.readonly",
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/drive.readonly",
+  "https://www.googleapis.com/auth/drive.file",
+].join(" ")
+
+export default Plugin.define({
+  id: "project.integration.google-workspace",
+  effect: (context) =>
+    Effect.all(
+      [
+        context.integration.transform((editor) => {
+          editor.update("google-workspace", (integration) => {
+            integration.name = "Google Workspace"
+          })
+          editor.method.update({
+            integrationID: "google-workspace",
+            method: {
+              id: "oauth",
+              type: "oauth",
+              label: "Google",
+              client: {
+                fields: [
+                  { key: "clientID", title: "Client ID", type: "string", required: true },
+                  { key: "clientSecret", title: "Client secret", type: "string", required: true, secret: true },
+                ],
+              },
+              form: [
+                {
+                  key: "authorizationURL",
+                  type: "string",
+                  default: "https://accounts.google.com/o/oauth2/v2/auth",
+                },
+                { key: "tokenURL", type: "string", default: "https://oauth2.googleapis.com/token" },
+                { key: "scope", type: "string", default: SCOPE },
+                { key: "accessType", type: "string", default: "offline" },
+                { key: "prompt", type: "string", default: "consent" },
+              ],
+            },
+          })
+        }),
+        context.tool.transform((editor) => {
+          editor.add({
+            name: "google_workspace_profile",
+            description: "Confirm the connected Google Workspace account by reading its profile.",
+            input: Schema.Struct({}),
+            output: Schema.Unknown,
+            options: { permission: "google-workspace" },
+            execute: (_input, execution) =>
+              Effect.gen(function* () {
+                const connection = yield* context.integration.connection.active("google-workspace")
+                if (!connection)
+                  return yield* new Tool.Error({ message: "Connect Google Workspace before using this tool" })
+                const credential = yield* context.integration.connection.resolve(connection).pipe(
+                  Effect.mapError(() => new Tool.Error({ message: "Reconnect Google Workspace" })),
+                )
+                if (credential?.type !== "oauth")
+                  return yield* new Tool.Error({ message: "Reconnect Google Workspace" })
+                yield* execution.permission({ action: "google-workspace", resources: ["profile"], save: ["*"] })
+                return yield* Effect.tryPromise({
+                  try: async () => {
+                    const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+                      headers: { Authorization: `Bearer ${credential.accessToken}` },
+                    })
+                    if (!response.ok) throw new Error("Google Workspace profile request failed")
+                    return { output: await response.json() }
+                  },
+                  catch: () => new Tool.Error({ message: "Google Workspace profile request failed" }),
+                })
+              }),
+          })
+        }),
+      ],
+      { discard: true },
+    ),
+})

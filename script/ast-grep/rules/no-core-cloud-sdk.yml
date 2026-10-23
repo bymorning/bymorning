@@ -1,0 +1,16 @@
+id: no-core-cloud-sdk
+language: TypeScript
+message: >-
+  Core must not import cloud SDKs. Cloud backends live in their own workspace
+  packages (backends/aws, backends/azure) and are imported only by the host
+  that needs them.
+severity: error
+files:
+  - packages/core/src/**/*.ts
+rule:
+  all:
+    - kind: import_statement
+    - has:
+        kind: string
+        regex: ^["'](@aws-sdk/|@smithy/|@azure/|@google-cloud/)
+        stopBy: end

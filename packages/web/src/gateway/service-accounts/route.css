@@ -1,0 +1,111 @@
+[data-component="workspace-page"]:has([data-component="gateway-page"]) {
+  [data-slot="workspace-page-card"] {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  [data-slot="workspace-page-heading"] {
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    [data-slot="workspace-page-heading"] {
+      align-items: stretch;
+    }
+  }
+}
+[data-component="workspace-page"] [data-component="gateway-page"] {
+  display: grid;
+  min-width: 0;
+  gap: 20px;
+}
+[data-component="gateway-page"] [data-service-account-list] tbody tr {
+  position: relative;
+}
+
+[data-component="gateway-page"] [data-service-account-list] {
+  padding: 2px;
+  overflow: hidden;
+  border-color: var(--color-border-muted);
+  border-radius: 6px;
+}
+
+[data-component="gateway-page"] [data-service-account-list] > [data-slot="table-wrap"] {
+  border: 0;
+  border-radius: 0;
+}
+
+[data-component="gateway-page"] [data-service-account-list] > [role="status"] {
+  padding: 20px;
+}
+
+/* Row headers carry the row's name: match the cells beside them, not the column-header style. */
+[data-component="gateway-page"] :is([data-service-account-list], table[aria-label="API keys"]) tbody th[scope="row"] {
+  color: var(--color-text-base);
+  font-size: inherit;
+}
+
+[data-component="gateway-page"] [data-slot="account-link"] {
+  color: inherit;
+  text-decoration: none;
+  max-width: 240px;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="gateway-page"] [data-slot="account-link"]::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+[data-component="gateway-page"] [data-service-account-list] thead tr { height: 32px; }
+[data-component="gateway-page"] [data-service-account-list] tbody tr { height: 48px; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td) { padding: 0 12px; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(1) { width: 355px; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(2) { width: 110px; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(3) { width: 70px; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(4) { width: 135px; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(5) { width: 158px; text-align: right; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(6) { width: 122px; text-align: right; }
+[data-component="gateway-page"] [data-service-account-list] :is(th, td):nth-child(7) { width: 52px; }
+[data-component="gateway-page"] [data-service-account-list] tbody tr:last-child > * { border-bottom: 0; }
+
+[data-component="gateway-page"] [data-service-account-list] tbody tr:has([data-slot="account-link"]):hover {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="gateway-page"] [data-service-account-list] td:nth-last-child(-n + 2) {
+  position: relative;
+  z-index: 1;
+}
+
+[data-component="gateway-page"] [data-edge-table-card] {
+  padding: 0;
+  overflow: hidden;
+}
+
+[data-component="gateway-page"] [data-edge-table-card] > [data-slot="table-wrap"] {
+  border: 0;
+  border-radius: 0;
+}
+
+[data-component="gateway-page"] [data-edge-table-card] > [role="status"] { padding: 20px; }
+
+[data-component="gateway-page"] [data-status="suspended"],
+[data-component="gateway-page"] [data-status="expired"] {
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+}
+
+[data-component="gateway-page"] [data-slot="service-account-empty"] {
+  display: grid;
+  gap: 16px;
+  padding: 30px 16px;
+  text-align: center;
+}
+

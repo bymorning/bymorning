@@ -1,0 +1,85 @@
+[data-component="card"][data-kind="tool-error-card"] {
+  width: 100%;
+  color: var(--color-text-base);
+}
+
+[data-component="card"][data-kind="tool-error-card"] [data-slot="tool-collapsible-trigger"] {
+  min-height: 24px;
+}
+
+[data-component="card"][data-kind="tool-error-card"] [data-slot="basic-tool-tool-trigger-content"] {
+  max-width: calc(100% - 20px);
+  gap: 8px;
+}
+
+[data-component="card"][data-kind="tool-error-card"] [data-slot="basic-tool-tool-indicator"] {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-danger-fg);
+}
+
+[data-component="card"][data-kind="tool-error-card"] [data-slot="basic-tool-tool-info-main"] {
+  align-items: center;
+  gap: 6px;
+}
+
+[data-component="card"][data-kind="tool-error-card"] [data-slot="basic-tool-tool-title"] {
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-component="card"][data-kind="tool-error-card"] [data-slot="basic-tool-tool-subtitle"] {
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-slot="tool-error-card-dot"] {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 530;
+}
+
+[data-slot="tool-error-card-summary"] {
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+  color: var(--color-danger-fg);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-slot="tool-error-card-content"] {
+  position: relative;
+  padding: 0 40px 4px 24px;
+  color: var(--color-text-faint);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 20px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+[data-slot="tool-error-card-copy"] {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+[data-component="card"][data-kind="tool-error-card"]:is(:hover, :focus-within) [data-slot="tool-error-card-copy"] {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -1,0 +1,32 @@
+id: no-core-server-import
+snapshots:
+  import Server from "@bymorning/server":
+    labels:
+    - source: import Server from "@bymorning/server"
+      style: primary
+      start: 0
+      end: 38
+    - source: '"@bymorning/server"'
+      style: secondary
+      start: 19
+      end: 38
+  import { WorkspaceMap } from "../../server/src/workspace-map.js":
+    labels:
+    - source: import { WorkspaceMap } from "../../server/src/workspace-map.js"
+      style: primary
+      start: 0
+      end: 64
+    - source: '"../../server/src/workspace-map.js"'
+      style: secondary
+      start: 29
+      end: 64
+  import { WorkspaceMap } from "@bymorning/server/workspace-map":
+    labels:
+    - source: import { WorkspaceMap } from "@bymorning/server/workspace-map"
+      style: primary
+      start: 0
+      end: 62
+    - source: '"@bymorning/server/workspace-map"'
+      style: secondary
+      start: 29
+      end: 62

@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "lib": ["ES2024", "ESNext.Array", "ESNext.Collection", "ESNext.Disposable", "ESNext.Iterator", "DOM"],
+    "noUncheckedIndexedAccess": false,
+    "types": ["node"]
+  },
+  "include": ["src"]
+}

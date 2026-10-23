@@ -1,0 +1,229 @@
+---
+title: Deploy on Azure
+description: Run ByMorning on AKS or Azure Container Apps with Blob Storage, Key Vault, and PostgreSQL Flexible Server.
+---
+
+The Gateway image runs as one container serving the UI and API on one origin. It is the same image every installer ships; `STORAGE_PROVIDER=azure-blob` and `CIPHER_BACKEND=keyvault` bind it to Azure at startup. State lives in Azure services reached with `DefaultAzureCredential` (managed or workload identity, no stored secrets): Azure Blob Storage for project files, Tool output, and plugin data; Azure Key Vault for the Cipher key that protects stored credentials; and Azure Database for PostgreSQL Flexible Server for the database.
+
+<Callout type="warning">
+  Deploy to a non-production resource group first and run `installers/azure/smoke.sh` before you rely on it.
+</Callout>
+
+## Azure cloud
+
+`AZURE_CLOUD` is `AzureCloud` or `AzureUSGovernment`, required whenever `STORAGE_PROVIDER=azure-blob` or `CIPHER_BACKEND=keyvault` is selected (no default; the installer sets it). It selects the Entra authority passed to `DefaultAzureCredential` (`login.microsoftonline.com` or `login.microsoftonline.us`) and the hosts `STORAGE_ACCOUNT_URL` (`*.blob.core.windows.net` or `*.blob.core.usgovcloudapi.net`) and `KEY_VAULT_KEY` (`*.vault.azure.net` or `*.vault.usgovcloudapi.net`) must use. A mismatched host, a non-https endpoint, or a Microsoft `AUTH_ISSUER` from the other cloud stops startup with `Host.ConfigError`. Blob tokens use `https://storage.azure.com/.default` in both clouds; Key Vault's scope follows the vault's own challenge. Rotating the Key Vault key is safe: each envelope records the versioned key URL that wrapped it, the backend unwraps with that version, and older versions keep decrypting while they are enabled. A Credential whose key version is disabled answers `503 ServiceUnavailableError` (`Credential key is unavailable`) instead of a 500. For Microsoft Entra sign-in, in either cloud, see [Microsoft Entra](/deploy/entra).
+
+## Deployment kit
+
+`installers/azure` provisions this stack with Terraform (`environment = "usgovernment"` or `"public"`) and ships Kustomize manifests for the Gateway, optional Bedrock and Code Interpreter components, and a post-deployment `smoke.sh`. `installers/azure/README.md` is the deployment guide: prerequisites, variables, image verification and push, secrets, sign-in, Bedrock, code execution, upgrade, rollback, and troubleshooting. This page covers the runtime contract the kit implements.
+
+## Build
+
+Build the Gateway image from the repository root:
+
+```sh
+docker build -t bymorning:<version> .
+```
+
+There is one image for every cloud: UBI 9 minimal with the RHEL 9 OpenSSL FIPS Provider, Node 22, non-root (uid 65532), port `3210`, no package managers, both cloud backends, and both production Code Interpreter plugins. The installer binds it to Azure with the two selectors in the Environment table; `AWS_USE_FIPS_ENDPOINT` is not set by the image, and `installers/azure/scripts/overlay.sh` adds it only for Bedrock in a GovCloud Region. Amazon Bedrock models remain available with an API key (`AWS_BEARER_TOKEN_BEDROCK`) or the standard AWS credential chain, as for [Server runtime](/configure/server-runtime).
+
+## Architecture
+
+```text
+Browser ─► Ingress / Container Apps ingress (TLS) ─► ByMorning container (1 replica)
+                                                       ├─► PostgreSQL Flexible Server
+                                                       ├─► Blob Storage container   (managed identity)
+                                                       └─► Key Vault RSA key        (managed identity)
+```
+
+Run **one replica**, and never let two versions overlap: OAuth callback state and the scheduler are process-local. On AKS use a `Deployment` with `replicas: 1` and `strategy: Recreate`. On Container Apps set the revision mode to single, with minimum and maximum replicas of `1`.
+
+## Identity and role assignments
+
+Give the workload one managed identity (a user-assigned identity on Container Apps, or a workload identity federated with the pod's service account on AKS) and grant it:
+
+| Resource       | Role                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------- |
+| Blob container | `Storage Blob Data Contributor`, scoped to the storage container                       |
+| Key Vault key  | `Key Vault Crypto User`, scoped to the key: includes `get`, `wrapKey`, and `unwrapKey` |
+
+With a Key Vault access policy instead of Azure RBAC, grant the key `get`, `wrap key`, and `unwrap key` permissions. Nothing else is required: the host never creates the container or the key, and it never lists or reads other Azure resources.
+
+On AKS with workload identity, `DefaultAzureCredential` reads `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_FEDERATED_TOKEN_FILE`, which the workload identity webhook injects. On Container Apps with a user-assigned identity, set `AZURE_CLIENT_ID` to that identity's client ID.
+
+## Key Vault key
+
+Create an RSA (or RSA-HSM) key. ByMorning generates a 32-byte data key locally, wraps it with the vault key using `RSA-OAEP-256`, and records the versioned key URL with every wrapped key. Key material never leaves Key Vault.
+
+```sh
+az keyvault key create --vault-name <vault> --name bymorning-cipher --kty RSA --size 3072 \
+  --ops wrapKey unwrapKey
+```
+
+`KEY_VAULT_KEY` is the key URL, `https://<vault>.vault.azure.net/keys/bymorning-cipher`. An unversioned URL resolves to the latest key version once at startup; a versioned URL pins that version. Rotating the key creates a new version that new wraps use after the next restart, and old versions must stay enabled so existing wrapped keys can still unwrap. Startup fails closed when the vault is unreachable, the identity lacks permission, or the URL is invalid; errors never include key material.
+
+## Environment
+
+| Variable                                                                                     | Required | Default   | Use                                                                                                                             |
+| -------------------------------------------------------------------------------------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `STORAGE_PROVIDER`                                                                           | Yes      | —         | `azure-blob`. Selects Blob Storage; the image refuses to start without it. Fixed for the life of an installation.               |
+| `CIPHER_BACKEND`                                                                             | Yes      | —         | `keyvault`. Selects Key Vault for the Cipher key; the image refuses to start without it. Fixed for the life of an installation. |
+| `AZURE_CLOUD`                                                                                | Yes      | —         | `AzureCloud` or `AzureUSGovernment`; see [Azure cloud](#azure-cloud).                                                           |
+| `APP_ORIGIN`                                                                                 | Yes      | —         | Exact `http:`/`https:` origin browsers use, no path or credentials. Secure cookies require HTTPS.                               |
+| `DATABASE_URL`                                                                               | Yes      | —         | PostgreSQL URL (`postgresql://…`).                                                                                              |
+| `DATABASE_CA`                                                                                | No       | Unset     | PEM contents (not a path) of the CA that signs the PostgreSQL server certificate; turns on verified TLS.                        |
+| `WEB_COOKIE_KEY`                                                                             | Yes      | —         | Secret encrypting Login Session cookies.                                                                                        |
+| `STORAGE_ACCOUNT_URL`                                                                        | Yes      | —         | Blob service account URL, `https://<account>.blob.core.windows.net`.                                                            |
+| `STORAGE_CONTAINER`                                                                          | Yes      | —         | Existing Blob container holding ByMorning data.                                                                                 |
+| `KEY_VAULT_KEY`                                                                              | Yes      | —         | Key Vault key URL, `https://<vault>.vault.azure.net/keys/<name>[/<version>]`.                                                   |
+| `HOST`                                                                                       | No       | `0.0.0.0` | Listen address.                                                                                                                 |
+| `PORT`                                                                                       | No       | `3210`    | Listen port.                                                                                                                    |
+| `TLS_CERT`, `TLS_KEY`                                                                        | No       | Unset     | PEM listener certificate and key; set both or neither. Absent, the listener is plain HTTP behind your ingress.                  |
+| `TRUSTED_PROXIES`                                                                            | No       | Unset     | Comma-separated proxy IPs/CIDRs whose `X-Forwarded-For` chains are trusted for authentication rate limiting.                    |
+| `SETUP_TOKEN`                                                                                | No       | Generated | Operator-chosen Setup token. Without it, the generated token is written owner-read-only to `/tmp/bymorning/setup-token` in the gateway container. |
+| `LOGIN_BANNER`                                                                               | No       | Unset     | System use notification acknowledged before sign-in.                                                                            |
+| `BYMORNING_CONFIG`                                                                           | No       | Bundled   | Installation document path. The image ships `/app/bymorning.azure.jsonc`; the kit mounts its own at `/config/bymorning.jsonc`.  |
+| `AUTH_ISSUER`, `AUTH_CLIENT_ID`, `AUTH_CLIENT_SECRET`, `AUTH_PROVIDER`, `AUTH_EMAIL_DOMAINS` | No       | Unset     | Seed the first Auth Provider; set all five or startup fails.                                                                    |
+
+Store `DATABASE_URL`, `DATABASE_CA`, `WEB_COOKIE_KEY`, `SETUP_TOKEN`, `TLS_KEY`, and `AUTH_CLIENT_SECRET` in Key Vault secrets, Kubernetes Secrets, or Container Apps secrets. Logging, telemetry, and Provider credentials follow [Server runtime](/configure/server-runtime).
+
+Local Login is not available on Azure. Register the first Auth Provider with the `AUTH_*` seed (all five variables) or through `/setup` with the setup token the first start writes (the log names the file; see [Server runtime](/configure/server-runtime)); the callback URL to register with the identity provider is `<origin>/auth/callback` for the provider seeded from `AUTH_*` (it sends that URI; its ID does not exist before the first start) and `<origin>/auth/callback/<providerID>` for a provider created in Setup. Register the Entra application as described in [Microsoft Entra](/deploy/entra); the Gateway needs outbound HTTPS to `login.microsoftonline.com` or `login.microsoftonline.us` for registration and every sign-in.
+
+## PostgreSQL
+
+Use Azure Database for PostgreSQL Flexible Server with a database and login role for ByMorning, and require TLS. Set `DATABASE_URL` to `postgresql://<user>:<password>@<server>.postgres.database.azure.com:5432/<database>` and `DATABASE_CA` to the PEM contents of the CA chain that signs the server certificate (download it from Azure's documented root certificates). Keep the server reachable only from the cluster or Container Apps environment (private access or a VNet-integrated endpoint).
+
+## Migrate
+
+Run migrations to completion before each rollout, with the same environment as the Gateway:
+
+```sh
+node /app/bymorning.mjs migrate
+```
+
+On AKS run it as an init container or a pre-upgrade Job; on Container Apps use an init container in the same app or a Container Apps Job. The command exits non-zero on failure and never logs connection details. The serving process also applies pending migrations on start.
+
+```yaml title="deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bymorning
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bymorning
+  template:
+    metadata:
+      labels:
+        app: bymorning
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: bymorning
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      initContainers:
+        - name: migrate
+          image: <registry>/bymorning@sha256:<digest>
+          args: ["node", "/app/bymorning.mjs", "migrate"]
+          envFrom:
+            - secretRef:
+                name: bymorning
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: bymorning
+          image: <registry>/bymorning@sha256:<digest>
+          ports:
+            - containerPort: 3210
+          envFrom:
+            - secretRef:
+                name: bymorning
+          env:
+            - name: STORAGE_PROVIDER
+              value: azure-blob
+            - name: CIPHER_BACKEND
+              value: keyvault
+            - name: AZURE_CLOUD
+              value: AzureCloud
+            - name: APP_ORIGIN
+              value: "https://bymorning.example.com"
+            - name: STORAGE_ACCOUNT_URL
+              value: "https://<account>.blob.core.windows.net"
+            - name: STORAGE_CONTAINER
+              value: bymorning
+            - name: KEY_VAULT_KEY
+              value: "https://<vault>.vault.azure.net/keys/bymorning-cipher"
+          readinessProbe:
+            httpGet:
+              path: /system/health
+              port: 3210
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+```
+
+The service account carries the workload identity annotation `azure.workload.identity/client-id: <client-id>`. The `Secret` holds `DATABASE_URL`, `DATABASE_CA`, `WEB_COOKIE_KEY`, and any `AUTH_*` seed. Terminate TLS at the Ingress; set `APP_ORIGIN` to its origin and `TRUSTED_PROXIES` to the Ingress controller's addresses.
+
+`/tmp` must be writable: the process sets `HOME=/tmp`, and the migrator and the generated Setup token use the temp directory. With `readOnlyRootFilesystem`, mount an `emptyDir` as above.
+
+## FIPS
+
+The image runs on the RHEL 9 OpenSSL FIPS Provider regardless of the node. For an environment that requires FIPS-enabled hosts, use an AKS FIPS-enabled node pool (`az aks nodepool add --enable-fips-image`) for the cluster. Container Apps has no equivalent host setting.
+
+## Blob lifecycle for Tool output
+
+Tool output is written under the `tool-output/` prefix of the Storage container and is meant to expire after seven days (the AWS stack applies the same rule to its bucket). Blob Storage does not expire objects on its own here, so add a lifecycle management rule on the storage account, with the container name in the prefix:
+
+```json title="policy.json"
+{
+  "rules": [
+    {
+      "enabled": true,
+      "name": "expire-tool-output",
+      "type": "Lifecycle",
+      "definition": {
+        "filters": {
+          "blobTypes": ["blockBlob"],
+          "prefixMatch": ["bymorning/tool-output/"]
+        },
+        "actions": {
+          "baseBlob": { "delete": { "daysAfterModificationGreaterThan": 7 } }
+        }
+      }
+    }
+  ]
+}
+```
+
+```sh
+az storage account management-policy create --account-name <account> --resource-group <rg> --policy @policy.json
+```
+
+Replace `bymorning` in the prefix with your `STORAGE_CONTAINER`. The rule matches only `tool-output/`; project files and plugin data are never expired.
+
+## Models
+
+Amazon Bedrock models stay available, and Azure OpenAI is added as a custom Provider under Settings → Providers: choose the native request format your deployment serves (OpenAI Chat or OpenAI Responses), set the endpoint to your resource's OpenAI-compatible base URL (`https://<resource>.openai.azure.com/openai/v1/`), and choose the authentication your resource requires (for API-key authentication, Azure's `api-key` header is a custom header choice). See [Models](/configure/models). This Azure OpenAI setup has not been validated against a live resource.
+
+## Code Interpreter
+
+Code execution runs in per-call Kubernetes pods through the bundled `@bymorning/plugin-code-interpreter-kubernetes` plugin (see its README for isolation guarantees and RBAC). The plugin is bundled in the image but not enabled by the shipped configuration, because it needs a digest-pinned execution image that only your deployment knows. Build the image from `app/host/Dockerfile.execution` (it runs as uid 1000, the plugin's `runAsUser` default), push it to your registry, and enable the plugin in the installation document (`BYMORNING_CONFIG`; the example is `installers/azure/k8s/components/code-interpreter-kubernetes/config/bymorning.jsonc`, deployed by that component). Apply `plugins/code-interpreter-kubernetes/deploy` for the sandbox namespace, RBAC and deny-all NetworkPolicy. If `code_interpreter.implementation` is `kubernetes` without a digest-pinned `image` in the plugin options, the Gateway refuses to start with `Host.ConfigError` (`code_interpreter.image`).
+
+The Terraform module can create an optional Kata VM-isolation node pool (`sandbox_node_pool`). AKS pod sandboxing runs only on Azure Linux and cannot be combined with FIPS node pools; Microsoft's documentation does not state whether it is available in Azure Government regions.
+
+## Verify
+
+1. `curl https://<origin>/system/health` answers through the ingress.
+2. `curl https://<origin>/auth/method` reports `ready` with your provider, or `setup` while Setup is pending.
+3. Sign in and confirm the Workspace loads; ask for a large Tool result and confirm an object appears under `tool-output/` in the container.

@@ -1,0 +1,18 @@
+/*
+ * Every Console page lays out as height: 100% of the routed content slot. The
+ * countdown strip pins above the page inside a stable flex column, so toggling
+ * the strip never remounts or re-lays-out the page below it.
+ */
+[data-component="console-view"] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+[data-component="console-view"] > [data-slot="console-view-content"] {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}

@@ -1,0 +1,91 @@
+---
+title: Permissions
+description: Configure ordered Workspace Permission rules and their runtime enforcement.
+---
+
+Permissions decide which actions may run. Define them as an ordered array under `permissions`.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "ask" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "linear_*", "resource": "*", "effect": "ask" }
+  ]
+}
+```
+
+An empty ruleset leaves an unmatched action and resource allowed.
+
+## Schema
+
+Each rule has three required fields:
+
+| Field | Meaning |
+| --- | --- |
+| `action` | Tool name or action pattern, such as `linear_*`. |
+| `resource` | Value the Tool acts on. Integration Tools use `*`. |
+| `effect` | `allow`, `deny`, or `ask`. |
+
+Add `user: "usr_…"` to address a rule to one Workspace member. Omit `user` for the Workspace default. Only Workspace administrators author permanent rules.
+
+## Matching
+
+Both `action` and `resource` support wildcards. `*` matches zero or more characters, including `/`, and `?` matches one character. Other characters are literal. A pattern ending in ` *` also matches the value without arguments.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "shell", "resource": "git status *", "effect": "allow" }
+  ]
+}
+```
+
+That rule matches `git status` and `git status --short`. Matching is case-sensitive except on Windows.
+
+The last matching rule wins. Put broad defaults first and narrower exceptions later. In the example above, actions ask by default, reads are allowed, `.env` reads are denied, and Linear Tools ask.
+
+- For a root Session, ByMorning concatenates the selected Agent's rules, Workspace rules, then rules addressed to the current User.
+- A later matching User rule can override a Workspace match. Rules for other Users do not participate.
+- If the selected Agent is unavailable, ByMorning substitutes a deny-all Agent rule before applying Workspace and User rules.
+- If nothing matches, the result remains `allow`.
+- Child Sessions add an allow-all baseline before Agent, Workspace, and matching User rules, then append a final deny for the `subagent` action. Workspace configuration cannot override that final rule.
+- When an operation checks several resources, any `deny` blocks it. Otherwise, any `ask` requires approval. Every resource must resolve to `allow` for immediate execution.
+
+See the [Permission model](/developer-reference/permission-model#matching) for path normalization, Agent updates, and child Session details.
+
+## Effects
+
+| Effect | Behavior |
+| --- | --- |
+| `allow` | Run the action without prompting. |
+| `deny` | Block the action without opening an approval request. |
+| `ask` | Pause the Session until the request is approved or rejected. |
+
+Session and Tool Gateway approval is once-only. `always` is rejected; only owner/admin-authored Workspace and User rules create permanent authority. Legacy saved grants remain listable and removable, but are ignored during evaluation.
+
+Use **Integrations** to edit Tool defaults and a selected member's effective Tool permissions. A member value may inherit the Workspace default. Saving creates or updates that member's wildcard rule; you cannot remove a member override from this screen.
+
+See [Approvals](/developer-reference/permission-model#approvals) for reply semantics.
+
+## MCP
+
+Inbound MCP cannot open an interactive approval.
+
+- It evaluates only the Workspace rules captured for the request; Agent rules, User rules, and saved grants do not participate.
+- Both `ask` and `deny` therefore fail closed.
+- Add an explicit Workspace `allow` for each inbound action and resource that should execute.
+
+Outbound MCP Tools run inside a Session and use the normal effective Permission policy. Their action is the normalized `<server>_<tool>` name and their resource is `*`.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "linear_*", "resource": "*", "effect": "deny" },
+    { "action": "linear_search", "resource": "*", "effect": "allow" }
+  ]
+}
+```
+
+Because the last match wins, this denies the server namespace except for `linear_search`. See [Integrations](/configure/integrations#permissions) for naming and [MCP](/developer-reference/permission-model#mcp) for catalog filtering.

@@ -1,0 +1,32 @@
+[data-slot="login-providers"] {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-slot="login-providers"] li {
+  display: grid;
+}
+
+[data-slot="login-banner"] {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--color-border-base);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-base);
+}
+
+[data-slot="login-banner-text"] {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+[data-slot="login-failure-hint"] {
+  display: block;
+  margin-top: 4px;
+}

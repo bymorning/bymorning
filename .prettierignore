@@ -1,0 +1,13 @@
+**/sst-env.d.ts
+packages/**/src/**/migration/**
+packages/client/src/**/generated/**
+packages/client/src/effect/api/api.ts
+packages/models/generated/**
+packages/models/source/models-dev/cache/**
+packages/models/source/models-dev/pin.json
+packages/web/public/assets/provider-icons/*.svg
+packages/web/src/integration/provider-icons.generated.*
+**/.httpapi-codegen.json
+**/dist/**
+/.sst
+**/.sst/**

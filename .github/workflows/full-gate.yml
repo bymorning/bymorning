@@ -1,0 +1,377 @@
+# Full gate (plans/single-image.md, T4): everything the PR gate (ci.yml) leaves
+# out, run on every merge to dev, nightly, and on demand for a release.
+#
+# What runs where:
+#   ci.yml (every PR and push)   static checks, unit matrix, packages/testing
+#                                application shards, core integration, gitleaks.
+#   full-gate.yml (this file)    the release build itself and the suites that
+#                                need it or a browser or a cluster:
+#     build        script/release.ts builds both images (Gateway, execution) as
+#                  linux/amd64 OCI tarballs, writes release/manifest.json and the
+#                  full evidence folders (SBOMs, grype, licenses, gitleaks,
+#                  semgrep, bun audit, SLSA provenance, OpenVEX, SHA256SUMS,
+#                  cosign bundles), then runs packages/server/test/image-security.sh
+#                  against the exact Gateway tarball (FIPS provider, non-root,
+#                  toolchain, labels, approved crypto, TLS policy).
+#                  Uploads the release directory as `release`.
+#     image-boot   packages/server/test/image-boot.sh on the tarball, one leg per
+#                  installer: aws (AWS ECS task environment: TLS, migrate over
+#                  verify-full, KMS + S3 emulators, failure paths) and azure (AKS
+#                  pod environment: workload identity exchange, Key Vault
+#                  resolution and wrapping, Blob against real Azurite, inventory,
+#                  log hygiene, cloud-endpoint refusals).
+#     kind         installers/azure/test/kind-e2e.sh: the signed tarballs imported
+#                  into a kind node by digest, the installer's own manifests,
+#                  Entra/Key Vault/STS/Bedrock emulators behind CoreDNS rewrites,
+#                  sign-in, Blob, Key Vault rotation, sandbox code execution; then
+#                  the Kubernetes Code Interpreter plugin's own kind suite.
+#     browser      Playwright suites with managed Chromium: packages/web and
+#                  packages/starter test:application (real Application, one
+#                  PostgreSQL per run), packages/ui and packages/session-ui
+#                  test:browser.
+#     installers   offline installer checks: the Azure installer's terraform
+#                  validate/test, kustomize, kubeconform, policy and
+#                  create-secret checks.
+#
+# Signing model: push and schedule runs sign the evidence with an EPHEMERAL
+# cosign key generated in the job (so kind-e2e's signature verification runs
+# for real, against a key nobody keeps). The release path is a manual dispatch
+# with sign=true: when the repository variable BYMORNING_COSIGN_KEY_ENABLED is
+# "true", the real key is restored from the BYMORNING_COSIGN_KEY (PEM) and
+# COSIGN_PASSWORD secrets and the `release` artifact (kept 30 days) is the
+# signed release: download it, verify, commit manifest.json and release/<version>/,
+# and deliver through the installer exports as README.md describes. Only that path
+# sets BYMORNING_SIGNING_KIND=release, so the manifest records the evidence as
+# release-signed (script/release/signing.ts); every other run records it as
+# ephemeral and the installer exports refuse it. Without the variable, sign=true
+# falls back to an ephemeral key and says so. This replaces the former
+# release-evidence.yml drill.
+#
+# Versions: a dispatch on the real-key path may pass `version`; every other run
+# uses the root package.json version with a `-ci.<run number>` prerelease suffix
+# so the tarballs, labels, manifest, and evidence folder of a gate run can never
+# be mistaken for a release. A `version` without the real key is refused.
+#
+# Runners: ubuntu-24.04 everywhere. The kind and browser jobs benefit from a
+# 4-core larger runner; the organization's runner groups could not be listed
+# (403), so switch `runs-on` for those jobs to the org's larger label (for
+# example `ubuntu-24.04-4core`) once it is known.
+name: full-gate
+
+on:
+  push:
+    branches: [dev]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (semver, prerelease allowed). Default: package.json version with a -ci.<run> suffix."
+        required: false
+        type: string
+      sign:
+        description: "Sign with the real release key (requires BYMORNING_COSIGN_KEY_ENABLED=true). Default: ephemeral key."
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Push and nightly runs group by commit, so every merge to dev gets its own
+# complete gate (a later push never cancels an earlier one) and only a rerun of
+# the same commit queues behind it. Dispatches group by ref: two release
+# dispatches on one branch queue instead of racing. Nothing is cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && format('dispatch-{0}', github.ref) || github.sha }}
+  cancel-in-progress: false
+
+env:
+  BUN_VERSION: 1.3.11
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tarball: ${{ steps.release.outputs.tarball }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # provenance and gitleaks read full history
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      - name: Install the evidence toolchain (syft, grype, cosign, gitleaks; checksum-verified)
+        run: sh script/security/tools-ci.sh
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: pip install semgrep==1.176.0
+      - name: Resolve the version
+        id: version
+        run: |
+          if [ -n "${INPUT_VERSION}" ]; then
+            # A release version is only built with the real key; anything else would
+            # produce release-looking artifacts signed by a key nobody keeps.
+            if [ "${REAL_KEY}" != "true" ]; then
+              echo "::error::version=${INPUT_VERSION} needs the real release key (dispatch with sign=true and BYMORNING_COSIGN_KEY_ENABLED=true); leave version empty for a -ci.<run> build"
+              exit 1
+            fi
+            version="${INPUT_VERSION}"
+          else
+            version="$(jq -r .version package.json)-ci.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "RELEASE_DIR=$RUNNER_TEMP/release" >> "$GITHUB_ENV"
+          echo "version: $version"
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          REAL_KEY: ${{ github.event_name == 'workflow_dispatch' && inputs.sign && vars.BYMORNING_COSIGN_KEY_ENABLED == 'true' }}
+      - name: Restore the release signing key (dispatch with sign=true and the key configured)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sign && vars.BYMORNING_COSIGN_KEY_ENABLED == 'true' }}
+        run: |
+          printf '%s\n' "$BYMORNING_COSIGN_KEY" > "$RUNNER_TEMP/cosign.key"
+          chmod 600 "$RUNNER_TEMP/cosign.key"
+          echo "BYMORNING_COSIGN_KEY=$RUNNER_TEMP/cosign.key" >> "$GITHUB_ENV"
+          # The only place a PEM key is recorded as the release key in the manifest.
+          echo "BYMORNING_SIGNING_KIND=release" >> "$GITHUB_ENV"
+          echo "signing: RELEASE key (BYMORNING_COSIGN_KEY secret)"
+        env:
+          BYMORNING_COSIGN_KEY: ${{ secrets.BYMORNING_COSIGN_KEY }}
+      - name: Generate an ephemeral signing key (every other run)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.sign && vars.BYMORNING_COSIGN_KEY_ENABLED == 'true') }}
+        run: |
+          if [ "${INPUT_SIGN}" = "true" ]; then
+            echo "::warning::sign=true was requested but BYMORNING_COSIGN_KEY_ENABLED is not 'true'; signing with an ephemeral key instead"
+          fi
+          mkdir -p "$RUNNER_TEMP/ephemeral"
+          password=$(openssl rand -hex 32)
+          echo "::add-mask::$password"
+          (cd "$RUNNER_TEMP/ephemeral" && COSIGN_PASSWORD="$password" cosign generate-key-pair)
+          echo "COSIGN_PASSWORD=$password" >> "$GITHUB_ENV"
+          echo "BYMORNING_COSIGN_KEY=$RUNNER_TEMP/ephemeral/cosign.key" >> "$GITHUB_ENV"
+          echo "signing: EPHEMERAL key (discarded with the runner)"
+        env:
+          INPUT_SIGN: ${{ inputs.sign }}
+      # The runner's default `docker` driver cannot export an OCI layout; a
+      # docker-container builder can (same BuildKit the release machine uses).
+      - name: Create a buildx builder that supports the OCI exporter
+        run: docker buildx create --name release --driver docker-container --use --bootstrap
+      - name: Build both images, the manifest, and the evidence
+        id: release
+        run: |
+          bun script/release.ts --version "$RELEASE_VERSION" --out "$RELEASE_DIR" --evidence-out "$RELEASE_DIR/$RELEASE_VERSION" --force
+          # kind-e2e.sh reads the release public key at the release root; every evidence folder carries the same one.
+          cp "$RELEASE_DIR/$RELEASE_VERSION/gateway/cosign.pub" "$RELEASE_DIR/cosign.pub"
+          cmp "$RELEASE_DIR/cosign.pub" "$RELEASE_DIR/$RELEASE_VERSION/execution/cosign.pub"
+          # The manifest must record what signed: release only on the real-key path.
+          expected=ephemeral; [ "${BYMORNING_SIGNING_KIND:-}" = release ] && expected=release
+          recorded=$(jq -r '[.artifacts[].signing.kind] | unique | join(",")' "$RELEASE_DIR/manifest.json")
+          [ "$recorded" = "$expected" ] || { echo "::error::manifest records signing $recorded, expected $expected"; exit 1; }
+          echo "signing recorded: $recorded $(jq -r .artifacts.gateway.signing.key "$RELEASE_DIR/manifest.json")"
+          echo "tarball=$(jq -r .artifacts.gateway.tarball "$RELEASE_DIR/manifest.json")" >> "$GITHUB_OUTPUT"
+          ls -la "$RELEASE_DIR" "$RELEASE_DIR/$RELEASE_VERSION"/*
+        env:
+          # The real key path when restored; the ephemeral one otherwise (both set through GITHUB_ENV above).
+          COSIGN_PASSWORD: ${{ env.COSIGN_PASSWORD || secrets.COSIGN_PASSWORD }}
+      - name: Image security gate on the built Gateway tarball
+        run: sh packages/server/test/image-security.sh
+        env:
+          TARBALL: ${{ runner.temp }}/release/${{ steps.release.outputs.tarball }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release
+          path: ${{ runner.temp }}/release
+          # The tarballs are already compressed layers; skip zip compression.
+          compression-level: 0
+          if-no-files-found: error
+          # A signed release build is kept long enough to publish from; gate runs are throwaway.
+          retention-days: ${{ (github.event_name == 'workflow_dispatch' && inputs.sign) && 30 || 3 }}
+
+  image-boot:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        leg: [aws, azure]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release
+          path: ${{ runner.temp }}/release
+      # Pull the emulator-boundary images up front so a registry stall shows here
+      # (and times out here) instead of inside a detached `docker run`.
+      - name: Pull the emulator images
+        timeout-minutes: 8
+        run: |
+          docker pull -q postgres:17-alpine
+          [ "${{ matrix.leg }}" != azure ] || docker pull -q --platform linux/amd64 mcr.microsoft.com/azure-storage/azurite@sha256:830430c1da1a2d537e08f3e6764dd1f5ae00cf0346bcaf625b968ec3f0971fd5
+      - name: Boot the release tarball (${{ matrix.leg }} leg)
+        run: sh packages/server/test/image-boot.sh
+        env:
+          LEG: ${{ matrix.leg }}
+          RELEASE_DIR: ${{ runner.temp }}/release
+          TARBALL: ${{ runner.temp }}/release/${{ needs.build.outputs.tarball }}
+
+  kind:
+    needs: build
+    # Switch to the organization's 4-core label when known (see the header).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      # kind v0.33.0 (node image kindest/node:v1.37.0, pinned by digest in the
+      # scripts) and kubectl v1.37.0; install only, the scripts create clusters.
+      - uses: helm/kind-action@06c1ae10762d3b9c1644e7fe69596ae519e015a2 # v1.15.0
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          install_only: true
+      - name: Install cosign (checksum-verified, with the rest of the evidence toolchain) and uuidgen
+        run: |
+          sh script/security/tools-ci.sh
+          command -v uuidgen >/dev/null || sudo apt-get install -y -q uuid-runtime
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release
+          path: ${{ runner.temp }}/release
+      - name: Azure installer end to end on kind (signed tarballs, real manifests)
+        # KIND_KEEP leaves the cluster for the diagnostic step below; the runner is discarded anyway.
+        # E2E_SANDBOX_CPU: the 2-vCPU runner's kind node cannot fit the installer's default 1-CPU sandbox
+        # request next to the Gateway and system pods; drop the override on a 4-core runner.
+        run: KIND_INTEGRATION=1 KIND_KEEP=1 E2E_SANDBOX_CPU=250m RELEASE_DIR="$RUNNER_TEMP/release" sh installers/azure/test/kind-e2e.sh
+      - name: Cluster state after a failed end to end
+        if: failure()
+        run: |
+          kind get kubeconfig --name bymorning-azure-e2e > "$RUNNER_TEMP/e2e.kubeconfig" || exit 0
+          export KUBECONFIG="$RUNNER_TEMP/e2e.kubeconfig"
+          kubectl describe node | sed -n '/Allocatable:/,/Events:/p'
+          kubectl get pods -A -o wide
+          kubectl get events -A --sort-by=.lastTimestamp | tail -40
+          kubectl -n bymorning logs deploy/bymorning -c gateway --tail=80 || true
+      - name: Delete the end-to-end cluster before the plugin suite creates its own
+        if: ${{ !cancelled() }}
+        run: kind delete cluster --name bymorning-azure-e2e || true
+      - name: Kubernetes Code Interpreter against kind
+        if: ${{ !cancelled() }}
+        run: KIND_INTEGRATION=1 bun run --cwd plugins/code-interpreter-kubernetes test
+
+  browser:
+    # Switch to the organization's 4-core label when known (see the header).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # packages/web test:application is 60 real-Application scenarios, each
+        # with its own Vite server and browser; on a 2-vCPU runner two workers
+        # push the first page load past the 20 s expectation, so it runs one
+        # worker per runner across three shards instead.
+        suite: [web-1/3, web-2/3, web-3/3, starter, ui, session-ui]
+    env:
+      # No /usr/bin/chromium on the runner: use Playwright's managed Chromium.
+      PLAYWRIGHT_MANAGED_CHROMIUM: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(jq -r '.devDependencies["@playwright/test"]' package.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install managed Chromium (download skipped on a cache hit; OS packages always)
+        run: bunx playwright install --with-deps chromium
+      - if: startsWith(matrix.suite, 'web-')
+        name: packages/web test:application (real Application, browser; one shard)
+        run: bun run --cwd packages/web test:application --workers=1 --shard="${SUITE#web-}"
+        env:
+          SUITE: ${{ matrix.suite }}
+      - if: matrix.suite == 'starter'
+        name: packages/starter test:application
+        run: bun run --cwd packages/starter test:application
+      - if: matrix.suite == 'ui'
+        name: packages/ui test:browser
+        run: bun run --cwd packages/ui test:browser
+      - if: matrix.suite == 'session-ui'
+        name: packages/session-ui test:browser
+        run: bun run --cwd packages/session-ui test:browser
+      - if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-${{ matrix.suite == 'web-1/3' && 'web-1' || matrix.suite == 'web-2/3' && 'web-2' || matrix.suite == 'web-3/3' && 'web-3' || matrix.suite }}
+          path: |
+            packages/web/test-results
+            packages/starter/e2e/test-results
+            packages/starter/e2e/playwright-report
+            packages/ui/test-results
+            packages/session-ui/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  installers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.16.4
+          # The scripts spawn terraform and parse its output; the wrapper would interpose.
+          terraform_wrapper: false
+      - name: Install kubectl and kubeconform (checksum-verified)
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          kubectl_version=v1.37.0
+          curl -fsSLo kubectl "https://dl.k8s.io/release/$kubectl_version/bin/linux/amd64/kubectl"
+          curl -fsSLo kubectl.sha256 "https://dl.k8s.io/release/$kubectl_version/bin/linux/amd64/kubectl.sha256"
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c -
+          curl -fsSLo kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz
+          echo "9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883  kubeconform.tar.gz" | sha256sum -c -
+          tar -xzf kubeconform.tar.gz kubeconform
+          chmod +x kubectl kubeconform
+          sudo mv kubectl kubeconform /usr/local/bin/
+          kubectl version --client
+          kubeconform -v
+      - name: Azure installer offline checks (validate, test, kustomize, kubeconform, policy, create-secret)
+        run: sh installers/azure/test.sh

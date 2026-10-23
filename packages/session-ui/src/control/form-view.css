@@ -1,0 +1,65 @@
+[data-session-ui] [data-component="form-view"] {
+  display: flex;
+  max-height: min(70vh, 680px);
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-layer-2);
+  box-shadow: var(--shadow-raised);
+}
+[data-session-ui] [data-component="form-view"] h2,
+[data-session-ui] [data-component="form-view"] p {
+  margin: 0;
+}
+[data-session-ui] [data-component="form-view"] fieldset {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  overflow: auto;
+  margin: 0;
+  padding: 1px;
+  border: 0;
+}
+[data-session-ui] [data-component="form-view"] [data-slot="field"] {
+  display: grid;
+  gap: 5px;
+  color: var(--color-text-base);
+}
+[data-session-ui] [data-component="form-view"] small {
+  color: var(--color-text-muted);
+}
+[data-session-ui] [data-component="form-view"] input,
+[data-session-ui] [data-component="form-view"] textarea,
+[data-session-ui] [data-component="form-view"] select {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  color: var(--color-text-base);
+  background: var(--color-bg-layer-1);
+  font: inherit;
+}
+[data-session-ui] [data-component="form-view"] input[type="checkbox"] {
+  width: auto;
+}
+[data-session-ui] [data-component="form-view"] p,
+[data-session-ui] [data-component="form-view"] [role="alert"] {
+  color: var(--color-danger-fg);
+}
+[data-session-ui] [data-component="form-view"] [data-slot="actions"] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+[data-session-ui] [data-component="form-view"] button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 6px 9px;
+  color: var(--color-text-base);
+  background: var(--color-bg-layer-1);
+  font: inherit;
+}

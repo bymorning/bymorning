@@ -1,0 +1,40 @@
+{
+  "name": "@bymorning/testing",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts",
+    "./scenario/*": "./src/scenario/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bymorning/plugin-code-interpreter-docker": "workspace:*",
+    "@bymorning/plugin-code-interpreter-agentcore": "workspace:*",
+    "@bymorning/plugin-code-interpreter-kubernetes": "workspace:*",
+    "@bymorning/plugin-share": "workspace:*",
+    "@bymorning/client": "workspace:*",
+    "@bymorning/core": "workspace:*",
+    "@bymorning/server": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "@bymorning/util": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "@effect/platform-node": "catalog:",
+    "@effect/sql-pg": "catalog:",
+    "effect": "catalog:",
+    "@bymorning/plugin": "workspace:*",
+    "@modelcontextprotocol/client": "2.3.1",
+    "@modelcontextprotocol/server": "2.3.1",
+    "@opencode-ai/ai": "catalog:"
+  },
+  "devDependencies": {
+    "@bymorning/models": "workspace:*",
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "drizzle-orm": "catalog:",
+    "vitest": "catalog:"
+  },
+  "license": "MIT"
+}

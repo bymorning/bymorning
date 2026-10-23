@@ -1,0 +1,171 @@
+---
+title: Models
+description: Connect bundled Providers and control which Catalog Models a Workspace can use.
+---
+
+ByMorning ships a bundled Catalog of Providers and Models. As a Workspace administrator, open **AI Gateway → Models** to connect or activate a Provider, enable Models, and set Workspace limits.
+
+## Catalog
+
+The Models page lists Catalog Models from active Providers. Each item includes these Workspace states:
+
+| Field | Meaning |
+| --- | --- |
+| `enabled` | The Workspace has not disabled this Model. |
+| `isPreferredDefault` | The Workspace explicitly selected this Model as its default. |
+| `isEffectiveDefault` | ByMorning currently resolves this Model as the default. |
+| `unavailableReason` | The Provider is inactive or disabled, its Connection is unavailable, the active Bedrock region is unsupported, or the execution transport is unsupported. |
+| `custom` | Present and `true` for a custom Model the Workspace configured. |
+
+A Provider can appear in the Provider directory while inactive or disconnected. Open it to inspect its Models and their unavailable reasons. The main Models list includes active Providers; an explicitly enabled Provider remains active even when authentication is unavailable.
+
+Deprecated Models are excluded from the bundled Catalog. Sessions and LLM Gateway use the same effective Catalog.
+
+### Enable
+
+Use the switch beside a Model to enable or disable it for the Workspace. You can toggle only a Model currently visible to the Workspace.
+
+### Default
+
+Choose the default Model from the Model selector. Do not write `default_model` in Workspace configuration.
+
+The selected Model must be executable through an active Provider and an available authentication source when its transport requires one.
+
+- If the preferred default later becomes unavailable, ByMorning uses the first available Model as the effective default while retaining the preferred identity.
+- Compare `isPreferredDefault` with `isEffectiveDefault` to detect that fallback.
+
+### Custom models
+
+Add a Model the bundled Catalog does not list, such as an Amazon Bedrock inference profile your IAM policy allows or a Model released after the pinned source.
+
+1. On the **Models** tab, choose **Add model**.
+2. Choose an active Provider, then enter a display label and the upstream model name.
+3. Optionally enter a key, prices, and a context limit, then choose **Add model**.
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| Provider | Yes | An active Provider. The custom Model uses its endpoint and Connections. |
+| Display label | Yes | The name shown in the Models list and Model selector. |
+| Upstream model name | Yes | The model ID sent to the Provider, such as a Bedrock inference profile ID or ARN. |
+| Key | No | The Model's identity within the Provider. Defaults to the upstream model name and cannot change later. It cannot contain `/` or spaces. |
+| Input price, Output price | No | USD per million tokens. Without them, usage is recorded at no cost. |
+| Context limit | No | Tokens. Without it, ByMorning does not compact Sessions on the Model automatically. |
+
+ByMorning stores custom Models as server-owned `models` in Workspace configuration. A whole-document configuration update leaves them unchanged.
+
+```jsonc title="Workspace configuration"
+{
+  "models": [
+    {
+      "provider": "amazon-bedrock",
+      "id": "team-sonnet",
+      "name": "Team Sonnet",
+      "apiID": "arn:aws-us-gov:bedrock:us-gov-west-1:123456789012:application-inference-profile/a1b2c3d4e5f6",
+      "cost": { "input": 3, "output": 15 },
+      "limit": { "context": 200000 }
+    }
+  ]
+}
+```
+
+- A key its Provider already uses is refused; enable the existing Model instead.
+- **Edit** changes the label, upstream model name, prices, and context limit. **Delete** removes the Model and its enablement state. Bundled Models can be disabled but not edited or deleted.
+- Only Workspace administrators can change custom Models, through the Models page or `POST`, `PUT`, and `DELETE` on `/api/models`. The audit log records `model.create`, `model.update`, and `model.delete`.
+- Gateway IDs follow the Provider: the bare key on Amazon Bedrock, OpenAI, Anthropic, Google, and Fireworks, and `<provider>/<key>` elsewhere. `<provider>/<key>` always resolves exactly.
+- Amazon Bedrock checks the upstream model name against the active Connection's region, so a `us-gov.` profile runs only on a GovCloud Connection.
+
+## Costs
+
+Catalog costs are USD per million tokens. Missing values stay unknown rather than zero.
+
+Usage prices observations from these values. Incomplete pricing shows as a known subtotal. You do not set `cost` in Workspace configuration.
+
+Optional `cost.tiers` and `cost.experimentalOver200K` describe context-tiered prices when the Catalog supplies them. A dash in the Models UI means the Catalog has no value.
+
+## Limits
+
+Workspace activity caps live in `gateway`. Monthly Spend Limits belong to Budget.
+
+```jsonc title="Workspace configuration"
+{
+  "gateway": {
+    "limits": { "rpm": 300, "tpm": 500000 },
+    "models": ["bymorning/gpt-5.6-luna", "kimi-k2p6"]
+  }
+}
+```
+
+| Control | Authority | Behavior |
+| --- | --- | --- |
+| `gateway.limits.rpm` | Limiter | Admitted requests in the trailing 60 seconds, across all Workspace inference callers. |
+| `gateway.limits.tpm` | Limiter | Settled input, output, and reasoning tokens in the trailing 60 seconds. Excludes cache tokens. |
+| `gateway.models` | Limiter | Exact provider-qualified public Model IDs. An empty array denies every Model. |
+| Spend Limit | Budget | USD per UTC calendar month per Holder. |
+
+Omitted `gateway` properties are unrestricted. Set `rpm` or `tpm` to `0` to deny admission immediately. Values must be non-negative integers.
+
+Set monthly Spend Limits from **Gateway → Budgets**. A Holder without a Spend Limit is unrestricted but still accrues Charges. LLM Gateway and Session inference share Workspace RPM, TPM, and the Workspace Holder's Spend Limit.
+
+See [Workspace configuration](/configure/workspace-configuration#gateway) for Limiter windows and [Spend](/configure/workspace-configuration#spend) for Holder kinds.
+
+## Provider
+
+The bundled directory includes Bymorning, OpenAI, Anthropic, Google, OpenCode Zen, Fireworks, and Amazon Bedrock. Plugins and installation sources can add more Providers. Open the **Providers** tab on the Models page to inspect the installed directory.
+
+| Provider | Stored connection | Process environment |
+| --- | --- | --- |
+| Bymorning | API key | `BYMORNING_API_KEY` |
+| OpenAI | API key | `OPENAI_API_KEY` |
+| Anthropic | API key | `ANTHROPIC_API_KEY` |
+| Google | API key | `GOOGLE_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, or `GEMINI_API_KEY` |
+| OpenCode Zen | API key | `OPENCODE_API_KEY` |
+| Fireworks | API key | `FIREWORKS_API_KEY` |
+| Amazon Bedrock | Bedrock API key or AWS SigV4 credentials, plus region | See [Bedrock](#bedrock). |
+
+Each directory entry reports Provider metadata, configured activation, effective active state, Integration methods, whether at least one Connection is available, and Connection and Model counts.
+
+Choose **Add provider**, select an advertised authentication method, and enter its credentials. This flow creates a Workspace Connection with an automatic label. Under `auto`, a successful Connection activates the Provider. Use the shared **Enabled** switch to explicitly enable or disable it separately from Connection management; use configuration or the activation API to restore `auto`.
+
+Environment connections are discovered from the ByMorning server process. They cannot be renamed, activated, or removed from the Provider details. Stored Connections take precedence over environment connections.
+
+`providers.allow` is Workspace admission by Provider name. Omit it to admit every active Provider. Set `allow` to `[]` to admit none.
+
+```jsonc title="Workspace configuration"
+{
+  "providers": {
+    "allow": ["openai", "anthropic"]
+  }
+}
+```
+
+Session and Gateway inference refuse a Provider that is not on the allowlist. This restriction is distinct from Provider Activation, Model enablement, Limiter admission by Model identity, and Permission.
+
+See [Integration authentication](/developer-reference/integration-authentication) for discovery, connection payloads, and response redaction.
+
+### Bedrock
+
+Amazon Bedrock supports catalogued language Models through Converse and Mantle. The active Connection's AWS region (commercial or GovCloud) selects the endpoint and signing scope. Choose one authentication form:
+
+- a Bedrock API key and region;
+- an AWS access key ID, secret access key, optional session token, and region;
+- `AWS_BEARER_TOKEN_BEDROCK` with `AWS_REGION`; or
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, optional `AWS_SESSION_TOKEN`, and `AWS_REGION`; or
+- the deployment's AWS credential chain, including an ECS task role, instance role, web identity, or shared AWS profile.
+
+ByMorning discovers complete environment groups automatically. Set Bedrock activation to `enabled` to use the deployment credential source; you do not need to copy task-role keys.
+
+- ByMorning does not maintain a per-Model or per-region approval list. AWS determines access and regional availability when you invoke a Model.
+- A member's active saved Connection takes precedence over a permitted Workspace Connection, then complete environment groups, then deployment credentials.
+- Gateway uses Workspace Connections.
+- When both environment groups are complete, the bearer group wins.
+- A failed selected identity never falls back to another identity.
+- Deployment credentials are resolved afresh for each signed request. Set `AWS_REGION` or `AWS_DEFAULT_REGION` to choose their region; the default is `us-east-1`.
+- The task role needs `bedrock:InvokeModelWithResponseStream` for Converse (the Gateway calls `ConverseStream`; `Converse` and `ConverseStream` are not IAM action names) and `bedrock-mantle:CreateInference` for Mantle. The bundled AWS stacks also grant `bedrock:InvokeModel`, which the Gateway does not call.
+
+LLM Gateway accepts OpenAI Chat, OpenAI Responses, Anthropic Messages, and Google Generate requests for these Models. It preserves supported messages, tool calls and results, streaming, and usage.
+
+- Unsupported request features return an explicit error.
+- Stateful response references, server-side tools, strict tool validation, and provider-specific request controls are not supported by translation.
+- Opaque signed or encrypted reasoning produces an explicit translation failure rather than losing continuation state.
+
+See [Workspace configuration](/configure/workspace-configuration) for the complete configuration boundary.

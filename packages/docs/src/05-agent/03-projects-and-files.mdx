@@ -1,0 +1,33 @@
+---
+title: Projects and files
+description: Group Sessions in Projects and upload shared files.
+hidden: true
+---
+
+Projects group Sessions and provide the files an Agent can reference. New accounts begin with a `Default` Project in their `Default` Workspace.
+
+## Create
+
+Select the plus control beside **Projects**. Enter a name in **Create project**, then select **Create project**. You can also choose **Create Project** from the Project picker on a new Session.
+
+Names can contain up to 255 characters. If no name is supplied through the Project API, ByMorning uses `Default`. The web dialog accepts an empty name when creating a Project.
+
+## Rename
+
+Select the settings control beside a Project, then select **Edit project**. Change **Name** and select **Save changes**. Saving an empty name displays the Project as **Untitled**.
+
+## Upload
+
+Open a Project from its settings control, then select **Upload file**.
+
+1. Choose one file. The uploader accepts any file type up to 20 MB.
+2. Set a **Destination path**, such as `notes/research.md`.
+3. Select **Upload file**.
+
+Destination paths are relative to the Project. They cannot contain empty segments, backslashes, null characters, drive-letter roots, or `.` and `..` segments. Uploading to an existing path replaces that file.
+
+## Limits
+
+The web app has no control to delete a Project. The Project page lists and uploads files, but does not rename, move, download, or delete them.
+
+Inside a Session, use **Files** to filter the tree and preview a selected file. Add a file to a prompt with an `@` [reference or attachment](/agent/start-a-session).

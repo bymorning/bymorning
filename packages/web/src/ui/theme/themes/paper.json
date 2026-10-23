@@ -1,0 +1,54 @@
+{
+  "id": "paper",
+  "name": "Paper",
+  "radius": 10,
+  "fonts": {
+    "heading": "inter",
+    "body": "inter",
+    "mono": "jetbrains-mono"
+  },
+  "components": {
+    "button": {
+      "radius": "pill",
+      "focusRing": "primary",
+      "primary": {
+        "shadow": "none",
+        "hoverEffect": "edge-glow",
+        "hover": {
+          "paint": {
+            "type": "linear-gradient",
+            "angle": 270,
+            "stops": ["#c4dfff", "#e5d0ff", "#fcbead", "#ffd3ba"],
+            "positions": [0, 38, 67, 100]
+          }
+        }
+      }
+    }
+  },
+  "light": {
+    "palette": {
+      "neutral": "#fcfcf9",
+      "ink": "#555555",
+      "primary": "#000000",
+      "success": "#2f7d4a",
+      "warning": "#9a6700",
+      "error": "#c43d32",
+      "info": "#426a8c",
+      "accent": "#e5d0ff",
+      "interactive": "#c4dfff"
+    }
+  },
+  "dark": {
+    "palette": {
+      "neutral": "#080808",
+      "ink": "#aaaaaa",
+      "primary": "#ffffff",
+      "success": "#43a568",
+      "warning": "#d19a2a",
+      "error": "#e06457",
+      "info": "#6f98b8",
+      "accent": "#e5d0ff",
+      "interactive": "#c4dfff"
+    }
+  }
+}

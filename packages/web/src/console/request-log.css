@@ -1,0 +1,117 @@
+[data-component="request-log"] {
+  display: grid;
+  gap: 16px;
+}
+
+[data-component="request-log"] [data-slot="section-heading"] h2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+[data-component="request-log"] [data-slot="section-heading"] p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 20px;
+}
+
+[data-component="request-log-table"] {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+[data-component="request-log-table"]::-webkit-scrollbar {
+  height: 8px;
+}
+
+[data-component="request-log-table"]::-webkit-scrollbar-track {
+  background: var(--color-bg-layer-2);
+}
+
+[data-component="request-log-table"]::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--color-text-faint);
+}
+
+[data-component="request-log-table"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-component="request-log-table"] table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+[data-component="request-log-table"] :is(th, td) {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+[data-component="request-log-table"] thead th {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+[data-component="request-log-table"] tbody :is(th, td) {
+  white-space: nowrap;
+}
+
+[data-component="request-log-table"] tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+[data-component="request-log-table"] [data-align="end"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-component="request-log-table"] time {
+  white-space: nowrap;
+}
+
+[data-component="request-log-table"] [data-slot="request-log-identity"] {
+  min-width: 8rem;
+  max-width: 16rem;
+}
+
+[data-component="request-log-table"] [data-slot="request-log-identity-label"] {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="request-log-table"]
+  [data-slot="request-log-identity-label"]
+  [data-component="gateway-model-identity"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+[data-component="request-log-table"] [data-slot="request-log-identity-label"] [data-slot="model-label"] {
+  min-width: 0;
+}
+
+[data-component="request-log-table"]
+  [data-slot="request-log-identity-label"]
+  [data-slot="model-label"]
+  :is(strong, span) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+[data-slot="request-log-pagination"] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

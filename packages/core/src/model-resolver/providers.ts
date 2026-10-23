@@ -1,0 +1,6 @@
+export * as Anthropic from "@opencode-ai/ai/providers/anthropic"
+export * as Google from "@opencode-ai/ai/providers/google"
+export * as OpenAI from "@opencode-ai/ai/providers/openai/responses"
+export * as Compatible from "@opencode-ai/ai/providers/openai-compatible"
+export * as Bedrock from "@opencode-ai/ai/providers/amazon-bedrock"
+export * as Mantle from "@opencode-ai/ai/providers/amazon-bedrock-mantle"

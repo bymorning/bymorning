@@ -1,0 +1,17 @@
+node_modules
+**/dist
+.git
+.sst
+.bymorning
+**/.bymorning
+.env
+.env.*
+README.md
+Dockerfile*
+# release tarballs and evidence, security review renders, provider caches,
+# filled-in Azure variables, and the docs site build never enter the image context
+release/
+build/
+**/.terraform
+installers/azure/**/*.tfvars
+packages/docs/dist

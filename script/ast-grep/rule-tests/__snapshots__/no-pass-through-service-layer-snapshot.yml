@@ -1,0 +1,14 @@
+id: no-pass-through-service-layer
+snapshots:
+  Layer.effect(EventHub.Service, EventHub.Service):
+    labels:
+    - source: Layer.effect(EventHub.Service, EventHub.Service)
+      style: primary
+      start: 0
+      end: 48
+  Layer.effect(Service, Service):
+    labels:
+    - source: Layer.effect(Service, Service)
+      style: primary
+      start: 0
+      end: 30

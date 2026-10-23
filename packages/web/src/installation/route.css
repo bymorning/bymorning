@@ -1,0 +1,68 @@
+[data-component="installation-region"] {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+[data-component="installation-region"] [data-slot="admin-row"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+[data-component="installation-region"] [data-slot="admin-identity"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+[data-component="installation-region"] [data-slot="admin-grant"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="installation-region"] [data-slot="policy-form"] {
+  display: grid;
+  gap: 16px;
+}
+
+[data-component="installation-region"] [data-slot="policy-field"] {
+  display: grid;
+  gap: 6px;
+}
+
+[data-component="installation-region"] [data-slot="policy-field"] > label {
+  font-weight: 600;
+}
+
+[data-component="installation-region"] [data-slot="policy-hint"] {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="installation-region"] [data-slot="policy-warning"] {
+  color: var(--color-danger-fg);
+  font-size: 12px;
+}
+
+[data-component="installation-region"] [data-slot="admin-note"] {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="installation-region"] [data-slot="admin-action"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="installation-region"] [data-component="switch"] [data-slot="switch-label"] {
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-weight: 600;
+}

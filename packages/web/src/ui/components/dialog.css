@@ -1,0 +1,342 @@
+[data-component="dialog-overlay"] {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: var(--color-overlay-scrim);
+}
+
+[data-component="dialog"] {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100dvh;
+  box-sizing: border-box;
+  padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right))
+    calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+  pointer-events: none;
+}
+
+[data-component="dialog"] > [data-slot="dialog-container"] {
+  display: flex;
+  width: min(100%, 480px);
+  height: min(100%, 368px);
+  min-height: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--color-bg-layer-1);
+  box-shadow: var(--shadow-overlay);
+  pointer-events: auto;
+}
+
+[data-component="dialog"] > [data-slot="dialog-container"] > [data-slot="dialog-content"] {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  max-height: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  overflow: hidden;
+  background: transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[data-component="dialog"] > [data-slot="dialog-container"] > [data-slot="dialog-content"]::-webkit-scrollbar {
+  display: none;
+}
+
+[data-component="dialog"] > [data-slot="dialog-container"] > [data-slot="dialog-content"]:focus-visible {
+  outline: none;
+}
+
+[data-component="dialog"] > [data-slot="dialog-container"] > [data-slot="dialog-content"] > form {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+[data-component="dialog"] [data-slot="dialog-header"] {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: 0;
+  padding: 16px;
+}
+
+[data-component="dialog"] [data-slot="dialog-header-title"] {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-weight: 530;
+  font-variation-settings: "slnt" 0;
+  line-height: 16px;
+  letter-spacing: -0.04px;
+  user-select: none;
+}
+
+[data-component="dialog"] [data-slot="dialog-title-group"] {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+[data-component="dialog"] [data-slot="dialog-title"] {
+  flex: none;
+  margin: 0;
+  color: var(--color-text-base);
+  font-size: 15px;
+  font-weight: 530;
+  font-variation-settings: "slnt" 0;
+  line-height: 20px;
+  letter-spacing: -0.13px;
+  user-select: none;
+}
+
+[data-component="dialog"] [data-slot="dialog-description"] {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 440;
+  font-variation-settings: "slnt" 0;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+  user-select: none;
+}
+
+[data-component="dialog"] [data-slot="dialog-close-button"] {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2px;
+  margin-inline: auto -2px;
+  border-radius: var(--radius-md);
+  color: var(--color-icon-muted);
+  cursor: pointer;
+}
+
+[data-component="dialog"] [data-slot="dialog-close-button"]:hover {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="dialog"] [data-slot="dialog-header"][data-hide-close] [data-slot="dialog-close-button"] {
+  display: none;
+}
+
+[data-component="dialog"] [data-slot="dialog-footer"] {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: flex-start;
+  align-self: stretch;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px;
+}
+
+[data-component="dialog"] [data-slot="dialog-body"] {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+[data-component="dialog"] [data-slot="dialog-body"]:focus-visible {
+  outline: none;
+}
+
+/* Content-sized dialogs stay within the viewport; their body scrolls instead of the dialog overflowing it. */
+[data-component="dialog"][data-fit] > [data-slot="dialog-container"] {
+  height: auto;
+  max-height: 100%;
+}
+
+[data-component="dialog"][data-fit] > [data-slot="dialog-container"] > [data-slot="dialog-content"] {
+  min-height: 0;
+}
+
+[data-component="dialog"][data-size="large"] > [data-slot="dialog-container"] {
+  width: min(100%, 640px);
+  height: min(100%, 480px);
+}
+
+/* Content-sized form dialogs grow to their content (up to the viewport) rather than stopping at a fixed height. */
+[data-component="dialog"][data-fit][data-size="large"] > [data-slot="dialog-container"] {
+  height: auto;
+  max-height: 100%;
+}
+
+[data-component="dialog"][data-size="x-large"] {
+  padding: calc(46px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+    calc(46px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
+
+[data-component="dialog"][data-size="x-large"] > [data-slot="dialog-container"] {
+  width: min(100%, 980px);
+  height: min(100%, 600px);
+}
+
+/* Full: nearly the whole viewport, for editor-like dialogs. Wins over `fit` so the body can flex. */
+[data-component="dialog"][data-size="full"] {
+  padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right))
+    calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+}
+
+[data-component="dialog"][data-size="full"] > [data-slot="dialog-container"] {
+  width: 100%;
+  height: 100%;
+}
+
+[data-component="dialog"][data-size="full"] [data-slot="dialog-footer"] {
+  grid-auto-columns: max-content;
+  justify-content: end;
+}
+
+@media (max-width: 600px) {
+  [data-component="dialog"][data-size="full"] {
+    padding: 12px;
+  }
+}
+
+/* Scroll cues: an edge shadow on each side that has more content, painted over the card surface. */
+[data-component="dialog"][data-variant="card"] {
+  --scroll-cue-card:
+    linear-gradient(var(--color-bg-base) 30%, transparent) 0 0 / 100% 24px local no-repeat,
+    linear-gradient(transparent, var(--color-bg-base) 70%) 0 100% / 100% 24px local no-repeat,
+    linear-gradient(color-mix(in srgb, var(--color-text-base) 7%, transparent), transparent) 0 0 / 100% 8px scroll
+      no-repeat,
+    linear-gradient(transparent, color-mix(in srgb, var(--color-text-base) 7%, transparent)) 0 100% / 100% 8px scroll
+      no-repeat;
+}
+
+/* Card variant: the same surface and rhythm as the public entry cards. */
+[data-component="dialog"][data-variant="card"] > [data-slot="dialog-container"] {
+  padding: 32px;
+  border: 1px solid var(--color-border-base);
+  border-radius: var(--radius-2xl);
+  background: var(--color-bg-base);
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-header"] {
+  gap: 16px;
+  padding: 0;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-header-title"],
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-title"] {
+  font: var(--font-page-title);
+  letter-spacing: 0;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+/* A very long title keeps to three lines so it cannot squeeze the body and footer out of the card. */
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-title"],
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-header-title"] {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  max-width: 100%;
+}
+
+/* A long description scrolls inside the header instead of pushing the body and footer out of the card.
+   Only the description scrolls: the title and close button stay put. */
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-header"] {
+  min-height: 0;
+  max-height: 45%;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-title-group"] {
+  min-height: 0;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-description"] {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+  user-select: text;
+  background: var(--scroll-cue-card);
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-close-button"] {
+  align-self: flex-start;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-title-group"] {
+  gap: 8px;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-description"] {
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+/* The card header clips its overflow, so keep the focus ring (outline plus offset) inside it on the right. */
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-close-button"] {
+  margin: 8px 6px 0 0;
+}
+
+/* The padded card contains its content; let the body's 2px inset below overhang without being clipped. */
+[data-component="dialog"][data-variant="card"] > [data-slot="dialog-container"] > [data-slot="dialog-content"] {
+  overflow: visible;
+}
+
+/* Inputs paint their ring and focus outline outside their box; keep 2px inside the scroll area for them. */
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-body"] {
+  width: auto;
+  align-self: stretch;
+  margin: 24px -2px 0;
+  padding: 2px;
+  background: var(--scroll-cue-card);
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="dialog-footer"] {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+  padding: 0;
+}
+
+@media (max-width: 480px) {
+  [data-component="dialog"][data-variant="card"] > [data-slot="dialog-container"] {
+    padding: 24px;
+  }
+}
+
+[data-component="confirm-dialog"] [data-slot="confirm-error"] {
+  margin: 24px 0 0;
+  color: var(--color-danger-fg);
+  font-size: 14px;
+  line-height: 20px;
+}

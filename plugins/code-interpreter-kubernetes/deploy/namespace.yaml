@@ -1,0 +1,12 @@
+# Dedicated sandbox namespace. Never the Gateway's namespace: the Gateway identity may exec into any pod here.
+# Pod Security Admission enforces the `restricted` profile, so the API server rejects any pod that is not
+# non-root, capability-free, seccomp-confined and free of host access, whatever the plugin sends.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bymorning-sandbox
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

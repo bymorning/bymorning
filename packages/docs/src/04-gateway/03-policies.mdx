@@ -1,0 +1,41 @@
+---
+title: Policies
+description: Restrict Providers and route requests to Models from Workspace configuration.
+---
+
+Set Provider admission and Model routing in [Workspace configuration](/configure/policies).
+
+## Restrict
+
+`providers` and `routing` are top-level Workspace configuration.
+
+- Omit `providers.allow` to admit every active Provider. Set `allow` to `[]` to admit none.
+- `routing` chooses which Catalog Model a request uses. Omit `routing`, or set it to `[]`, to route nothing. The last matching rule decides. Completed-Tool conditions apply only to Sessions.
+
+## Auto
+
+Callers can send an Auto name such as `auto/general` as the model. Each Gateway Models list includes the Auto names whose Tiers that caller format can reach, so Claude Code lists Auto names backed by Anthropic Models.
+
+```bash
+curl https://<gateway>/inference/openai/v1/chat/completions \
+  -H "Authorization: Bearer bm_…" \
+  -H "content-type: application/json" \
+  -d '{"model": "auto/general", "messages": [{"role": "user", "content": "Summarize this changelog"}]}'
+```
+
+- A judge chooses a Tier once per participant ask. Requests that only continue a Tool loop reuse that Tier.
+- Tiers the caller format cannot reach are skipped.
+- Replies carry `x-bymorning-route-cause` and `x-bymorning-route-tier`, plus `x-bymorning-route-fallback` when the default Tier served instead of a judged one.
+- The judge is a separate inference, charged to the same Spend Limits and recorded in Usage.
+
+## Owners
+
+| Change | Configuration |
+| --- | --- |
+| Provider allowlist | `providers` |
+| Model routing | `routing` |
+| Permanent Tool permissions | [Permission rules](/configure/permissions) |
+| Workspace Model, request, and token limits | `gateway` |
+| Spend Limits | **Gateway → Budgets** |
+
+See [Policies](/configure/policies) for configuration examples and matching rules.

@@ -1,0 +1,13 @@
+[data-component="session-timeline"] {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+[data-component="session-timeline"] > [data-slot="session-timeline-error"] {
+  width: min(100%, 800px);
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--color-danger-fg);
+}

@@ -1,0 +1,9 @@
+id: no-core-cloud-sdk
+valid:
+  - import { Session } from "@bymorning/core/session"
+  - import { helper } from "./helper.js"
+invalid:
+  - import { KMSClient } from "@aws-sdk/client-kms"
+  - import { AwsClient } from "@smithy/smithy-client"
+  - import { SecretClient } from "@azure/keyvault-secrets"
+  - import { Storage } from "@google-cloud/storage"

@@ -1,0 +1,1108 @@
+import type { GeneratedModel } from "../../src/normalized.js"
+
+export const models = [
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/deepseek-v4-flash-0731",
+      "digest": "0101a830c81ca5ff2a04350d6edb822b38ce30a73d443f63580a07a5e275d7af"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "deepseek-v4-flash-0731"
+    },
+    "apiID": "accounts/fireworks/models/deepseek-v4-flash-0731",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "DeepSeek V4 Flash 0731",
+      "description": "Official DeepSeek V4 Flash release with enhanced agentic capabilities and integrated DSpark speculative decoding",
+      "family": "deepseek-flash",
+      "releaseDate": "2026-07-31",
+      "lastUpdated": "2026-07-31",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 384000
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 0.66,
+        "cache_read": 0.007
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/deepseek-v4-flash-vision-exp",
+      "digest": "ac5f2f9a07c8fe5494603da9a591319a05ce754cb47fc3849651156c6e010cb2"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "deepseek-v4-flash-vision-exp"
+    },
+    "apiID": "accounts/fireworks/models/deepseek-v4-flash-vision-exp",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "DeepSeek V4 Flash Vision Exp",
+      "description": "Experimental multimodal DeepSeek V4 Flash model for image understanding, coding, and agentic work",
+      "family": "deepseek-flash",
+      "releaseDate": "2026-08-21",
+      "lastUpdated": "2026-08-21",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 384000
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 0.66,
+        "cache_read": 0.007
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/deepseek-v4-pro-0813",
+      "digest": "d5995d6befe174b4ab9cc21cbeb86ab56baf3d2a260f8dd1cff788859762a069"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "deepseek-v4-pro-0813"
+    },
+    "apiID": "accounts/fireworks/models/deepseek-v4-pro-0813",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "DeepSeek V4 Pro 0813",
+      "description": "DeepSeek V4 Pro snapshot with million-token context and support for thinking and non-thinking modes",
+      "family": "deepseek-thinking",
+      "releaseDate": "2026-08-12",
+      "lastUpdated": "2026-08-22",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 384000
+      },
+      "cost": {
+        "input": 1.32,
+        "output": 3.96,
+        "cache_read": 0.044
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/glm-5p2",
+      "digest": "9613b1ecbeb9163b37fbac8d0548779dab475643f03c8617b07175c1b3e9c334"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "glm-5p2"
+    },
+    "apiID": "accounts/fireworks/models/glm-5p2",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM 5.2",
+      "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+      "family": "glm",
+      "releaseDate": "2026-06-16",
+      "lastUpdated": "2026-06-16",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048575,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1.4,
+        "output": 4.4,
+        "cache_read": 0.14
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/glm-5p3",
+      "digest": "3020f998e57b853f69426dd1edf2f75a8062a43439f244e82e05edcdaf13d088"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "glm-5p3"
+    },
+    "apiID": "accounts/fireworks/models/glm-5p3",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM 5.3",
+      "description": "Flagship GLM model for long-horizon coding, agents, and complex project delivery",
+      "family": "glm",
+      "releaseDate": "2026-08-14",
+      "lastUpdated": "2026-08-28",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1.4,
+        "output": 4.4,
+        "cache_read": 0.26
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/glm-5p3-flash",
+      "digest": "221b5fddd01aeda1dec5d28878d2ce914d6fa9fd4eab4349c9d63d481697ad3f"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "glm-5p3-flash"
+    },
+    "apiID": "accounts/fireworks/models/glm-5p3-flash",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM 5.3 Flash",
+      "description": "Native multimodal GLM model for efficient coding and long-horizon agent tasks",
+      "family": "glm",
+      "releaseDate": "2026-08-26",
+      "lastUpdated": "2026-08-26",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.5,
+        "cache_read": 0.03
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/gpt-oss-120b",
+      "digest": "94af55fae5fecaa7d6fa7ac5ba0c2fa51016802c91d8fe5a20b03b2a625a1fb7"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "gpt-oss-120b"
+    },
+    "apiID": "accounts/fireworks/models/gpt-oss-120b",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT OSS 120B",
+      "description": "Open-weight GPT model for self-hosted reasoning and instruction-following workloads",
+      "family": "gpt-oss",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2026-06-16",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 131072,
+        "output": 32768
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.6,
+        "cache_read": 0.015
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/inkling",
+      "digest": "c7a4cf3fdf40f6a71b6cdfc37c7cff320a3630586473e8b0e1b200f2cc136b3a"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "inkling"
+    },
+    "apiID": "accounts/fireworks/models/inkling",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Inkling",
+      "description": "Multimodal MoE reasoning model (975B total, 41B active) for text, image, and audio",
+      "family": "ling",
+      "releaseDate": "2026-07-15",
+      "lastUpdated": "2026-07-15",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 1048576
+      },
+      "cost": {
+        "input": 1,
+        "output": 4.05,
+        "cache_read": 0.17
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/kimi-k2p6",
+      "digest": "20ee6d9b1211717659a9ece2d1551f965e06d26e1a230653325ca6e565b438db"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "kimi-k2p6"
+    },
+    "apiID": "accounts/fireworks/models/kimi-k2p6",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K2.6",
+      "description": "Kimi reasoning model for long-horizon research, planning, and tool use",
+      "family": "kimi-thinking",
+      "releaseDate": "2026-04-17",
+      "lastUpdated": "2026-04-17",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262000,
+        "output": 262000
+      },
+      "cost": {
+        "input": 0.95,
+        "output": 4,
+        "cache_read": 0.16
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/kimi-k2p7-code",
+      "digest": "a73066efc3593c2afb8e169e6fb304ffbd59a826fe552a7c7412e7d1d811d6a2"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "kimi-k2p7-code"
+    },
+    "apiID": "accounts/fireworks/models/kimi-k2p7-code",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K2.7 Code",
+      "description": "Kimi coding model for software agents, refactors, and repository reasoning",
+      "family": "kimi-k2",
+      "releaseDate": "2026-06-12",
+      "lastUpdated": "2026-06-16",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262000,
+        "output": 262000
+      },
+      "cost": {
+        "input": 0.95,
+        "output": 4,
+        "cache_read": 0.19
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/kimi-k3",
+      "digest": "2e31f8f281083867038fd2be3ebfe038e8549a7ce6676fa644b9f554326fc0d9"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "kimi-k3"
+    },
+    "apiID": "accounts/fireworks/models/kimi-k3",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K3",
+      "description": "Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work",
+      "family": "kimi-k3",
+      "releaseDate": "2026-07-27",
+      "lastUpdated": "2026-07-27",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 131072
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/minimax-m3",
+      "digest": "b28112ee5f82ba13cf04491b2c2cf92d85c3337018fbbbb3db46758c51c61538"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "minimax-m3"
+    },
+    "apiID": "accounts/fireworks/models/minimax-m3",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "MiniMax-M3",
+      "description": "MiniMax multimodal coding model for long-context reasoning and agent tasks",
+      "family": "minimax",
+      "releaseDate": "2026-06-12",
+      "lastUpdated": "2026-06-12",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 512000,
+        "output": 512000
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2,
+        "cache_read": 0.06
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/muse-glimmer-30b",
+      "digest": "08a58d04291be9a33a5bee5f60dd6c57ed6b86ad4038506da30e458b69caa5d5"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "muse-glimmer-30b"
+    },
+    "apiID": "accounts/fireworks/models/muse-glimmer-30b",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Muse Glimmer 30B",
+      "description": "Muse Glimmer is a 30-billion-parameter open-weight multimodal model from Meta Superintelligence Labs, distilled from Muse Spark for always-on local agents, tool use, coding, and image understanding.",
+      "family": "muse",
+      "releaseDate": "2026-08-10",
+      "lastUpdated": "2026-08-10",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 131072,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.35,
+        "output": 1.5,
+        "cache_read": 0.04
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/nemotron-3-ultra-nvfp4",
+      "digest": "d4ea15607047022d6fecdd7bbaae2459787fc4bf67a80b1de195ae4941392402"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "nemotron-3-ultra-nvfp4"
+    },
+    "apiID": "accounts/fireworks/models/nemotron-3-ultra-nvfp4",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Nemotron 3 Ultra 550B A55B",
+      "description": "Largest Nemotron 3 model for maximum open-weight reasoning and agent accuracy",
+      "family": "nemotron",
+      "releaseDate": "2026-06-04",
+      "lastUpdated": "2026-06-04",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 2.4,
+        "cache_read": 0.119
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+      "digest": "2046458e1fc8170e05a766f21e56da2c822354c716b05c73eaa8124179cc347b"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "nemotron-lightning-3p5-30b-a3b"
+    },
+    "apiID": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Nemotron 3.5 Lightning 30B A3B",
+      "description": "Fast NVIDIA Nemotron MoE for reliable agentic tasks across enterprise workloads",
+      "family": "nemotron",
+      "releaseDate": "2026-08-11",
+      "lastUpdated": "2026-08-11",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 262144
+      },
+      "cost": {
+        "input": 0.05,
+        "output": 0.2,
+        "cache_read": 0.01
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/qwen3p7-plus",
+      "digest": "dd645496eec64a7ba0a93c2b626e6dadb44d4a1715832df89fe9401e7cace6c9"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "qwen3p7-plus"
+    },
+    "apiID": "accounts/fireworks/models/qwen3p7-plus",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Qwen 3.7 Plus",
+      "description": "Qwen vision-language model for visual reasoning, documents, and agent tasks",
+      "family": "qwen",
+      "releaseDate": "2026-06-12",
+      "lastUpdated": "2026-06-12",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.4,
+        "output": 1.6,
+        "cache_read": 0.08
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/models/qwen3p8-max",
+      "digest": "413c060d1db3b32b3ec634389f47c32870749726999810010923b41a4dbea329"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "qwen3p8-max"
+    },
+    "apiID": "accounts/fireworks/models/qwen3p8-max",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Qwen3.8 Max",
+      "description": "2.4-trillion-parameter MoE flagship for coding, professional work, multimodal understanding, and long-horizon agentic workflows",
+      "family": "qwen",
+      "releaseDate": "2026-08-03",
+      "lastUpdated": "2026-08-03",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 131072
+      },
+      "cost": {
+        "input": 2,
+        "output": 6,
+        "cache_read": 0.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/routers/glm-5p2-fast",
+      "digest": "fe4bcfd01804982be4ce5eac4137e64442ae227057535772b86c4b8e52ed8bae"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "glm-5p2-fast"
+    },
+    "apiID": "accounts/fireworks/routers/glm-5p2-fast",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM 5.2 Fast",
+      "description": "Efficient GLM model for fast reasoning, coding, and agent workflows",
+      "family": "glm",
+      "releaseDate": "2026-06-26",
+      "lastUpdated": "2026-06-26",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048575,
+        "output": 131072
+      },
+      "cost": {
+        "input": 2.1,
+        "output": 6.6,
+        "cache_read": 0.21
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "fireworks-ai",
+      "path": "providers/fireworks-ai/models/accounts/fireworks/routers/kimi-k3-fast",
+      "digest": "08060c1261e42f7a77cff545e3e98201f59f0ab142cfe376fabdef50a77c8a99"
+    },
+    "local": {
+      "provider": "fireworks",
+      "id": "kimi-k3-fast"
+    },
+    "apiID": "accounts/fireworks/routers/kimi-k3-fast",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K3 Fast",
+      "description": "Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work",
+      "family": "kimi-k3",
+      "releaseDate": "2026-07-27",
+      "lastUpdated": "2026-07-27",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 131072
+      },
+      "cost": {
+        "input": 4.5,
+        "output": 22.5,
+        "cache_read": 0.45
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  }
+] as const satisfies ReadonlyArray<GeneratedModel>

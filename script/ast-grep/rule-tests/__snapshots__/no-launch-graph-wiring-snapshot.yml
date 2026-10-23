@@ -1,0 +1,44 @@
+id: no-launch-graph-wiring
+snapshots:
+  LayerNode.bind(root, bindings):
+    labels:
+      - source: LayerNode.bind(root, bindings)
+        style: primary
+        start: 0
+        end: 30
+  LayerNode.compile(root):
+    labels:
+      - source: LayerNode.compile(root)
+        style: primary
+        start: 0
+        end: 23
+  LayerNode.group([root]):
+    labels:
+      - source: LayerNode.group([root])
+        style: primary
+        start: 0
+        end: 23
+  LayerNode.hoist(root, tags.values.global):
+    labels:
+      - source: LayerNode.hoist(root, tags.values.global)
+        style: primary
+        start: 0
+        end: 41
+  'makeGlobalNode({ name: "global", layer, deps: [] })':
+    labels:
+      - source: 'makeGlobalNode({ name: "global", layer, deps: [] })'
+        style: primary
+        start: 0
+        end: 51
+  'makeWorkspaceNode({ name: "workspace", layer, deps: [] })':
+    labels:
+      - source: 'makeWorkspaceNode({ name: "workspace", layer, deps: [] })'
+        style: primary
+        start: 0
+        end: 57
+  memoMap:
+    labels:
+      - source: memoMap
+        style: primary
+        start: 0
+        end: 7

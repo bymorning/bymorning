@@ -1,0 +1,133 @@
+[data-component="session-composer-completions"] {
+  position: absolute;
+  z-index: 20;
+  inset-inline: 0;
+  bottom: calc(100% + 8px);
+  box-sizing: border-box;
+  display: flex;
+  max-height: min(320px, 45dvh);
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-border-muted);
+  border-radius: 12px;
+  padding: 8px;
+  background: var(--color-bg-layer-2);
+  box-shadow: var(--shadow-floating);
+  scrollbar-width: none;
+}
+
+[data-component="session-composer-completions"]::-webkit-scrollbar {
+  display: none;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-row"] {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  min-height: 28px;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 0 8px;
+  background: transparent;
+  color: var(--color-text-base);
+  font-size: 12px;
+  line-height: 28px;
+  text-align: start;
+  cursor: pointer;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-row"][data-active],
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-row"]:hover {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-row"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-icon"] {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-icon-muted);
+  line-height: 1;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-icon"] > svg,
+[data-component="session-composer-completions"]
+  [data-slot="session-composer-completion-icon"]
+  [data-component="file-icon"] {
+  width: 16px;
+  height: 16px;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-icon"][data-kind="skill"] {
+  border-radius: var(--radius-sm);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-icon"][data-kind="agent"] {
+  border-radius: var(--radius-sm);
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+  font-family: var(--font-mono);
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-label"] {
+  min-width: 0;
+  flex: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-description"] {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-shortcut"] {
+  flex: none;
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-group"] {
+  padding: 5px 8px 2px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+[data-component="session-composer-completions"] [data-slot="session-composer-completion-state"] {
+  padding: 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+@media (max-width: 520px) {
+  [data-component="session-composer-completions"] {
+    max-height: min(280px, 42dvh);
+  }
+
+  [data-component="session-composer-completions"] [data-slot="session-composer-completion-label"] {
+    max-width: 45%;
+  }
+}

@@ -1,0 +1,39 @@
+# OpenSSL configuration for the Gateway image: route every cryptographic
+# operation through the Red Hat Enterprise Linux 9 OpenSSL FIPS Provider, a
+# FIPS 140-3 validated module (CMVP certificate #4857,
+# https://csrc.nist.gov/projects/cryptographic-module-validation-program/certificate/4857).
+#
+# Red Hat's Node.js build is linked against the shared system OpenSSL and
+# refuses --enable-fips/--force-fips by design; activating the provider through
+# OPENSSL_CONF (this file is installed at /etc/pki/tls/openssl-fips.cnf and
+# named by the OPENSSL_CONF environment variable) is the supported mechanism.
+# crypto.getFips() reports 1 under this configuration.
+#
+# The configuration fails closed: with default_properties = "fips=yes" and the
+# default provider unloaded, Node aborts during startup if the FIPS module
+# cannot be initialized, and no algorithm fetch can fall back to a
+# non-validated implementation.
+
+openssl_conf = openssl_init
+
+[openssl_init]
+providers = provider_sect
+alg_section = evp_properties
+
+# fips carries every approved algorithm; base carries only the
+# non-cryptographic support operations (key management glue) that OpenSSL
+# requires beside it.
+[provider_sect]
+fips = fips_sect
+base = base_sect
+
+[base_sect]
+activate = 1
+
+[evp_properties]
+default_properties = "fips=yes"
+
+[fips_sect]
+activate = 1
+# FIPS 140-3 IG D.Q: require the extended master secret in TLS 1.2.
+tls1-prf-ems-check = 1

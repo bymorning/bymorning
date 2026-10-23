@@ -1,0 +1,8 @@
+{
+  "extends": "../server/tsconfig.json",
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "../server/src/virtual.d.ts"
+  ]
+}

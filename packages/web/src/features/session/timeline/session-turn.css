@@ -1,0 +1,81 @@
+[data-component="session-turn"] {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+}
+[data-component="session-turn"] [data-slot="session-turn-message-container"] {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: 0;
+  padding-inline: var(--session-content-gutter, 16px);
+  overflow-anchor: none;
+}
+[data-component="session-turn"] [data-slot="session-turn-message-content"] {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+[data-component="session-turn"] [data-slot="session-turn-assistant-content"] {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 12px;
+}
+[data-component="session-turn"] [data-slot="session-turn-thinking-row"],
+[data-component="session-turn"] [data-slot="session-turn-retry-row"] {
+  width: 100%;
+  margin-top: 12px;
+}
+[data-component="session-turn"] [data-slot="session-turn-thinking"],
+[data-component="session-turn"] [data-slot="session-turn-retry"] {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 530;
+  line-height: 20px;
+}
+[data-component="session-turn"] [data-slot="session-turn-compaction"] {
+  width: 100%;
+  min-width: 0;
+  align-self: stretch;
+}
+[data-component="session-turn"] [data-slot="session-turn-divider"] {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  height: 48px;
+  gap: 12px;
+  color: var(--color-text-faint);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 20px;
+  padding-block: 8px;
+  letter-spacing: -0.04px;
+}
+
+[data-component="session-turn"] [data-slot="session-turn-divider"]::before,
+[data-component="session-turn"] [data-slot="session-turn-divider"]::after {
+  height: 1px;
+  flex: 1;
+  content: "";
+  background: var(--color-border-strong);
+}
+
+@media (min-width: 768px) {
+  [data-component="session-turn"] [data-slot="session-turn-message-container"] {
+    padding-inline: var(--session-content-gutter, 20px);
+  }
+}
+[data-timeline-row="UserMessage"][id^="message-"] {
+  scroll-margin-top: 64px;
+}

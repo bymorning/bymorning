@@ -1,0 +1,16 @@
+[data-slot="scheduled-task-hint"] {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+[data-slot="scheduled-task-hint"] strong {
+  color: var(--color-text-base);
+  font-weight: 500;
+}
+
+.scheduled-task-cron input {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}

@@ -1,0 +1,211 @@
+@scope ([data-session-ui]) {
+  [data-component="text-input"] {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    padding-block: 0;
+    padding-inline: 0 8px;
+    gap: 8px;
+    width: 280px;
+    height: 28px;
+    border: 0;
+    border-radius: var(--radius);
+    outline: 1px solid transparent;
+    outline-offset: 0;
+    background:
+      linear-gradient(180deg, var(--color-alpha-light-2) 0%, var(--color-alpha-light-0) 100%), var(--color-bg-base);
+    box-shadow: var(--shadow-button-neutral);
+    flex: none;
+    align-self: stretch;
+    transition:
+      background 85ms ease-out,
+      outline-color 85ms ease-out,
+      box-shadow 85ms ease-out;
+  }
+
+  [data-component="text-input"][data-appearance="large"] {
+    height: 32px;
+  }
+
+  [data-component="text-input"][data-appearance="full-width"] {
+    width: 100%;
+  }
+
+  [data-component="text-input"][data-appearance="command"] {
+    width: 100%;
+    height: 36px;
+    border-radius: var(--radius);
+    outline: 0;
+    background: color-mix(in srgb, var(--color-bg-layer-2) 60%, transparent);
+    box-shadow: none;
+  }
+
+  [data-component="text-input"][data-appearance="command"]:where(:hover, :focus-within):not(
+      [data-disabled],
+      [data-invalid]
+    ) {
+    background: var(--color-bg-layer-2);
+    box-shadow: none;
+  }
+
+  [data-component="text-input"][data-appearance="command"] [data-slot="text-input-value"] {
+    gap: 8px;
+  }
+
+  [data-component="text-input"][data-appearance="command"] [data-slot="text-input-leading-icon"] {
+    padding-inline-start: 12px;
+  }
+
+  [data-component="text-input"]:where(:hover):not([data-disabled], [data-invalid]):not(:focus-within) {
+    background:
+      linear-gradient(0deg, var(--color-overlay-hover), var(--color-overlay-hover)),
+      linear-gradient(180deg, var(--color-alpha-light-2) 0%, var(--color-alpha-light-0) 100%), var(--color-bg-base);
+  }
+
+  [data-component="text-input"]:where(:focus-within):not([data-disabled], [data-invalid]) {
+    outline-color: var(--color-border-focus);
+    box-shadow: none;
+  }
+
+  [data-component="text-input"]:where([data-invalid]):not([data-disabled]) {
+    outline-color: var(--color-danger-fg);
+    box-shadow: none;
+  }
+
+  [data-component="text-input"]:where([data-disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-value"] {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-self: stretch;
+    padding: 0;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-leading-icon"] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    padding-inline-start: 8px;
+    color: var(--color-icon-muted);
+  }
+
+  [data-component="text-input"] [data-slot="text-input-leading-icon"] :is(svg, [data-slot="icon-svg"]) {
+    display: block;
+    flex: none;
+  }
+
+  [data-component="text-input"][data-leading-icon] [data-slot="text-input-input"] {
+    padding-inline-start: 0;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-input"] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding-block: 0;
+    padding-inline: 8px 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    outline: none;
+    font-style: normal;
+    font-weight: 440;
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: -0.04px;
+    color: var(--color-text-base);
+    font-variation-settings: "slnt" 0;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-input"]::placeholder {
+    color: var(--color-text-faint);
+    user-select: none;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-input"][type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  [data-component="text-input"][data-numeric] [data-slot="text-input-input"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-icon-button"] {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    gap: 3px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-icon-muted);
+    cursor: pointer;
+    outline: none;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-icon-button"]:is(:hover, [data-state="hover"]):not(:disabled) {
+    background-color: var(--color-overlay-hover);
+  }
+
+  [data-component="text-input"]
+    [data-slot="text-input-icon-button"]:is(:active, [data-state="pressed"]):not(:disabled) {
+    background-color: var(--color-overlay-pressed);
+  }
+
+  [data-component="text-input"] [data-slot="text-input-icon-button"]:focus {
+    outline: none;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-icon-button"]:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 1px;
+  }
+
+  [data-component="text-input"]:where([data-disabled]) [data-slot="text-input-icon-button"] {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-icon-button"] [data-slot="icon-svg"] {
+    display: block;
+    flex: none;
+    color: currentColor;
+  }
+
+  [data-component="text-input"] [data-slot="text-input-icon-button"][data-variant="clear"] {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: var(--radius);
+    margin-inline-end: -8px;
+  }
+
+  [data-component="text-input"][data-invalid]:not([data-disabled]) [data-slot="text-input-input"] {
+    color: var(--color-danger-fg);
+    caret-color: var(--color-danger-fg);
+  }
+
+  [data-component="text-input"][data-invalid]:not([data-disabled]) [data-slot="text-input-input"]::placeholder {
+    color: var(--color-danger-fg);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,53 @@
+[data-component="permission-view"] {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-layer-2);
+  box-shadow: var(--shadow-raised);
+}
+
+[data-component="permission-view"] > [data-slot="permission-view-header"] {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+[data-component="permission-view"] > [data-slot="permission-view-header"] span,
+[data-component="permission-view"] > [data-slot="permission-view-context"] > span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="permission-view"] > [data-slot="permission-view-context"] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 5px 10px;
+}
+
+[data-component="permission-view"] > [data-slot="permission-view-context"] div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+[data-component="permission-view"] code {
+  overflow-wrap: anywhere;
+  color: var(--color-text-base);
+  font-size: 12px;
+}
+
+[data-component="permission-view"] > [data-slot="permission-view-error"] {
+  margin: 0;
+  color: var(--color-danger-fg);
+}
+
+[data-component="permission-view"] > [data-slot="permission-view-actions"] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}

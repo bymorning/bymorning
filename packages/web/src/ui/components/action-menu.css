@@ -1,0 +1,19 @@
+[data-component="menu-content"][data-slot="action-menu-content"] [data-component="menu-item"].danger {
+  --menu-fg: var(--color-danger-fg);
+}
+
+@media (pointer: coarse) {
+  [data-component="icon-button"][data-slot="action-menu-trigger"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+[data-component="menu-content"][data-slot="action-menu-content"] [data-slot="action-menu-hint"] {
+  max-width: 220px;
+  margin: 0;
+  padding: 6px 8px 4px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 15px;
+}

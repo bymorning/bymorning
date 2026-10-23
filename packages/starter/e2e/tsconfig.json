@@ -1,0 +1,7 @@
+{
+  "extends": "../../testing/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext"]
+  },
+  "include": ["./**/*.ts", "../playwright.config.ts", "../../server/src/**/*.d.ts"]
+}

@@ -1,0 +1,42 @@
+---
+title: Skills
+description: Create reusable instructions that Agents can load in a Session.
+---
+
+Skills are Workspace-owned instructions for repeatable tasks. Open **Workspace → Skills** to browse and manage them.
+
+## Add from the library
+
+Select **Skill library** to browse suggested Skills grouped by the kind of work they support: analysis and data, decisions and reviews, operations, and hardware engineering. Select **Add** on one to copy it into this Workspace.
+
+An added Skill is an ordinary Workspace Skill from that moment. The Workspace owns it, everyone here can use it, and you can edit or delete it like any other. The library is seed content, not a live subscription, so later changes to a suggestion do not alter a Skill you already added.
+
+## Create
+
+1. Select **Add skill**.
+2. Enter a non-empty name.
+3. Add a description that explains when to use the Skill.
+4. Write the instructions the Agent should follow.
+5. Select **Create skill**.
+
+Each Skill contains:
+
+| Field | Meaning |
+| --- | --- |
+| Name | Display name shown in the Workspace and Session picker. |
+| Description | Summary used to find and choose the Skill. |
+| Instructions | Guidance loaded for the Agent. |
+
+## Browse
+
+Open **Workspace → Skills**, then select a Skill to read its description and rendered instructions. If the list cannot load, select **Retry**.
+
+## Use
+
+Type `@` in the Session composer and choose a Skill from the **Skills** group. Search matches its ID, name, or description. ByMorning inserts the reference into your prompt so the Agent can load its instructions during the run.
+
+An Agent also loads a Skill on its own when the request matches the Skill's description, so write the description as the trigger: say when to use the Skill and when not to.
+
+## Plugin Skills
+
+A Plugin can contribute Skills to every Workspace that enables it. They appear in the list and the Session picker alongside Workspace Skills, but they are not editable here; change them where the Plugin declares them.

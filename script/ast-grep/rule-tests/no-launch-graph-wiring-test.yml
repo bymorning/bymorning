@@ -1,0 +1,12 @@
+id: no-launch-graph-wiring
+valid:
+  - Application.node({ settings, deps })
+  - Application.serve(Application.node({ settings, deps }), settings)
+invalid:
+  - 'makeWorkspaceNode({ name: "workspace", layer, deps: [] })'
+  - 'makeGlobalNode({ name: "global", layer, deps: [] })'
+  - LayerNode.hoist(root, tags.values.global)
+  - LayerNode.bind(root, bindings)
+  - LayerNode.group([root])
+  - LayerNode.compile(root)
+  - memoMap

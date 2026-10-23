@@ -1,0 +1,156 @@
+---
+title: Integrations
+description: Connect outbound MCP servers and web-search providers for a Workspace.
+---
+
+Register remote MCP servers on a Workspace so Sessions and inbound MCP share the same Tools. Web search is a built-in Tool with its own provider selection.
+
+```ts title="add-mcp-server.ts"
+const workspace = "wrk_your-workspace-id"
+const server = "linear"
+const response = await fetch(
+  `/api/mcp/server/${encodeURIComponent(server)}?workspace=${encodeURIComponent(workspace)}`,
+  {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ url: "https://mcp.linear.app/mcp" }),
+  },
+)
+
+if (!response.ok) throw new Error(`MCP server save failed: ${response.status}`)
+```
+
+Use [Outbound MCP](/agent/outbound-mcp) for the **MCP Gateway** connect, authenticate, and remove workflows. Use [Inbound MCP](/agent/inbound-mcp) when an external client should call ByMorning's `/mcp` endpoint.
+
+## MCP
+
+Add remote Streamable HTTP endpoints under `mcp.servers`, or with `PUT /api/mcp/server/:server`. The record key names the server and becomes the Tool namespace.
+
+```jsonc title="Workspace configuration"
+{
+  "mcp": {
+    "servers": {
+      "linear": {
+        "type": "remote",
+        "url": "https://mcp.example.com/mcp",
+        "headers": { "X-Tenant": "workspace-a" },
+        "oauth": { "client_id": "public-client-id", "scope": "tools.read tools.write" },
+        "codemode": true,
+        "timeout": {
+          "startup": 30000,
+          "catalog": 30000,
+          "execution": 43200000
+        }
+      }
+    }
+  }
+}
+```
+
+<Callout type="warning">
+  `PUT /api/config` replaces the writable Workspace configuration. Read the current document and preserve every writable field you still need. The MCP management API updates one server without replacing the rest of the document.
+</Callout>
+
+| Field | Default | Constraint and behavior |
+| --- | --- | --- |
+| `type` | Required | Must be `remote`. |
+| `url` | Required | String containing an absolute `http:` or `https:` URL. Connection fails for another protocol or an invalid URL. |
+| `headers` | None | String-to-string request headers sent to the remote server. |
+| `oauth` | Enabled | Omit to enable OAuth discovery. Use `false` when the endpoint uses headers, anonymous access, or another authentication policy. An object can set optional `client_id` and `scope` strings. |
+| `codemode` | `true` | Makes imported Tools available inside Code Mode. Set `false` to expose them only as direct Tools. |
+| `disabled` | `false` | `true` keeps the definition but disconnects it. |
+| `enabled` | `true` | `false` keeps the definition but disconnects it. Prefer `disabled` for new configuration rather than setting both fields. |
+| `timeout.startup` | `30000` | Positive integer milliseconds to connect and initialize. |
+| `timeout.catalog` | `30000` | Positive integer milliseconds for each `tools/list` request and ping. |
+| `timeout.execution` | `43200000` | Positive integer milliseconds for one Tool call; the default is 12 hours. |
+
+If `enabled` is `false` or `disabled` is `true`, the server is disabled. Timeout values must be positive integers; zero, fractions, and negative values fail configuration validation.
+
+- Server names entered through the outbound MCP management API are trimmed and must match `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`.
+- The management API accepts `url`, `oauth`, `codemode`, and `disabled`. Set `headers` and `timeout` in Workspace configuration.
+- OAuth credentials are stored through the Integration connection lifecycle, not in this document.
+
+## Authentication
+
+Add `headers` when a remote server accepts a static header. Configuration reads return `mcp.headers`, so do not put reusable secrets there when OAuth or an Integration credential is available.
+
+```jsonc title="Workspace configuration"
+{
+  "mcp": {
+    "servers": {
+      "internal-tools": {
+        "type": "remote",
+        "url": "https://tools.internal.example/mcp",
+        "oauth": false,
+        "headers": { "X-Tenant": "workspace-a" }
+      }
+    }
+  }
+}
+```
+
+OAuth is enabled unless `oauth` is `false`. ByMorning discovers the authorization server and stores credentials on the Integration. Complete authorization from **MCP Gateway** as described in [Outbound MCP](/agent/outbound-mcp).
+
+See [Integration authentication](/developer-reference/integration-authentication) for stored keys, OAuth grants, and environment connections.
+
+## Names
+
+ByMorning combines the server name and Tool name as `<server>_<tool>`. Characters other than letters, numbers, `_`, and `-` become `_`.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "linear_create_issue", "resource": "*", "effect": "allow" }
+  ]
+}
+```
+
+Server `linear` and Tool `create.issue` assert `linear_create_issue`. Names such as `foo.bar` and `foo_bar` can collide. Colliding namespaces or canonical Tool names are omitted rather than overwritten.
+
+Keep direct configuration keys to the same form as the management API, and begin names with a letter so they form valid Tool namespaces.
+
+## Permissions
+
+Use Permission actions to hide or deny a server's Tools without removing its configuration. This rule denies every Tool from the `linear` server except `linear_search`:
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "linear_*", "resource": "*", "effect": "deny" },
+    { "action": "linear_search", "resource": "*", "effect": "allow" }
+  ]
+}
+```
+
+Outbound MCP Tools run inside a Session and use the normal effective Permission policy. Their action is the normalized `<server>_<tool>` name and their resource is `*`. Inbound MCP evaluates only Workspace rules and fails closed on `ask` and `deny`.
+
+See [Permissions](/configure/permissions) for rule order and [Outbound MCP](/agent/outbound-mcp) for status and Code Mode connect.
+
+## Search
+
+Set `websearch` to a provider selection or `false`. If you omit it, the runtime uses `random`.
+
+```jsonc title="Workspace configuration"
+{
+  "websearch": { "provider": "exa" }
+}
+```
+
+| Value | Behavior |
+| --- | --- |
+| `{ "provider": "random" }` | Choose a registered provider for each search. This is also the runtime default when `websearch` is absent. |
+| `{ "provider": "exa" }` | Use the provider with that exact ID. Built-in IDs are `exa`, `firecrawl`, `parallel`, and `tavily`. |
+| `false` | Disable web search for the Workspace. |
+
+The provider ID is a string and must match a registered provider exactly. Configuration can name an unavailable provider, but a query then fails with provider-not-found. Tool Permission checks still apply independently of provider selection.
+
+Web-search credentials are server environment connections or stored Integration keys. You do not put them in the `websearch` object.
+
+| Provider | Environment variable | Request behavior without an active credential |
+| --- | --- | --- |
+| Exa | `EXA_API_KEY` | Calls Exa's MCP endpoint without its `exaApiKey` query parameter. |
+| Firecrawl | `FIRECRAWL_API_KEY` | Calls Firecrawl's MCP endpoint without an `Authorization` header. |
+| Parallel | `PARALLEL_API_KEY` | Calls Parallel's MCP endpoint without an `Authorization` header. |
+| Tavily | `TAVILY_API_KEY` | Sends Tavily's keyless-access header. |
+
+With a credential, Exa sends the key as the endpoint's `exaApiKey` query parameter. Firecrawl, Parallel, and Tavily send it as a bearer token. Stored credentials take precedence over environment connections. Environment values appear only as available connections; API responses do not expose their values.

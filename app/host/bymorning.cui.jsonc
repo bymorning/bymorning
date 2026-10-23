@@ -1,0 +1,17 @@
+// CUI profile: only the AgentCore
+// Code Interpreter is enabled. The Share plugin (unauthenticated public
+// Session links) and the Google plugin are not loaded, so their Tools do not
+// exist in this Installation. Select it with BYMORNING_CONFIG, for example
+// BYMORNING_CONFIG=/app/bymorning.cui.jsonc (the installer's `config_file` setting).
+{
+  "plugins": [
+    {
+      "package": "@bymorning/plugin-code-interpreter-agentcore",
+      "options": {
+        "identifier": { "env": "CODE_INTERPRETER_ID" },
+        "region": { "env": "AWS_REGION" },
+      },
+    },
+  ],
+  "code_interpreter": { "implementation": "agentcore" },
+}

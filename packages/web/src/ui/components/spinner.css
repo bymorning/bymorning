@@ -1,0 +1,29 @@
+[data-component="spinner"] {
+  flex-shrink: 0;
+  aspect-ratio: 204 / 231;
+}
+
+@keyframes spinner-glass {
+  0%,
+  100% {
+    fill: #ffe457;
+  }
+  20% {
+    fill: #ee3726;
+  }
+  40% {
+    fill: #22afff;
+  }
+  60% {
+    fill: #4ec722;
+  }
+  80% {
+    fill: #ff9c36;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-component="spinner"] * {
+    animation: none !important;
+  }
+}

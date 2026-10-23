@@ -1,0 +1,202 @@
+# PR gate for every push to dev and every pull request (plans/single-image.md, T3).
+#
+# Independent jobs run in parallel so wall clock is the slowest job, not the sum:
+#   static       format, lint, ast-grep rule tests, generated-file checks, model
+#                catalog check, codegen tests; typecheck in three matrix shards
+#                (packages without web / plugins+backends / web and the host).
+#   unit         one matrix entry per owning package group: core, server, web,
+#                small packages, plugins, backends (RustFS and Azurite emulators),
+#                host. Every entry runs the package-local `test` script.
+#   application  the full packages/testing suite, sharded 1/2 and 2/2 by vitest.
+#                It starts one PostgreSQL container per shard and runs real Docker
+#                execution, so each shard builds the execution image first.
+#   integration  packages/core test:integration against a real PostgreSQL.
+#   security     gitleaks (gating), bun audit and semgrep (reported).
+#
+# Not run here but in full-gate.yml (merge to dev, nightly, release dispatch):
+# the release build with its image-security and image-boot checks (AWS and
+# Azure legs), the Azure kind end-to-end run, the browser suites (packages/web
+# and starter test:application; ui and session-ui test:browser), and the
+# installer offline checks. packages/web test:e2e and test:browser:timeline run
+# in neither.
+#
+# Typecheck shards partition the workspace. Bun 1.3.11 unions multiple --filter
+# patterns and cannot combine a positive glob with a negation, so
+# typecheck:packages selects `./packages/[!w]*`; packages/web is the only
+# workspace member under packages/ starting with `w`, and typecheck:apps checks it.
+# Every test is a package-local run orchestrated from root scripts or `--cwd`;
+# no suite runs from the repository root.
+name: ci
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUN_VERSION: 1.3.11
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        typecheck: [packages, plugins, apps]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      # The non-typecheck checks are cheap; the first shard runs them so the
+      # other two shards spend their time on tsc only.
+      - if: matrix.typecheck == 'packages'
+        run: bun run format:check
+      - if: matrix.typecheck == 'packages'
+        run: bun run lint
+      - if: matrix.typecheck == 'packages'
+        run: bun run test:lint-rules
+      - if: matrix.typecheck == 'packages'
+        run: bun run check:models
+      - if: matrix.typecheck == 'packages'
+        run: bun run --cwd packages/protocol check:generated
+      - if: matrix.typecheck == 'packages'
+        run: bun run --cwd packages/client check:generated
+      - if: matrix.typecheck == 'packages'
+        run: bun run test:codegen
+      - run: bun run typecheck:${{ matrix.typecheck }}
+
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [core, server, web, small, plugins, backends, host]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      - if: matrix.group == 'core'
+        run: bun run test:core
+      - if: matrix.group == 'server'
+        run: bun run test:server
+      - if: matrix.group == 'web'
+        run: bun run test:web
+      - if: matrix.group == 'small'
+        run: |
+          bun run test:protocol
+          bun run test:schema
+          bun run test:observability
+          bun run --cwd packages/util test
+          bun run --cwd packages/gateway test
+          bun run --cwd packages/models test
+          bun run --cwd packages/admin test
+          bun run --cwd packages/ui test
+          bun run --cwd packages/session-ui test
+          bun run test:solid
+      - if: matrix.group == 'plugins'
+        run: bun run --filter './plugins/*' test
+      # Storage.Provider contract legs start RustFS and Azurite containers.
+      - if: matrix.group == 'backends'
+        run: bun run --filter './backends/*' test
+      - if: matrix.group == 'host'
+        run: bun run test:host
+
+  application:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/2, 2/2]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      # execution.test.ts and code-interpreter.test.ts run real code in
+      # bymorning-code-interpreter:local; the image is two pinned pulls and a COPY.
+      - name: Build the execution image
+        run: bun run --cwd app/host setup
+      - name: Real Application scenarios (one PostgreSQL server per shard)
+        run: bun run --cwd packages/testing test -- --shard=${{ matrix.shard }}
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      - run: bun run --cwd packages/core test:integration
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # gitleaks scans full history
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.11
+      - name: Install gitleaks (checksum-verified)
+        run: sh script/security/tools-ci.sh /tmp/tools && echo /tmp/tools >> "$GITHUB_PATH"
+      - name: gitleaks (fails on any non-allowlisted finding)
+        run: gitleaks git --config .gitleaks.toml --report-format json --report-path gitleaks.json .
+      - name: Dependency advisories (reported, not gating)
+        run: |
+          bun install --frozen-lockfile
+          bun audit --audit-level high > bun-audit.txt || true
+          cat bun-audit.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: security-reports
+          path: |
+            gitleaks.json
+            bun-audit.txt
+          if-no-files-found: ignore
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: semgrep (reported, not gating; SARIF uploaded as an artifact)
+        run: |
+          pip install semgrep==1.176.0
+          semgrep scan --config p/default --config p/typescript --config p/owasp-top-ten \
+            --sarif --output semgrep.sarif --exclude node_modules --exclude dist --exclude generated \
+            --metrics off app packages plugins backends installers script || true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
+          if-no-files-found: ignore

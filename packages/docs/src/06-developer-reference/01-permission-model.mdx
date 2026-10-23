@@ -1,0 +1,201 @@
+---
+title: Permission model
+description: Configure persistent Permission rules and once-only runtime approvals.
+---
+
+Permissions decide whether an operation may perform an `action` on a `resource`. `allow` continues, `deny` blocks, and `ask` pauses a Session until you reply. An unmatched request defaults to `allow`.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "ask" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "github_*", "resource": "*", "effect": "deny" },
+    { "user": "usr_member", "action": "shell", "resource": "*", "effect": "ask" }
+  ]
+}
+```
+
+Use Permission for authorization, not for collecting structured values. If an operation needs user input after authorization, compose it with a [Session Form](/developer-reference/session-forms).
+
+## Rules
+
+Set `permissions` to an ordered array in Workspace configuration. Omitting it is equivalent to `[]`, so unmatched actions remain allowed. Only a Workspace administrator can write permanent rules.
+
+An Agent also has a `permissions` ruleset. Update a persisted Agent through the Agent API, or transform an effective Agent from a plugin:
+
+```ts title="plugin/agent-permissions.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.agent-permissions",
+  async setup(context) {
+    await context.agent.transform((editor) => {
+      editor.update("default", (agent) => {
+        agent.permissions = [
+          { action: "*", resource: "*", effect: "ask" },
+          { action: "read", resource: "*", effect: "allow" },
+          { action: "shell", resource: "git status *", effect: "allow" },
+          { action: "shell", resource: "git push *", effect: "deny" }
+        ]
+      })
+    })
+  }
+})
+```
+
+Plugin transforms change the effective Agent only while the plugin is active. They do not persist an Agent update.
+
+## Matching
+
+Both fields use whole-string wildcard matching. A pattern ending in ` *` also matches the value without arguments:
+
+```jsonc
+{ "action": "shell", "resource": "git status *", "effect": "allow" }
+```
+
+That rule matches `git status` and `git status --short`.
+
+- `*` matches zero or more characters, including `/`.
+- `?` matches exactly one character.
+- Other characters are literal.
+- Path separators are normalized. Matching is case-sensitive except on Windows.
+
+The last matching rule wins. Put defaults first and exceptions later.
+
+For a root Session, ByMorning evaluates Agent rules first, Workspace rules second, and matching User rules last. A matching User rule can therefore override a Workspace rule. Rules for other Users do not participate. If the selected Agent is unavailable, ByMorning starts with a deny-all Agent fallback before applying Workspace and User rules.
+
+Child Sessions start with an allow-all baseline, then apply Agent, Workspace, and matching User rules. A final `subagent` deny prevents recursive child creation and cannot be overridden.
+
+When one operation checks several resources, any `deny` blocks the operation. Otherwise, any `ask` opens approval. All resources must resolve to `allow` for immediate execution.
+
+Saved grants do not participate in evaluation. Legacy saved rows remain listable and removable for compatibility, but they do not create authority.
+
+## Actions
+
+Core Tools currently assert these public Permission values:
+
+| Action | Resource |
+| --- | --- |
+| `read`, `write`, `edit`, `execute` | A Project File identity such as `project:prj_123:packages%2Fdocs%2Findex.mdx` |
+| `glob` | The requested glob pattern |
+| `grep` | The requested JavaScript regular expression |
+| `shell` | The complete command string |
+| `subagent` | The target Agent ID |
+| `skill` | The Skill ID |
+| `websearch` | The search query |
+| `webfetch` | The requested URL |
+| `tool_output` | An opaque stored Tool output ID |
+| `add` | The addition expression |
+
+The Tool name and Permission action can differ. The `run` Tool uses `execute`. A custom Tool can set `options.permission`; otherwise its effective Tool name is the action.
+
+```ts
+editor.add({
+  name: "deploy",
+  options: { permission: "deploy" },
+})
+```
+
+### Output
+
+Large Tool results may include an `outputID` and tell the model to call `tool_output`. That Tool requests `tool_output` Permission for the exact opaque ID on every page. A cursor from the previous page continues retrieval.
+
+```json
+{
+  "outputID": "out_opaque-id-from-a-tool-result",
+  "cursor": 4096
+}
+```
+
+The ID is scoped to its owning Session. Unavailable, invalid, or cross-Session output returns the same unavailable error. Grant only IDs that came from the current Tool result; do not construct them.
+
+## Approvals
+
+An `ask` request pauses the asserting operation and appears as pending Session Permission. Reply with one of these values:
+
+| Reply | Result |
+| --- | --- |
+| `once` | Allow this request without saving a grant. |
+| `reject` | Reject all pending requests in the same Session. Optional feedback applies to the selected request. |
+
+```ts title="permissions.ts"
+import { ByMorning } from "@bymorning/client"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const [pending, saved] = await Promise.all([
+  client.permission.request.list({ workspace: workspace.id }),
+  client.permission.saved.list({ workspace: workspace.id })
+])
+
+console.log({ pending, saved })
+```
+
+`always` is unavailable. Use a Workspace or targeted User rule when an administrator must establish permanent authority.
+
+Approvals in both Sessions and the inbound Tool Gateway are once-only. A Gateway cannot establish a permanent rule through an approval response.
+
+Legacy saved grants remain listable and removable with `client.permission.saved.list` and `client.permission.saved.remove`. They are ignored during evaluation and are not part of Workspace configuration.
+
+`client.permission.create` evaluates a request and may open it without waiting. Runtime Tools use the blocking assertion behavior. Reply to a pending request with `client.permission.reply`.
+
+## MCP
+
+Inbound MCP evaluates Workspace rules captured for that request. It does not use Agent rules, User rules, saved grants, pending approvals, or persisted Sessions. Both `ask` and `deny` fail closed.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "linear_*", "resource": "*", "effect": "deny" }
+  ]
+}
+```
+
+The inbound `execute` wrapper disappears when Workspace rules wholly deny `execute`. Individual nested Tools are omitted when their effective action is wholly denied. Execution checks actual resources again, so a stale catalog entry does not bypass a changed rule.
+
+Outbound MCP Tools assert a normalized `<server>_<tool>` action with resource `*` immediately before the remote call. Unsupported name characters become underscores. For example, server `linear` and Tool `create.issue` use `linear_create_issue`. Use `linear_*` to match every Tool from that server.
+
+## Host Tools
+
+Sandbox Tools receive an automatic Permission assertion. Trusted host Tools must call `tool.permission` immediately before the sensitive operation:
+
+```ts title="plugin/protected-deploy.ts"
+import { Plugin } from "@bymorning/plugin"
+import { Schema } from "effect"
+
+export default Plugin.define({
+  id: "project.protected-deploy",
+  async setup(context) {
+    await context.tool.transform((editor) => {
+      editor.add({
+        name: "deploy",
+        description: "Deploy to an approved environment.",
+        input: Schema.Struct({ target: Schema.String }),
+        output: Schema.String,
+        async execute(input, tool) {
+          await tool.permission({
+            action: "deploy",
+            resources: [input.target],
+            save: [input.target]
+          })
+          return {
+            output: input.target,
+            content: [{ type: "text", text: `Approved ${input.target}` }]
+          }
+        }
+      })
+    })
+  }
+})
+```
+
+<Callout type="warning">
+  Permission is runtime consent, not a sandbox for plugin code. Plugin setup and host callbacks can perform side effects without asserting Permission. Prefer sandbox Tools when host access is unnecessary.
+</Callout>
+
+Inference admission hooks do not create approval requests. Use Permission rules with the `ask` effect when an operation requires interactive approval. Only Workspace administrators author permanent rules. See [Inference hooks](/developer-reference/inference-hooks).

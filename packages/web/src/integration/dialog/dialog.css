@@ -1,0 +1,295 @@
+[data-component="integration-dialog"] [data-slot="integration-dialog-header"] {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  align-self: stretch;
+  gap: 12px;
+  margin: -16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-close"] {
+  display: flex;
+  margin-left: auto;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-body"] {
+  min-height: 0;
+  padding: 16px 20px 20px;
+}
+
+[data-component="integration-dialog-error"] {
+  margin: 0;
+  color: var(--color-danger-fg);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="integration-dialog-success-message"] {
+  color: var(--color-success-fg);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-empty"] {
+  margin: 0;
+  padding: 24px 16px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+}
+
+[data-component="integration-dialog"]
+  :is(
+    [data-slot="integration-dialog-connections"],
+    [data-slot="integration-dialog-methods"],
+    [data-slot="integration-dialog-key-form"],
+    [data-slot="integration-dialog-client-form"],
+    [data-slot="integration-dialog-aws-form"],
+    [data-slot="integration-dialog-command-form"],
+    [data-slot="integration-dialog-authentication"],
+    [data-slot="integration-dialog-waiting"],
+    [data-slot="integration-dialog-success"]
+  ) {
+  display: grid;
+  gap: 16px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-section"] {
+  display: grid;
+  gap: 10px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-section"] > h3 {
+  margin: 0;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-weight: 530;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-component="integration-dialog"]
+  :is(
+    [data-slot="integration-dialog-intro"],
+    [data-slot="integration-dialog-note"],
+    [data-slot="integration-dialog-key-form"] > p,
+    [data-slot="integration-dialog-client-form"] > p,
+    [data-slot="integration-dialog-aws-form"] > p,
+    [data-slot="integration-dialog-command-form"] > p,
+    [data-slot="integration-dialog-methods"] > p,
+    [data-slot="integration-dialog-authentication"] > p,
+    [data-slot="integration-dialog-waiting"] > p
+  ) {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 20px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-authentication"] form {
+  display: grid;
+  gap: 1rem;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-authentication"] {
+  display: grid;
+  gap: 16px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-oauth-actions"] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+[data-component="integration-dialog"]
+  :is([data-slot="integration-dialog-form-actions"], [data-slot="integration-dialog-deployment-activation"]) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-deployment-activation"] {
+  flex-wrap: wrap;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-deployment-activation"] > p {
+  flex: 1 1 280px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-oauth-actions"] > p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-progress"] {
+  min-height: 7rem;
+  margin: 0;
+  padding: 0.75rem;
+  overflow: auto;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius);
+  background: var(--color-bg-base);
+  white-space: pre-wrap;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-list"] {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-list"] li {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.8rem;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius);
+  color: inherit;
+  background: var(--color-bg-base);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-select"] {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-list"] li[data-selected] {
+  border-color: var(--color-border-focus);
+  background: var(--color-bg-layer-2);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-select"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-select"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-label"],
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-label"] > span {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-actions"] {
+  display: flex;
+  flex: none;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-list"] strong {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-connection-list"] small {
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-optional"] {
+  color: var(--color-text-faint);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-footer"] {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  margin: -16px;
+  padding: 16px;
+  border-top: 1px solid var(--color-border-muted);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-action-rail"] {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-rename-field"] {
+  min-width: 0;
+  flex: 1;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-success"] {
+  place-items: center;
+  padding-top: 5rem;
+  text-align: center;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-success"] > span {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 1px solid var(--color-success-border);
+  border-radius: 50%;
+  color: var(--color-success-fg);
+  background: var(--color-success-bg);
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-success"] :is(h3, p) {
+  margin: 0;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-success"] p {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 560px) {
+  [data-component="integration-dialog"] [data-slot="integration-dialog-header"],
+  [data-component="integration-dialog"] [data-slot="integration-dialog-body"] {
+    padding-inline: 16px;
+  }
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-oauth-client-status"] {
+  display: grid;
+  gap: 12px;
+}
+
+[data-component="integration-dialog"] [data-slot="integration-dialog-oauth-client-status"] > p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}

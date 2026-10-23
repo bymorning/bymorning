@@ -1,0 +1,23 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+environment     = "usgovernment"
+location        = "usgovvirginia"
+
+# Public IP of the machine running Terraform (Key Vault / Storage data plane).
+# Leave empty when Terraform runs inside the VNet.
+deployer_ip_ranges = ["203.0.113.10/32"]
+
+# private_cluster = false
+# api_authorized_ip_ranges = ["203.0.113.0/24"]
+# admin_group_object_ids   = ["<entra-group-object-id>"]
+# fips_node_pools          = true
+# sandbox_node_pool        = true   # validate Kata availability first
+
+# Sizing and registry. New subscriptions often have no quota for the default DSv5 family
+# (for example eastus2): check `az vm list-usage -l <region>` and use a family with quota.
+# system_vm_size            = "Standard_D2s_v6"
+# user_vm_size              = "Standard_D4s_v6"
+# user_node_min             = 1
+# user_node_max             = 3
+# outbound_type             = "loadBalancer"   # or "userDefinedRouting", "managedNATGateway"
+# acr_public_network_access = true             # to push the image from outside the VNet
+# postgres_sku              = "GP_Standard_D2ds_v5"

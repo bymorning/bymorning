@@ -1,0 +1,252 @@
+[data-component="sidebar-projects-region"] {
+  display: block;
+  min-width: 0;
+  list-style: none;
+}
+[data-slot="sidebar-projects-heading"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  border-radius: 6px;
+}
+[data-slot="sidebar-projects-heading"]:hover,
+[data-slot="sidebar-projects-heading"]:focus-within {
+  background: var(--color-overlay-hover);
+}
+[data-slot="sidebar-projects-trigger"] {
+  display: flex;
+  min-width: 0;
+  min-height: 36px;
+  flex: 1;
+  align-items: center;
+  border: 0;
+  border-radius: 6px;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+}
+[data-slot="sidebar-project-create"] {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+[data-slot="sidebar-project-create"]:hover {
+  background: var(--color-overlay-pressed);
+  color: var(--color-text-base);
+}
+[data-slot="sidebar-project-create"]:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+[data-slot="sidebar-projects-trigger"] > [data-slot="sidebar-projects-title"] {
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+[data-slot="sidebar-projects-folder-icon"] {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+[data-slot="sidebar-projects-folder-icon"] > [data-slot="icon-svg"] {
+  position: absolute;
+  inset: 0;
+  transition: opacity 120ms ease;
+}
+[data-slot="sidebar-projects-folder-icon"] > [data-slot="icon-svg"][data-state="inactive"] {
+  opacity: 0;
+}
+[data-slot="sidebar-project-list"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-slot="sidebar-project"] {
+  min-width: 0;
+}
+[data-slot="sidebar-project-row"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  border-radius: 6px;
+}
+[data-slot="sidebar-project-row"]:hover,
+[data-slot="sidebar-project-row"]:focus-within {
+  background: var(--color-overlay-hover);
+}
+[data-slot="sidebar-project-row"] > button {
+  display: flex;
+  min-width: 0;
+  min-height: 36px;
+  flex: 1;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  padding: 0 2px 0 8px;
+  overflow: hidden;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+[data-slot="sidebar-project-leading"] {
+  position: relative;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  place-items: center;
+}
+[data-slot="sidebar-project-leading-avatar"] {
+  display: block;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+}
+[data-slot="sidebar-project-leading-avatar"] > * {
+  width: 100%;
+  height: 100%;
+}
+[data-slot="sidebar-project-leading"] > [data-slot="icon-svg"] {
+  position: absolute;
+  opacity: 0;
+  transition: transform 120ms ease;
+}
+[data-slot="sidebar-project-row"]
+  > button[aria-expanded="true"]
+  [data-slot="sidebar-project-leading"]
+  > [data-slot="icon-svg"] {
+  transform: rotate(90deg);
+}
+[data-slot="sidebar-project-row"]:is(:hover, :focus-within) [data-slot="sidebar-project-leading-avatar"] {
+  opacity: 0;
+}
+[data-slot="sidebar-project-row"]:is(:hover, :focus-within)
+  [data-slot="sidebar-project-leading"]
+  > [data-slot="icon-svg"] {
+  opacity: 1;
+}
+[data-slot="sidebar-project-row"] > button > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-slot="sidebar-project-row"] > a {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--color-text-muted);
+  opacity: 0;
+}
+[data-slot="sidebar-project-row"]:hover > a,
+[data-slot="sidebar-project-row"]:focus-within > a {
+  opacity: 1;
+}
+[data-slot="sidebar-project-row"] > a:hover {
+  background: var(--color-overlay-pressed);
+  color: var(--color-text-base);
+}
+[data-slot="sidebar-project-sessions"] {
+  min-width: 0;
+}
+[data-slot="sidebar-project-sessions"] [data-slot="session-list-content"] {
+  padding-bottom: 0;
+}
+[data-slot="sidebar-project-sessions"] [data-slot="session-list-items"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-slot="sidebar-project-sessions"] [data-component="session-list-row"] {
+  --sidebar-session-date-color: var(--color-text-faint);
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  height: 36px;
+  gap: 8px;
+  padding: 6px 8px;
+}
+[data-slot="sidebar-project-sessions"] [data-slot="session-list-row-leading"] {
+  display: grid;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+}
+[data-slot="sidebar-project-sessions"] [data-slot="session-list-row-title"] {
+  min-width: 0;
+}
+[data-slot="sidebar-project-sessions"] [data-slot="session-list-row-updated-at"] {
+  color: var(--sidebar-session-date-color);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+[data-slot="sidebar-project-sessions-empty"],
+[data-slot="sidebar-projects-status"],
+[data-slot="sidebar-projects-empty"],
+[data-slot="sidebar-projects-cache-status"] {
+  margin: 0;
+  padding: 8px 10px;
+  color: var(--color-text-faint);
+  font-size: 12px;
+}
+[data-slot="sidebar-project-show-more"] {
+  display: block;
+  min-height: 28px;
+  margin: 2px auto;
+  border: 0;
+  border-radius: 5px;
+  padding: 0 8px;
+  background: transparent;
+  color: var(--color-text-faint);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+[data-slot="sidebar-project-show-more"]:hover {
+  background: var(--color-overlay-hover);
+  color: var(--color-text-muted);
+}
+[data-component="sidebar-projects-region"] :is(button, a):focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+@media (hover: none), (pointer: coarse) {
+  [data-slot="sidebar-project-row"] > a {
+    opacity: 1;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="sidebar-project-create"] {
+    opacity: 0;
+  }
+  [data-slot="sidebar-projects-heading"]:is(:hover, :focus-within) [data-slot="sidebar-project-create"] {
+    opacity: 1;
+  }
+  [data-slot="sidebar-projects-heading"]:is(:hover, :focus-within) [data-slot="sidebar-project-create"]:disabled {
+    opacity: 0.45;
+  }
+}
+:root[data-color-scheme="dark"] [data-slot="sidebar-project-sessions"] [data-component="session-list-row"] {
+  --sidebar-session-date-color: var(--color-text-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-component="sidebar-projects-region"] [data-slot="icon-svg"] {
+    transition: none;
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@bymorning/client",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/promise/index.ts",
+    "./promise": "./src/promise/index.ts",
+    "./promise/api": "./src/promise/api.ts",
+    "./effect": "./src/effect/index.ts",
+    "./effect/api": "./src/effect/api.ts",
+    "./solid": "./src/solid/index.ts"
+  },
+  "scripts": {
+    "generate": "bun run script/build.ts",
+    "check:generated": "bun run script/check-generated.ts",
+    "typecheck": "tsc --noEmit",
+    "typecheck:solid": "tsc --noEmit -p tsconfig.solid.json",
+    "test:solid": "vitest run --config vitest.solid.config.ts"
+  },
+  "dependencies": {
+    "@bymorning/protocol": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@bymorning/httpapi-codegen": "workspace:*",
+    "@effect/platform-node": "catalog:",
+    "@types/node": "catalog:",
+    "jsdom": "catalog:",
+    "solid-js": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "solid-js": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "solid-js": {
+      "optional": true
+    }
+  }
+}

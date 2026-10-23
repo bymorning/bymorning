@@ -1,0 +1,36 @@
+[data-component="edit-tool"] [data-slot="edit-tool-context"] {
+  margin: 0 0 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="edit-tool"] [data-slot="edit-tool-diff"] pre {
+  max-height: 320px;
+  overflow: auto;
+  margin: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-bg-layer-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 12px/1.55 var(--font-mono);
+}
+
+[data-component="edit-tool"] [data-slot="edit-tool-diff"] {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-border-muted);
+}
+
+[data-component="edit-tool"] [data-slot="edit-tool-diff"] [data-change-kind="delete"] {
+  color: var(--color-danger-fg);
+  background: color-mix(in srgb, var(--color-danger-bg) 55%, var(--color-bg-layer-2));
+}
+
+[data-component="edit-tool"] [data-slot="edit-tool-diff"] [data-change-kind="add"] {
+  color: var(--color-success-fg);
+  background: color-mix(in srgb, var(--color-success-bg) 55%, var(--color-bg-layer-2));
+}

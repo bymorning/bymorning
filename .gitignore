@@ -1,0 +1,36 @@
+# dependencies
+.agents/
+node_modules
+
+# build output
+packages/server/dist/
+app/*/dist/
+
+# sst
+.sst
+
+# tmp files
+.#*
+
+# runtime cache
+.bymorning/
+packages/server/.bymorning/
+
+# env 
+.env*.local
+.env
+
+# opennext
+.open-next
+
+# misc
+.DS_Store
+
+# Playwright CLI session artifacts
+.playwright-cli/
+
+# release image tarballs built by script/release.ts (delivered, never committed)
+/release/*.tar
+
+# rendered output (security review packages etc.)
+build/

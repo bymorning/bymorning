@@ -1,0 +1,80 @@
+[data-component="usage-value"] {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-component="usage-value"] [data-slot="usage-percent"] { color: var(--color-text-muted); }
+
+[data-component="inline-limit"] {
+  position: relative;
+  display: inline-flex;
+  justify-content: flex-end;
+  min-width: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-component="inline-limit"] [data-slot="limit-value"] {
+  min-height: 24px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--color-text-base);
+  background: transparent;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+[data-component="inline-limit"] [data-slot="limit-value"]:where(:hover, :focus-visible):not(:disabled) {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="inline-limit"] [data-slot="limit-value"]:disabled { cursor: default; opacity: 1; }
+
+[data-component="inline-limit"] [data-slot="limit-editor"] {
+  display: flex;
+  align-items: center;
+  width: 88px;
+  height: 24px;
+  padding: 0 4px;
+  border-radius: var(--radius-md);
+  background: var(--color-overlay-hover);
+  color: var(--color-text-muted);
+}
+
+[data-component="inline-limit"] input {
+  width: 100%;
+  min-width: 0;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text-base);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+[data-component="inline-limit"] input[aria-invalid="true"] { color: var(--color-danger-fg); }
+
+[data-component="inline-limit"] [data-slot="limit-error"] {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 4px);
+  right: 0;
+  width: max-content;
+  max-width: 260px;
+  padding: 5px 8px;
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: normal;
+}

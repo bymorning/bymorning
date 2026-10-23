@@ -1,0 +1,2 @@
+ALTER TABLE "usage" DROP CONSTRAINT "usage_principal_check", ADD CONSTRAINT "usage_principal_check" CHECK ("user_id" is null or "service_account_id" is null);--> statement-breakpoint
+ALTER TABLE "usage" DROP CONSTRAINT "usage_session_principal_check", ADD CONSTRAINT "usage_session_principal_check" CHECK ("source" <> 'session' or "user_id" is not null);

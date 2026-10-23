@@ -1,0 +1,30 @@
+{
+  "name": "@bymorning/backend-azure",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.13.3",
+    "@azure/keyvault-keys": "^4.10.2",
+    "@azure/storage-blob": "^12.34.0",
+    "@bymorning/core": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "@effect/platform-node": "catalog:",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@azure/core-rest-pipeline": "^1.25.0",
+    "@bymorning/testing": "workspace:*",
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

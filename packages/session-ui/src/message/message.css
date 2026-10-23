@@ -1,0 +1,28 @@
+[data-session-ui] [data-component="message"] {
+  min-width: 0;
+}
+[data-session-ui] [data-component="user-message"] {
+  max-width: min(100%, 48rem);
+  margin-left: auto;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--color-bg-layer-2);
+}
+[data-session-ui] [data-component="assistant-message"] {
+  display: grid;
+  gap: 12px;
+}
+[data-session-ui] [data-component="reasoning"] {
+  color: var(--color-text-muted);
+}
+[data-session-ui] [data-component="message-error"] {
+  padding: 10px;
+  border-inline-start: 2px solid var(--color-red-700);
+}
+[data-session-ui] [data-component="compaction"],
+[data-session-ui] [data-component="inbox-message"],
+[data-session-ui] [data-component="pending-submission"] {
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}

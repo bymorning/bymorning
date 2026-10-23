@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+src/assets/
+src/theme/styles/tokens/colors.css
+src/theme/styles/tokens/theme.css
+src/theme/styles/fonts.css

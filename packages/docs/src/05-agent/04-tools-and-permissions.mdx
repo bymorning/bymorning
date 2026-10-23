@@ -1,0 +1,28 @@
+---
+title: Tools and Permissions
+description: Review Tool activity and decide whether a requested action may run.
+hidden: true
+---
+
+Tools let an Agent inspect context, execute work, and change Project files. Each Tool appears in the transcript as running, succeeded, interrupted, stopped, or failed.
+
+## Tools
+
+Select an expandable Tool row to inspect it. Context reads and searches can be grouped under **Exploring** or **Explored**. File edits show changed paths and diffs. Generic Tools show output when one is available.
+
+Failed Tools show **Failed**. Open the row to read the error and use **Copy error**. A stopped or interrupted Tool stays in the transcript with its terminal state.
+
+## Approvals
+
+When a Tool needs approval, the composer is replaced by **Permission required**. Review the Tool title, **Action**, and any **Resources**, then choose:
+
+| Response | Result |
+| --- | --- |
+| **Once** | Allow this pending request once. |
+| **Reject** | Deny all pending permission requests in this Session. |
+
+The panel stays open while ByMorning submits your response. If submission fails, it shows the error so you can answer again.
+
+Approve only the action and resources you recognize. To make a lasting rule, ask a Workspace administrator to configure a Workspace or member-scoped Permission rule.
+
+Return to [Sessions](/agent/sessions) for transcript and error controls.

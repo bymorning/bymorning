@@ -1,0 +1,41 @@
+export const legacyModels: ReadonlyArray<{
+  readonly provider: string
+  readonly sourceID: string
+  readonly id: string
+  readonly disposition: "tombstone" | "alias-to" | "approved-removal"
+  readonly target?: string
+  readonly previous: {
+    readonly provenance: object
+    readonly apiID: string
+    readonly metadata: object
+  }
+}> = [
+  {
+    provider: "anthropic",
+    sourceID: "claude-opus-4-1",
+    id: "claude-opus-4-1",
+    disposition: "tombstone",
+    previous: {
+      provenance: { kind: "local-baseline", inspectedCommit: "f308ffac2b71fd1eb026cad1cb26b230eb13c632" },
+      apiID: "claude-opus-4-1",
+      metadata: {
+        name: "Claude Opus 4.1 (latest)",
+        description: "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+        family: "claude-opus",
+        releaseDate: "2025-08-05",
+        lastUpdated: "2025-08-05",
+        openWeights: false,
+        capabilities: {
+          temperature: true,
+          reasoning: true,
+          attachment: true,
+          tools: true,
+          input: ["text", "image", "pdf"],
+          output: ["text"],
+        },
+        limit: { context: 200_000, output: 32_000 },
+        cost: { input: 15, output: 75, cache: { read: 1.5, write: 18.75 } },
+      },
+    },
+  },
+]

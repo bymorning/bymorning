@@ -1,0 +1,5 @@
+id: no-production-compile-outside-roots
+valid:
+  - LayerNode.group([root])
+invalid:
+  - LayerNode.compile(root)

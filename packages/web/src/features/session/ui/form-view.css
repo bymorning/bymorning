@@ -1,0 +1,167 @@
+[data-component="form-view"] {
+  box-sizing: border-box;
+  display: flex;
+  max-height: min(70vh, 680px);
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-layer-2);
+  box-shadow: var(--shadow-raised);
+}
+
+[data-component="form-view"] > [data-slot="form-view-header"] {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+}
+
+[data-component="form-view"] h2 {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+[data-component="form-view"] > fieldset {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+}
+
+[data-component="form-view"] [data-slot="form-view-scroll"] {
+  width: 100%;
+  max-height: min(55vh, 520px);
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+[data-component="form-view"] [data-component="form-fields"][data-variant="session"] {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  padding: 1px;
+}
+
+[data-component="form-view-settings"] {
+  border-top: 1px solid var(--color-border-muted);
+}
+
+[data-component="form-view-settings"] [data-slot="form-view-settings-trigger"] {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  color: var(--color-text-base);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: start;
+}
+
+[data-component="form-view-settings"] [data-slot="form-view-settings-arrow"] {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-icon-muted);
+  transform: rotate(-90deg);
+}
+
+[data-component="form-view-settings"][data-open="true"] [data-slot="form-view-settings-arrow"] {
+  transform: rotate(0deg);
+}
+
+[data-component="form-view"] [data-slot="form-view-settings-fields"] {
+  padding: 4px 1px 1px 24px;
+}
+
+[data-component="form-view"] [data-slot="form-fields-question"],
+[data-component="form-view"] [data-slot="form-fields-question"] > *,
+[data-component="form-view"] [data-slot="form-fields-options"],
+[data-component="form-view"] [data-slot="form-fields-custom"],
+[data-component="form-view"] [data-slot="form-fields-external"] {
+  min-width: 0;
+}
+
+[data-component="form-view"] [data-slot="form-fields-description"] {
+  margin: -2px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+[data-component="form-view"] [data-slot="form-fields-options"] {
+  display: grid;
+  width: 100%;
+  gap: 8px;
+}
+
+[data-component="form-view"] [data-slot="form-fields-custom"] {
+  width: 100%;
+  margin-top: 2px;
+}
+
+[data-component="form-view"] [data-slot="form-fields-external"] {
+  display: grid;
+  width: 100%;
+  gap: 8px;
+}
+
+[data-component="form-view"] [data-slot="form-fields-external"] > :first-child {
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+[data-component="form-view"] [data-slot="form-view-message"] {
+  min-height: calc(12px * 1.4);
+}
+
+[data-component="form-view"] [data-slot="form-view-error"] {
+  margin: 0;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  color: var(--color-danger-fg);
+  font-size: 12px;
+}
+
+[data-component="form-view"] [data-slot="form-view-actions"] {
+  display: flex;
+  min-width: 0;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+[data-component="form-view"] fieldset:disabled {
+  opacity: 0.62;
+}
+
+@media (max-width: 560px) {
+  [data-component="form-view"] {
+    max-height: min(72vh, 620px);
+  }
+}

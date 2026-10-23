@@ -1,0 +1,235 @@
+---
+title: Workspace configuration
+description: Read, replace, and refresh the persisted Workspace configuration document.
+---
+
+Workspace configuration is one persisted JSON document shared by a Workspace. Read its resolved value before replacing its writable fields.
+
+```ts title="replace-workspace-config.ts"
+const workspaceID = "wrk_your-workspace-id"
+const url = new URL("/api/config", window.location.origin)
+url.searchParams.set("workspace", workspaceID)
+
+const currentResponse = await fetch(url)
+if (!currentResponse.ok) throw new Error(`Configuration read failed: ${currentResponse.status}`)
+
+const current = await currentResponse.json()
+const { default_model, model_policy, ...writable } = current
+
+const updateResponse = await fetch(url, {
+  method: "PUT",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    ...writable,
+    default_agent: "default",
+    websearch: { provider: "random" },
+  }),
+})
+
+if (!updateResponse.ok) throw new Error(`Configuration update failed: ${updateResponse.status}`)
+console.log(await updateResponse.json())
+```
+
+<Callout type="warning">
+  `PUT /api/config` is a replacement, not a merge patch. Send every writable field you intend to keep. Omitted optional
+  fields are cleared, while omitted defaulted fields return to their schema defaults.
+</Callout>
+
+## API
+
+All configuration operations require an authenticated Workspace member. Pass `workspace=<Workspace ID>` to select the Workspace explicitly. Same-origin browser requests use the signed-in cookie. Unsafe requests such as `PUT` and `POST` must carry the deployment's exact application origin in the `Origin` header.
+
+| Method | Path                  | Behavior                                                                                                                                                                           |
+| ------ | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/api/config`         | Return the active, fully decoded Workspace configuration.                                                                                                                          |
+| `PUT`  | `/api/config`         | Validate and persist a complete replacement of client-owned fields, activate it, reload plugins, and return the resolved document.                                                 |
+| `POST` | `/api/config/refresh` | Reload the persisted document into process memory, reconcile plugins if it changed, wait for pending plugin activation, and return the resolved document. The request has no body. |
+
+Use `refresh` when storage changed outside this server process. It does not discard persisted changes or restore defaults by itself. Non-browser callers must supply the authenticated cookie and exact `Origin` header themselves. Use the [generated API reference](/api) for error and transport schemas.
+
+## Fields
+
+The response is resolved rather than a byte-for-byte copy of the submitted JSON. Schema defaults make `compaction`, `permissions`, and `model_policy` present in every successful response. Other optional fields remain absent until configured.
+
+| Field           | Ownership                         | Purpose                                                                    |
+| --------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| `default_agent` | Client-writable                   | Preferred Agent for newly created Sessions that do not specify one.        |
+| `compaction`    | Client-writable, defaulted        | Automatic compaction and retained-context settings.                        |
+| `permissions`   | Client-writable, defaults to `[]` | Ordered Workspace Permission rules.                                        |
+| `plugins`       | Client-writable, optional         | Ordered server plugin source and selector operations.                      |
+| `tool_output`   | Client-writable, optional         | Model-visible Tool output line and byte limits.                            |
+| `mcp`           | Client-writable, optional         | Outbound MCP server definitions.                                           |
+| `websearch`     | Client-writable, optional         | Default web-search provider selection or explicit disablement.             |
+| `code_interpreter` | Client-writable, optional      | Explicit code-execution implementation selection.                          |
+| `gateway`       | Client-writable, optional         | Workspace-wide inference models and RPM and TPM activity caps.             |
+| `providers`     | Client-writable, optional         | Provider activation overrides and allowlist. Omit an activation entry to inherit its installation default; omit `allow` to admit every active Provider. |
+| `routing`       | Client-writable, optional         | Ordered routing rules. Omit `routing` or set `[]` to route nothing.        |
+| `default_model` | Server-owned, optional            | Preferred Model identity maintained by the Model API.                      |
+| `model_policy`  | Server-owned, defaulted           | Disabled, seen, and initialized Model identities maintained by the server. |
+
+Sending `{}` resets the writable document to decoded defaults: `compaction` returns to its defaults, `permissions` becomes `[]`, and optional writable fields are removed. The server preserves the existing `default_model` and `model_policy`. See [Session behavior](/configure/session-behavior), [Permissions](/configure/permissions), and [Integrations](/configure/integrations) for field-specific behavior.
+
+## Gateway
+
+Set `gateway` to apply activity caps to all inference callers in the Workspace. Every property is optional. An omitted property is unrestricted. Monthly Spend Limits are not configuration; set them in **Budgets & Spend** or with `PUT /api/budget/limit`.
+
+```jsonc title="Workspace configuration"
+{
+  "gateway": {
+    "limits": {
+      "rpm": 300,
+      "tpm": 500000,
+    },
+    "models": ["bymorning/gpt-5.6-luna", "kimi-k2p6"],
+  },
+}
+```
+
+| Property     | Unit and behavior                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------ |
+| `limits.rpm` | Admitted requests in the trailing 60 seconds, aggregated across all Workspace inference callers.       |
+| `limits.tpm` | Settled input, output, and reasoning tokens in the trailing 60 seconds, aggregated across all callers. |
+| `models`     | Exact provider-qualified public Model IDs allowed for inference. An empty array denies every Model.    |
+
+Gateway and Session inference participate in the same Workspace RPM and TPM totals, including background Session calls.
+
+- Gateway receives only the Workspace and does not apply User or Service Account activity overrides.
+- Gateway usage is attributed to the Workspace; Session usage remains attributed to the Session's User.
+- Set `rpm` or `tpm` to `0` to deny admission immediately. Values must be non-negative integers.
+- TPM excludes cache read and cache write tokens.
+- RPM and TPM use process-local sliding windows.
+- The built-in Limiter Plugin consumes the configured caps on admission. Shared Limiter state survives Plugin reload; a new activation does not reset counters.
+
+## Providers
+
+Set `providers.activation` to `auto`, `enabled`, or `disabled`. Automatic activation requires a supported Connection or explicit no-auth configuration. Only Workspace administrators can change activation through `PUT /api/config` or `PUT /api/providers/activation`.
+
+```jsonc title="Workspace configuration"
+{
+  "providers": {
+    "activation": {
+      "amazon-bedrock": "enabled",
+    },
+    "allow": ["openai", "anthropic"],
+  },
+}
+```
+
+Omit `providers.activation[provider]` to inherit the installation or Plugin mode. Explicitly enable Amazon Bedrock to use the deployment AWS credential chain; a deployment role or default region does not activate it automatically.
+
+Omit `providers.allow` to admit every active Provider. Set it to `[]` to admit none. Session and Gateway inference refuse a Provider that is not on the allowlist. Admission is distinct from activation, Limiter admission by Model identity, and Permission. Do not put a Provider allowlist in `plugins[].options`.
+
+## Routing
+
+`routing` chooses which Catalog Model a request uses. Each rule has `match` conditions and a `to` target: one Model, or Tiers a judge Model chooses between. Model references use `provider` and `id`, not `model`.
+
+```jsonc title="Workspace configuration"
+{
+  "routing": [
+    {
+      "match": { "model": { "provider": "openai", "id": "gpt-5" } },
+      "to": { "provider": "anthropic", "id": "claude-sonnet-5" }
+    },
+    {
+      "match": { "model": { "provider": "auto", "id": "general" } },
+      "to": {
+        "tiers": [
+          { "name": "fast", "model": { "provider": "anthropic", "id": "claude-haiku-5" }, "description": "Short questions" },
+          { "name": "deep", "model": { "provider": "anthropic", "id": "claude-opus-5" }, "description": "Multi-step work" }
+        ],
+        "default": "fast",
+        "judge": { "model": { "provider": "anthropic", "id": "claude-haiku-5" } }
+      }
+    }
+  ]
+}
+```
+
+- Omit `routing`, or set it to `[]`, to route nothing.
+- The last matching rule decides. A rule needs at least one condition.
+- Conditions: `model`, `purpose`, `text`, `context`, `images`, `agent`, and `tool`. A `tool` condition applies to Session conversation turns from the next participant message.
+- A Session routes once per participant message; LLM Gateway routes once per participant ask.
+- Rules written as `{ "from", "when", "to" }` still load and are saved in the `match` form.
+- Only Workspace administrators change `routing`. Saving refuses unknown Models, a missing default Tier, and invalid patterns.
+- The Model still owns destination, including endpoint, upstream name, and authentication.
+
+See [Routing](/configure/policies#routing) for conditions, Auto names, Tiers, and the judge.
+
+Do not put routing rules in `plugins[].options`. Spend Limits remain Budget; set them with `PUT /api/budget/limit`.
+
+## Spend
+
+A Spend Limit is a USD amount one Holder may spend per UTC calendar month. ByMorning keeps three kinds of Holder: the Workspace, each member, and each Service Account. Before any inference runs, the edge reserves against every Holder the caller implies — the Workspace plus the calling member or Service Account — and refuses with `429` and a `retry-after` header when any of them is exhausted. Session inference reserves against the Workspace and the Session's member before the model is called.
+
+```bash title="Set a Service Account limit of 25 USD per month"
+curl -X PUT "$APP_ORIGIN/api/budget/limit?workspace=$WORKSPACE" \
+  -H "content-type: application/json" \
+  -d '{ "target": { "type": "service_account", "serviceAccountID": "sva_..." }, "amount": 25 }'
+```
+
+Omit `amount` to clear a limit. `GET /api/budget` returns the current-month standing — spent and optional limit — for the Workspace, every member, and every active Service Account. A Holder without a limit is unrestricted but still accrues spend, so a limit set later applies to the month's existing spend. Set `amount` to `0` to deny immediately.
+
+## Search
+
+Set `websearch` to `false` to disable the default web-search provider. Set it to an object containing `provider` to select a registered provider ID or randomized provider selection.
+
+```jsonc title="Workspace configuration"
+{
+  "websearch": { "provider": "tavily" },
+}
+```
+
+```jsonc title="Random provider selection"
+{
+  "websearch": { "provider": "random" },
+}
+```
+
+Selection does not create a connection. The chosen provider must be registered. Its plugin determines whether it needs a stored Integration connection, a server environment credential, or no credential. An omitted `websearch` field uses randomized selection among the registered providers. See [Integrations](/configure/integrations) for discovery and credentials.
+
+## Plugins
+
+The `plugins` array applies additions, configuration, and removals from first to last.
+
+```jsonc title="Workspace configuration"
+{
+  "plugins": [
+    "/srv/bymorning/plugins/audit.ts",
+    { "package": "@example/review-plugin@2.1.0", "options": { "strict": true } },
+    "-company.*",
+    "company.review",
+  ],
+}
+```
+
+| Entry                                         | Behavior                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `"target"`                                    | Enable a known matching plugin ID, or load the target as a server path or package.          |
+| `{ "package": "target", "options": { ... } }` | Apply the same resolution and pass non-secret options to the activated definition.          |
+| `"-selector"`                                 | Disable definitions matching an exact ID, `*`, or `prefix.*` at that point in the sequence. |
+
+Positive `*`, values ending in `.*`, and values beginning with `bymorning.` are selectors rather than package targets. A later positive operation can re-enable a known definition. ByMorning resolves all targets on the server:
+
+- Absolute paths and `file://` URLs refer to server-local files.
+- Relative paths resolve from the configuration document's directory. The persisted Workspace document has no path, so its relative targets resolve from the server process working directory.
+- Package targets resolve from the running installation first. If missing, ByMorning installs the exact target with `bun add --ignore-scripts` in `~/.cache/bymorning/plugins/` and resolves it there.
+
+Prefer absolute server paths or explicit package targets in deployments. Package fallback requires Bun, registry access, and a writable server cache.
+
+- A successful `PUT` waits for plugin reconciliation before responding.
+- `refresh` schedules reconciliation only when the loaded value differs from active memory, then waits for activation to settle.
+- Configured absolute entrypoint files are watched and schedule reloads when they change. Package targets and transitive imports are not watched.
+- Project code plugin entrypoints under `plugin/` are discovered separately; do not list them here.
+
+See [Plugins](/configure/plugins) for source ordering, Project discovery, reload limitations, and failures.
+
+## Models
+
+`GET /api/config` and successful update responses include `default_model` and `model_policy`. Generic `PUT /api/config` excludes both fields and preserves their current persisted values. Use these dedicated operations instead:
+
+| Change                             | Operation                 |
+| ---------------------------------- | ------------------------- |
+| Enable or disable a Model          | `PUT /api/models/toggle`  |
+| Select the preferred default Model | `PUT /api/models/default` |
+
+See [Models](/configure/models) for request examples and effective-default fallback behavior.

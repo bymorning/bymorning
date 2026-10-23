@@ -1,0 +1,23 @@
+id: no-explicit-inferred-variable-type
+language: TypeScript
+message: Let initialized variable types be inferred. Put necessary types on inputs or constructors.
+severity: error
+rule:
+  all:
+    - kind: variable_declarator
+    - has:
+        field: type
+        kind: type_annotation
+    - has:
+        field: value
+        regex: .+
+    - not:
+        any:
+          - has:
+              field: value
+              kind: array
+              regex: ^\[\]$
+          - has:
+              field: value
+              kind: object
+              regex: ^\{\}$

@@ -1,0 +1,7 @@
+id: no-pass-through-service-layer
+valid:
+  - Layer.effect(Service, Effect.map(Service, (service) => service))
+  - Layer.succeed(Service, service)
+invalid:
+  - Layer.effect(Service, Service)
+  - Layer.effect(EventHub.Service, EventHub.Service)

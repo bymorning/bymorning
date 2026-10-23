@@ -1,0 +1,8 @@
+id: no-production-compile-outside-roots
+snapshots:
+  LayerNode.compile(root):
+    labels:
+    - source: LayerNode.compile(root)
+      style: primary
+      start: 0
+      end: 23

@@ -1,0 +1,81 @@
+---
+title: Configuration surfaces
+description: Choose the configuration surface that owns each ByMorning setting.
+---
+
+ByMorning separates shared runtime configuration, secrets, Project behavior, browser preferences, and deployment settings. Change the narrowest surface that owns the behavior.
+
+| Surface                      | Scope and persistence                                                                          | Put here                                                                                                               | Do not put here                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Workspace configuration      | One persisted virtual JSON document per Workspace                                              | Session defaults, Permission rules, plugin sources, Tool output limits, outbound MCP definitions, web-search selection | Credentials, browser layout, deployment infrastructure |
+| Model management             | Server-owned fields in the Workspace configuration record                                      | Enabled Models and the preferred default Model                                                                         | Generic `PUT /api/config` payloads                     |
+| Integrations and Credentials | Workspace-scoped stored credentials, OAuth client configuration, or process-backed connections | API keys, OAuth grants, AWS credentials, active connection selection                                                   | Plugin `options`, Project files, `mcp.headers`         |
+| Project plugin files         | Files in one Project                                                                           | Member-hosted Project code Plugins and hooks                                                                           | Workspace package Plugins or deployment settings       |
+| Browser-local preferences    | One browser profile's local storage                                                            | Theme, layout, disclosure state, keybindings, editor text, and other UI state                                           | Shared runtime policy or secrets                       |
+| Deployment environment       | One server process or deployment                                                               | Database, public origin, authentication, cookie keys, telemetry, and environment-backed service credentials            | Per-Workspace choices                                  |
+
+## Workspace
+
+Workspace configuration is persisted for the Workspace and presented to the runtime as one virtual configuration document. It has no editable filesystem path. Every member using that Workspace observes the same active settings.
+
+- Use the authenticated `GET /api/config`, `PUT /api/config`, and `POST /api/config/refresh` operations.
+- `PUT` replaces all client-owned fields rather than patching selected keys.
+- Read [Workspace configuration](/configure/workspace-configuration) before updating it.
+
+The document controls these domains:
+
+- `default_agent` and `compaction` set shared Session behavior.
+- `permissions` supplies Workspace Permission rules.
+- `providers` admits Providers by name.
+- `routing` rewrites which Catalog Model a request uses.
+- `plugins` selects server-resolved plugin definitions and packages.
+- `tool_output` bounds Model-visible Tool results.
+- `mcp` defines outbound MCP servers.
+- `websearch` selects or disables the default web-search provider.
+
+The server also returns `default_model` and `model_policy` in this document, but it owns their mutation.
+
+## Models
+
+Use `PUT /api/models/toggle` to enable or disable a Model. Use `PUT /api/models/default` to select the preferred default. The server reconciles those changes into `model_policy` and `default_model` while preserving catalog history.
+
+- Do not send these fields to `PUT /api/config`; its public request schema excludes them.
+
+See [Models](/configure/models) for connection, availability, and effective-default fallback.
+
+## Credentials
+
+Use Integration discovery and connection operations for API keys, OAuth grants, command credentials, and AWS credentials. Stored credentials belong to a Workspace but are not fields in its configuration document. Integration responses expose connection metadata without returning credential material.
+
+- Environment-backed Integration connections are discovered from the server process environment. They have no stored Credential ID, so you cannot rename, activate, or remove them through the Credential API.
+- Treat Workspace plugin `options` as non-secret.
+- Configuration reads also return `mcp.headers`, so do not use that field as a general secret store.
+
+See [Integration authentication](/developer-reference/integration-authentication) and [Integrations](/configure/integrations).
+
+## Projects
+
+Project Plugins are source files at `plugin/<name>.ts` or `plugin/<name>/index.ts`. ByMorning discovers these files from Project storage and reloads their member-hosted activation when files under `plugin/` change.
+
+- Use Workspace configuration and an explicit `scope: "workspace"` Plugin for behavior that must also affect Gateway inference.
+- Do not add a Project entrypoint to the Workspace `plugins` array.
+- Workspace plugin targets resolve on the server, while Project plugins are materialized and discovered for their owning Project.
+
+See [Plugins](/configure/plugins), [Policies](/configure/policies), and the [developer plugin API](/developer-reference/plugins).
+
+## Appearance
+
+The web application stores appearance, layout, sidebar state, keybindings, prompt editors, and similar interaction state in browser local storage. Keys can be global or scoped to a Workspace, Project, Session, or editor.
+
+- These values are not synchronized through Workspace configuration.
+- Clearing site data can remove them, and another browser profile does not inherit them.
+- Never rely on browser-local state to enforce Permission, plugin, Model, or Provider behavior.
+
+## Runtime
+
+Environment variables configure the server process. They establish database connectivity, the trusted application origin, authentication, cookie encryption, telemetry, and optional environment-backed Integration connections.
+
+- Changing Workspace configuration cannot change those values.
+- Update your deployment environment and restart or redeploy the affected process when a runtime variable changes.
+
+See [Server runtime](/configure/server-runtime) for the validated variables and secret-handling boundary. Use the [generated API reference](/api) for authoritative HTTP request and response schemas.

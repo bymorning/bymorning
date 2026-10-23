@@ -1,0 +1,29 @@
+title = "ByMorning gitleaks configuration"
+
+# The default rule set, plus an allowlist for material that is not a real
+# credential. Everything below is a checked-in test fixture or a content hash.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Reviewed non-credentials: test fixtures and content hashes"
+paths = [
+  # Self-signed TLS fixture for listener tests.
+  '''^packages/server/test/fixtures/tls\.ts$''',
+  # Models.dev content hashes (git SHAs), not keys.
+  '''^packages/models/generated/provenance\.json$''',
+  '''^packages/models/source/models-dev/pin\.json$''',
+]
+regexes = [
+  # Fake Service Account key hardcoded in web tests.
+  '''bms_live_9f8e7d6c5b4a3f2e1d0c''',
+  # Azurite's documented, public development storage account key.
+  '''Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==''',
+  # Fake Key Vault key version in the Azure host test.
+  '''8f3a2c1b4d5e6f708192a3b4c5d6e7f8''',
+  # Public CPython release-signing key fingerprint, an ENV entry of python:3.12-slim
+  # recorded in the execution image's vulnerability report.
+  '''GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305''',
+  # Allowlist regexes match the extracted secret, which is the bare fingerprint.
+  '''^7169605F62C751356D054A26A821E680E5FA6305$''',
+]

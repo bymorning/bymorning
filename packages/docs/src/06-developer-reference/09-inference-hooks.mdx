@@ -1,0 +1,114 @@
+---
+title: Inference hooks
+description: Route requests and admit physical inference attempts with scoped Plugin callbacks.
+---
+
+Register inference hooks on a Workspace Plugin to affect both Sessions and LLM Gateway. Use `model.request` for mutable request customization and `model.invoke` for admission of the final destination.
+
+```ts title="plugins/model-access.ts"
+import { Plugin } from "@bymorning/plugin"
+import { ModelError } from "@bymorning/schema/plugin-model"
+
+export default Plugin.define({
+  id: "company.model-access",
+  scope: "workspace",
+  async setup(context) {
+    await context.session.hook("model.invoke", (input) => {
+      if (input.model.provider === "restricted") {
+        return new ModelError({ reason: "denied", message: "This Provider is restricted." })
+      }
+    })
+    await context.gateway.hook("model.invoke", (input) => {
+      if (input.model.provider === "restricted") {
+        return new ModelError({ reason: "denied", message: "This Provider is restricted." })
+      }
+    })
+  },
+})
+```
+
+Add this server-local file to Workspace `plugins` configuration. Await each registration during setup. A returned `ModelError` is an expected refusal; a thrown or rejected callback is a Plugin failure.
+
+## Request
+
+Gateway `model.request` receives the caller-native body, not a forced Chat Completions representation:
+
+```ts title="plugins/gateway-routing.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "company.gateway-routing",
+  scope: "workspace",
+  async setup(context) {
+    await context.gateway.hook("model.request", (input) => {
+      if (input.requestedModel === "company-default") {
+        input.model = "openai/gpt-5.6"
+      }
+    })
+  },
+})
+```
+
+Choose a destination available in your Catalog. The `model` field controls routing. ByMorning reparses the resulting body, validates stream settings, resolves the destination, and checks protocol compatibility. `protocol`, `requestedModel`, and `stream` are read-only facts. Invalid callback output is a server failure.
+
+Session `model.request` retains its own input representation. Register a separate Session callback when routing must affect both entrypoints, or set `Config.routing`. `Config.routing` applies before these hooks run: `requestedModel` is what the caller asked for, including an Auto name, and `model` starts as the routed Model. A hook cannot rewrite a request to an Auto name. Routing judge requests use purpose `route`. Static endpoints and authentication belong to Catalog, Provider, and Integration.
+
+## Invoke
+
+`model.invoke` receives frozen final selection facts. It cannot reroute an admitted call.
+
+```ts
+await context.session.hook("model.invoke", (input) => {
+  if (input.model.provider === "restricted") {
+    return new ModelError({ reason: "denied", message: "This Provider is restricted." })
+  }
+})
+```
+
+| Fact | Meaning |
+| --- | --- |
+| `id` | Correlation ID for one physical attempt; a retry gets another ID |
+| `workspaceID` | Workspace in which inference runs |
+| `model` | Resolved Model reference |
+| `publicModel` | Canonical public Model identifier |
+| `stream` | Whether this attempt streams |
+| Session-only `sessionID`, `messageID?`, `agent`, `purpose` | Session facts; purpose is `assistant`, `generate`, `compaction`, or `title` |
+| Gateway-only `protocol` | Caller protocol; no User, Service Account, or Session identity |
+
+Workspace hooks run before member hooks in Sessions. LLM Gateway uses Workspace hooks only. Any admission callback may refuse; later callbacks cannot turn a refusal into an allowance.
+
+## Usage
+
+Promise invocation inputs expose `signal`, `onUsage(callback)`, and `onClose(callback)`. Register observers and cleanup while the admission callback runs.
+
+```ts
+await context.gateway.hook("model.invoke", (input) => {
+  input.onUsage((tokens) => console.log(tokens))
+  input.onClose(() => console.log("closed"))
+})
+```
+
+- `onUsage` receives frozen normalized Tokens at most once, after the owning executor successfully records authoritative Usage. Missing usage remains unknown.
+- All registered usage observers run even if an earlier observer fails. A Usage write failure stays visible and does not trigger a successful usage notification.
+- `onClose` runs once when the invocation closes, including failed admission, upstream failure, cancellation, or body abandonment. Finalizers run in reverse registration order.
+- A streaming invocation stays alive through body consumption. Returning response headers does not close it.
+- Reload pauses new admission and drains active invocations before replacing their Plugin activation. Long streams can delay reload. Cancel an abandoned stream so its resources can close.
+
+Effect-native callbacks receive the physical attempt's Scope. The registration Scope still belongs to Plugin activation. Keep resources for one inference attempt in the invocation Scope.
+
+## Authority
+
+Plugins supply rules; they do not replace the owning authorities:
+
+| Authority | Responsibility |
+| --- | --- |
+| Permission | Permanent Tool rules and once-only approvals |
+| Budget | Spend Limits by Holder; reserved by the edge before hooks run, settled after usage |
+| Limiter | Model, request, and token allowance |
+| Usage | Authoritative pricing, recording, and reporting |
+| Catalog | Model and Provider configuration |
+| Instruction | Durable company guidance |
+
+The built-in `bymorning.limiter` Plugin consumes shared `Config.gateway` activity caps for Gateway and Session inference, including background calls. Spend Limits are not a Plugin concern: the Gateway HTTP middleware and the Session Provider reserve through Budget before any hook runs. Required activation failures block inference. Keep hard caps out of Plugin options.
+
+Gateway custom denial returns a native `403`; Spend Limit and rate refusal return `429`; unavailable Plugin dependencies return `503` before response commitment. After streaming headers are committed, failures use the stream-error path. `onUsage` cannot rewrite the response stream.

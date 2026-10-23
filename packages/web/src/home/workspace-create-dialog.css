@@ -1,0 +1,110 @@
+[data-component="workspace-create-dialog"] {
+  width: min(520px, calc(100vw - 32px));
+  height: auto;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-form"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-fields"] {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0 16px;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-instructions"],
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-notice"] {
+  grid-column: 1 / -1;
+  min-width: 0;
+  width: 100%;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-instructions"] {
+  align-items: stretch;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-picker"],
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-path"],
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-upload-error"] {
+  grid-column: 1 / -1;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-picker"] {
+  display: grid;
+  gap: 8px;
+  color: var(--color-text-base);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-picker"] input {
+  min-width: 0;
+  color: var(--color-text-base);
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-picker"] span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-file-upload-error"] {
+  margin: 0;
+  color: var(--color-danger-fg);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-notice"] {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border-base);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-layer-2);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="workspace-create-dialog"] [data-slot="workspace-create-dialog-footer"] {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+[data-component="workspace-file-action"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="workspace-file-action"] [data-slot="workspace-file-action-explanation"] {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+@media (max-width: 600px) {
+  [data-component="workspace-create-dialog"] [data-slot="workspace-create-fields"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-component="workspace-file-action"] {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  [data-component="workspace-create-dialog"] [data-slot="workspace-create-dialog-footer"] {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}

@@ -1,0 +1,110 @@
+@scope ([data-session-ui]) {
+  [data-component="collapsible"] {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    overflow: visible;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    transition: background-color 150ms ease;
+
+    &.tool-collapsible {
+      --tool-content-gap: 4px;
+
+      gap: var(--tool-content-gap);
+    }
+
+    [data-slot="collapsible-trigger"] {
+      display: flex;
+      width: 100%;
+      height: 32px;
+      align-items: center;
+      align-self: stretch;
+      padding: 0;
+      color: var(--color-text-base);
+      cursor: default;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 20px;
+      user-select: none;
+
+      [data-slot="collapsible-arrow"] {
+        display: flex;
+        width: 24px;
+        height: 24px;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 150ms ease;
+      }
+
+      [data-slot="collapsible-arrow-icon"] {
+        display: inline-flex;
+        color: var(--color-icon-muted);
+        transform: rotate(-90deg);
+        transition: transform 150ms ease;
+      }
+
+      &:hover [data-slot="collapsible-arrow"],
+      &[aria-expanded="true"] [data-slot="collapsible-arrow"] {
+        opacity: 1;
+      }
+
+      &[aria-expanded="true"] [data-slot="collapsible-arrow-icon"] {
+        transform: rotate(0deg);
+      }
+
+      &:focus-visible {
+        outline: none;
+        background: var(--color-overlay-hover);
+      }
+
+      &[data-disabled] {
+        cursor: not-allowed;
+      }
+
+      &[data-hide-details="true"] {
+        height: auto;
+        align-items: stretch;
+      }
+    }
+
+    [data-slot="collapsible-content"] {
+      overflow: hidden;
+
+      &[data-expanded] {
+        overflow: visible;
+      }
+    }
+
+    &[data-variant="ghost"] {
+      border: 0;
+      background: transparent;
+
+      > [data-slot="collapsible-trigger"] {
+        border: 0;
+        padding: 0;
+        background: transparent;
+
+        &:focus-visible {
+          outline: none;
+          background: var(--color-overlay-hover);
+        }
+
+        &[data-disabled] {
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    &[data-variant="ghost"][data-scope="filetree"] > [data-slot="collapsible-trigger"] {
+      height: 24px;
+    }
+
+    &[data-variant="ghost"][data-scope="file-tree-v2"] > [data-slot="collapsible-trigger"] {
+      height: 28px;
+    }
+  }
+}

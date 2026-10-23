@@ -1,0 +1,32 @@
+{
+  "name": "@bymorning/plugin",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./host": "./src/host.ts",
+    "./effect": "./src/effect/index.ts",
+    "./effect/*": "./src/effect/*.ts",
+    ".": "./src/promise/index.ts",
+    "./promise/*": "./src/promise/*.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/provider": "3.0.8",
+    "@bymorning/client": "workspace:*",
+    "@bymorning/protocol": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "@bymorning/util": "workspace:*",
+    "@opencode-ai/ai": "catalog:",
+    "@opencode-ai/codemode": "catalog:",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

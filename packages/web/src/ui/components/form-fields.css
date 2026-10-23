@@ -1,0 +1,6 @@
+[data-component="form-fields"][data-appearance="full-width"] {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 16px;
+}

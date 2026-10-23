@@ -1,0 +1,188 @@
+diff --git a/dist/protocols/openai-chat.d.ts b/dist/protocols/openai-chat.d.ts
+index d280be1b93185b8a17337ee2ccce462b91051c27..a3d8cd9bb4b848a202d7e5fcb76b29042d950811 100644
+--- a/dist/protocols/openai-chat.d.ts
++++ b/dist/protocols/openai-chat.d.ts
+@@ -271,8 +271,14 @@ interface PendingToolDelta {
+ }
+ export interface ParserState {
+     readonly providerMetadataKey: string;
+-    readonly tools: ToolStream.State<number>;
+-    readonly pendingTools: Partial<Record<number, PendingToolDelta>>;
++    readonly tools: ToolStream.State<string>;
++    readonly pendingTools: Partial<Record<string, PendingToolDelta>>;
++    readonly toolIdentities: Partial<Record<string, {
++        readonly index: number;
++        readonly providerID?: string;
++        readonly effectiveID: string;
++    }>>;
++    readonly usedToolCallIDs: ReadonlySet<string>;
+     readonly toolCallEvents: ReadonlyArray<LLMEvent>;
+     readonly usage?: Usage;
+     readonly finishReason?: FinishReasonDetails;
+@@ -281,8 +287,9 @@ export interface ParserState {
+     readonly reasoningDetails: Array<unknown>;
+     readonly reasoningDetailsObserved: boolean;
+     readonly reasoningEmitted: boolean;
+-    readonly latestToolIndex?: number;
+-    readonly nextToolIndex: number;
++    readonly latestToolKey?: string;
++    readonly latestToolKeys: Partial<Record<number, string>>;
++    readonly nextToolKey: number;
+     readonly requireFinishReason: boolean;
+ }
+ interface LoweringOptions {
+diff --git a/dist/protocols/openai-chat.js b/dist/protocols/openai-chat.js
+index 627dcbf81c738fa45bb95992c1f6e44bf1128b78..f23b5174749c890bd9ffff3b65aa8f4cb9ab15bd 100644
+--- a/dist/protocols/openai-chat.js
++++ b/dist/protocols/openai-chat.js
+@@ -683,12 +683,6 @@ const mapUsage = (usage, providerMetadataKey) => {
+         providerMetadata: { [providerMetadataKey]: usage },
+     });
+ };
+-const toolIndexByID = (tools, pendingTools, id) => {
+-    if (!id)
+-        return undefined;
+-    const entry = Object.entries({ ...pendingTools, ...tools }).find(([, tool]) => tool?.id === id);
+-    return entry ? Number(entry[0]) : undefined;
+-};
+ const reasoningDelta = (delta, configuredField) => {
+     if (!delta)
+         return undefined;
+@@ -777,8 +771,11 @@ const step = (state, event) => Effect.gen(function* () {
+     const toolDeltas = delta?.tool_calls ?? [];
+     let tools = state.tools;
+     let pendingTools = state.pendingTools;
+-    let latestToolIndex = state.latestToolIndex;
+-    let nextToolIndex = state.nextToolIndex;
++    let toolIdentities = state.toolIdentities;
++    let usedToolCallIDs = state.usedToolCallIDs;
++    let latestToolKey = state.latestToolKey;
++    let latestToolKeys = state.latestToolKeys;
++    let nextToolKey = state.nextToolKey;
+     let lifecycle = state.lifecycle;
+     const reasoning = reasoningDelta(delta, state.reasoningField);
+     const hasLateContent = Boolean(delta?.content) ||
+@@ -812,32 +809,70 @@ const step = (state, event) => Effect.gen(function* () {
+         lifecycle = Lifecycle.textDelta(lifecycle, events, "text-0", delta.content);
+     if (delta?.refusal)
+         lifecycle = Lifecycle.textDelta(lifecycle, events, "text-0", delta.refusal);
+-    // Compatible providers may omit indexes. Prefer durable identity, then use
+-    // batch position for parallel deltas or the latest call for sparse chunks.
++    // Declared indexes are the normal assembly boundary. Some compatible
++    // providers reuse one index for multiple calls; retain separate identities
++    // only when their nonempty provider IDs make that recoverable.
+     for (const [position, tool] of toolDeltas.entries()) {
+-        const matched = toolIndexByID(tools, pendingTools, tool.id || undefined);
+-        const fallback = toolDeltas.length > 1 ? position : (latestToolIndex ?? position);
+-        const fallbackTool = tools[fallback] ?? pendingTools[fallback];
+-        const index = tool.index ?? matched ?? (tool.id && fallbackTool?.id && fallbackTool.id !== tool.id ? nextToolIndex : fallback);
+-        const current = tools[index];
+-        const pending = pendingTools[index];
+-        const id = current?.id ?? pending?.id ?? (tool.id || undefined);
++        const providerID = tool.id || undefined;
++        const providerMatches = providerID
++            ? Object.entries(toolIdentities).filter(([, identity]) => identity?.providerID === providerID)
++            : [];
++        if (tool.index === undefined && providerMatches.length > 1)
++            return yield* ProviderShared.eventError(ADAPTER, "OpenAI Chat tool call delta has an ambiguous id");
++        const fallbackIndex = toolDeltas.length > 1
++            ? position
++            : latestToolKey !== undefined
++                ? toolIdentities[latestToolKey]?.index ?? position
++                : position;
++        const index = tool.index ?? (providerMatches.length === 1 ? providerMatches[0][1].index : fallbackIndex);
++        const indexKeys = Object.entries(toolIdentities)
++            .filter(([, identity]) => identity?.index === index)
++            .map(([key]) => key);
++        const idMatches = providerID
++            ? indexKeys.filter((key) => toolIdentities[key]?.providerID === providerID)
++            : [];
++        const unidentified = indexKeys.filter((key) => toolIdentities[key]?.providerID === undefined);
++        // Some compatible gateways reuse index zero for every call, then omit
++        // identity fields from continuation chunks. Continue the latest call at
++        // that declared index, while explicit IDs remain authoritative.
++        const latestIndexKey = latestToolKeys[index] ?? indexKeys.at(-1);
++        const existingKey = providerMatches.length === 1 && tool.index === undefined ? providerMatches[0][0] : undefined;
++        const key = existingKey ??
++            idMatches[0] ??
++            (!providerID ? latestIndexKey : undefined) ??
++            (providerID && indexKeys.length === 1 && unidentified.length === 1 ? unidentified[0] : undefined) ??
++            `tool-${nextToolKey}`;
++        const identity = toolIdentities[key];
++        if (!identity) {
++            const effectiveID = providerID && !usedToolCallIDs.has(providerID)
++                ? providerID
++                : `tool_${crypto.randomUUID().replaceAll("-", "")}`;
++            toolIdentities = { ...toolIdentities, [key]: { index, providerID, effectiveID } };
++            usedToolCallIDs = new Set([...usedToolCallIDs, effectiveID]);
++            nextToolKey += 1;
++        }
++        else if (!identity.providerID && providerID) {
++            toolIdentities = { ...toolIdentities, [key]: { ...identity, providerID } };
++        }
++        const current = tools[key];
++        const pending = pendingTools[key];
++        const id = current?.id ?? pending?.id ?? toolIdentities[key]?.effectiveID;
+         const name = current?.name ?? pending?.name ?? (tool.function?.name || undefined);
+         const text = `${pending?.input ?? ""}${tool.function?.arguments ?? ""}`;
+-        latestToolIndex = index;
+-        nextToolIndex = Math.max(nextToolIndex, index + 1);
++        latestToolKey = key;
++        latestToolKeys = { ...latestToolKeys, [index]: key };
+         if (!current && (!id || !name)) {
+             pendingTools = {
+                 ...pendingTools,
+-                [index]: { id: id || undefined, name: name || undefined, input: text },
++                [key]: { id: id || undefined, name: name || undefined, input: text },
+             };
+             continue;
+         }
+         if (pending) {
+             pendingTools = { ...pendingTools };
+-            delete pendingTools[index];
++            delete pendingTools[key];
+         }
+-        const result = ToolStream.appendOrStart(ADAPTER, tools, index, { id: id || undefined, name: name || undefined, text }, "OpenAI Chat tool call delta is missing id or name");
++        const result = ToolStream.appendOrStart(ADAPTER, tools, key, { id: id || undefined, name: name || undefined, text }, "OpenAI Chat tool call delta is missing id or name");
+         if (ToolStream.isError(result))
+             return yield* new AIError({
+                 reason: AIErrorReason.make({
+@@ -870,6 +905,8 @@ const step = (state, event) => Effect.gen(function* () {
+             providerMetadataKey: state.providerMetadataKey,
+             tools: finished?.tools ?? tools,
+             pendingTools,
++            toolIdentities,
++            usedToolCallIDs,
+             toolCallEvents: finished?.events ?? state.toolCallEvents,
+             usage,
+             finishReason,
+@@ -878,8 +915,9 @@ const step = (state, event) => Effect.gen(function* () {
+             reasoningDetails: state.reasoningDetails,
+             reasoningDetailsObserved,
+             reasoningEmitted,
+-            latestToolIndex,
+-            nextToolIndex,
++            latestToolKey,
++            latestToolKeys,
++            nextToolKey,
+             requireFinishReason: state.requireFinishReason,
+         },
+         events,
+@@ -938,13 +976,16 @@ export const protocol = Protocol.make({
+             providerMetadataKey: request.model.route.providerMetadataKey ?? String(request.model.provider),
+             tools: ToolStream.empty(),
+             pendingTools: {},
++            toolIdentities: {},
++            usedToolCallIDs: new Set(),
+             toolCallEvents: [],
+             lifecycle: Lifecycle.initial(),
+             reasoningField: request.model.compatibility?.reasoningField,
+             reasoningDetails: [],
+             reasoningDetailsObserved: false,
+             reasoningEmitted: false,
+-            nextToolIndex: 0,
++            latestToolKeys: {},
++            nextToolKey: 0,
+             requireFinishReason: request.model.compatibility?.requireFinishReason ?? true,
+         }),
+         step: (state, event) => (event === DONE ? Effect.succeed([state, []]) : step(state, event)),

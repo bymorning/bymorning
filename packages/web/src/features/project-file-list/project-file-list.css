@@ -1,0 +1,131 @@
+[data-component="project-file-list"] {
+  padding-bottom: 64px;
+}
+[data-slot="project-file-list-heading"] {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+[data-slot="project-file-list-heading"] h2,
+[data-slot="project-file-list-heading"] p {
+  margin: 0;
+}
+[data-slot="project-file-list-heading"] h2 {
+  font-size: 18px;
+  line-height: 26px;
+}
+[data-slot="project-file-list-heading"] p {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+[data-slot="project-file-list-heading"] label {
+  width: min(240px, 100%);
+}
+[data-component="project-file-list"] [data-slot="project-file-table-scroll"] {
+  width: 100%;
+  max-width: 100%;
+  max-height: 480px;
+  overflow: auto;
+  border: 1px solid var(--color-border-base);
+  border-radius: var(--radius-lg);
+}
+[data-component="project-file-list"] [data-slot="project-file-table-scroll"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+[data-component="project-file-list"] [data-slot="project-file-table"] {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: collapse;
+  color: var(--color-text-base);
+  font-size: 13px;
+  line-height: 20px;
+}
+[data-component="project-file-list"] [data-slot="project-file-table"] caption {
+  padding: 12px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-align: left;
+}
+[data-component="project-file-list"] [data-slot="project-file-table"] th,
+[data-component="project-file-list"] [data-slot="project-file-table"] td {
+  border-top: 1px solid var(--color-border-base);
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+[data-component="project-file-list"] [data-slot="project-file-table"] th {
+  background: var(--color-bg-layer-2);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+[data-component="project-file-list"] [data-slot="project-file-table"] td:first-child {
+  width: 100%;
+  min-width: 240px;
+}
+[data-component="project-file-list"]
+  [data-slot="project-file-table"]
+  tbody
+  tr:not([data-slot="project-file-table-spacer"])
+  td {
+  box-sizing: border-box;
+  height: 28px;
+  padding-block: 3px;
+}
+[data-component="project-file-list"] [data-slot="project-file-table"] [data-slot="project-file-table-spacer"] td {
+  border: 0;
+  padding: 0;
+}
+[data-component="project-file-list"] [data-slot="project-file-table-name"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+[data-component="project-file-list"] [data-slot="project-file-table-open"] {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-base);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 550;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-component="project-file-list"] [data-slot="project-file-table-open"]:hover {
+  text-decoration: underline;
+}
+[data-component="project-file-list"] [data-slot="project-file-table-open"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+[data-component="project-file-list"] [data-slot="project-file-list-message"],
+[data-component="project-file-list"] [data-slot="project-file-list-loading"],
+[data-component="project-file-list"] [data-slot="project-file-list-context"] {
+  margin: 0;
+  padding: 12px 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+[data-component="project-file-list"] [data-slot="project-file-list-message"][data-error] {
+  color: var(--color-danger-fg);
+}
+@media (max-width: 600px) {
+  [data-slot="project-file-list-heading"] {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  [data-slot="project-file-list-heading"] label {
+    width: 100%;
+  }
+  [data-component="project-file-list"] [data-slot="project-file-table"] {
+    min-width: 280px;
+  }
+}

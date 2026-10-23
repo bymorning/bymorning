@@ -1,0 +1,74 @@
+[data-component="new-session-project-picker"] [data-slot="dropdown-menu-trigger"] {
+  display: flex;
+  max-width: min(280px, calc(100vw - 80px));
+  height: 24px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-base);
+  outline: none;
+  cursor: default;
+}
+
+[data-component="new-session-project-picker"] [data-slot="dropdown-menu-trigger"]:where(:hover, [data-expanded]):not(:disabled) {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="new-session-project-picker"] [data-slot="dropdown-menu-trigger"]:active:not(:disabled, [data-expanded]) {
+  background: var(--color-overlay-pressed);
+}
+
+[data-component="new-session-project-picker"] [data-slot="dropdown-menu-trigger"]:focus-visible {
+  outline: 1px solid var(--color-border-focus);
+}
+
+[data-component="new-session-project-picker"] [data-slot="dropdown-menu-trigger"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-component="new-session-project-picker"] [data-slot="new-session-project-picker-trigger"] {
+  display: flex;
+  max-width: 100%;
+  min-width: 0;
+  height: 24px;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 8px;
+}
+
+[data-component="new-session-project-picker"] [data-slot="new-session-project-picker-label"] {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 530;
+  line-height: 16px;
+  letter-spacing: -0.04px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="new-session-project-picker"] [data-slot="new-session-project-picker-trigger"] > [data-slot="icon-svg"] {
+  flex: none;
+  color: var(--color-icon-muted);
+  transition: transform 120ms ease-out;
+}
+
+[data-component="new-session-project-picker"] [data-slot="dropdown-menu-trigger"][data-expanded] [data-slot="icon-svg"] {
+  transform: rotate(180deg);
+}
+
+[data-slot="new-session-project-picker-avatar"] {
+  display: block;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  flex: none;
+}
+
+[data-slot="new-session-project-picker-avatar"] > * {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,63 @@
+[data-component="restore-project-dialog"] [data-slot="restore-project-list"] {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-item"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border-base);
+  border-radius: var(--radius-lg);
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-text"] {
+  display: grid;
+  min-width: 0;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-name"] {
+  overflow: hidden;
+  color: var(--color-text-base);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-date"],
+[data-component="restore-project-dialog"] [data-slot="restore-project-status"],
+[data-component="restore-project-dialog"] [data-slot="restore-project-empty"] {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-status"],
+[data-component="restore-project-dialog"] [data-slot="restore-project-empty"] {
+  margin: 16px 0 0;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-status"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-empty"] p {
+  margin: 0;
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-empty"] p:first-child {
+  color: var(--color-text-base);
+}
+
+[data-component="restore-project-dialog"] [data-slot="restore-project-error"] {
+  margin: 16px 0 0;
+  color: var(--color-danger-fg);
+  font-size: 14px;
+  line-height: 20px;
+}

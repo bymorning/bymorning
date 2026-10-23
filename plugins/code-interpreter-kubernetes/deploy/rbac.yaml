@@ -1,0 +1,35 @@
+# Least privilege for the Gateway's service account, inside the sandbox namespace only (no ClusterRole).
+# No watch, pods/log, pods/attach, Secrets, ConfigMaps or Jobs: the plugin polls, and uses exec for all I/O.
+# Edit the subject to the Gateway's service account.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: bymorning-code-interpreter
+  namespace: bymorning-sandbox
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["create", "get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    # The exec WebSocket handshake is an HTTP GET, which the API server authorizes as "get" on pods/exec,
+    # and a POST-style connect as "create". Both are verified against a live API server by the integration test.
+    verbs: ["get", "create"]
+  # Needed only while requireNetworkPolicy is true (the default): startup and periodic check for the deny-all policy.
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bymorning-code-interpreter
+  namespace: bymorning-sandbox
+subjects:
+  - kind: ServiceAccount
+    name: bymorning-gateway # the Gateway's service account
+    namespace: bymorning # the Gateway's namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: bymorning-code-interpreter

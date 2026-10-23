@@ -1,0 +1,159 @@
+[data-component="command-dialog"] {
+  position: fixed;
+  top: max(48px, calc((100dvh - 480px) / 2));
+  width: min(calc(100vw - 24px), 640px);
+  height: auto;
+  min-height: 280px;
+  max-height: min(calc(100dvh - 96px), 480px);
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  background: var(--color-bg-base);
+  box-shadow: var(--shadow-floating);
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-body"] {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-search"] {
+  flex-shrink: 0;
+  padding: 6px;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-scroll"] {
+  min-height: 0;
+  flex: 1;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-results"] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 6px 6px 8px;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-group"] {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-group-title"] {
+  margin: 6px 0;
+  padding: 0 12px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 16px;
+  letter-spacing: -0.04px;
+  user-select: none;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-row"] {
+  display: flex;
+  width: 100%;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius);
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: default;
+  scroll-margin: 6px 0;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-row"][data-active] {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-row-main"] {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-row-icon"] {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-row-text"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-title"] {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-weight: 530;
+  line-height: 16px;
+  letter-spacing: -0.04px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="command-dialog"] :is([data-slot="command-dialog-description"], [data-slot="command-dialog-meta"]) {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 16px;
+  letter-spacing: -0.04px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-meta"] {
+  flex-shrink: 0;
+}
+
+[data-component="command-dialog"] [data-slot="command-dialog-state"] {
+  display: grid;
+  min-height: 120px;
+  place-items: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 16px;
+  letter-spacing: -0.04px;
+}
+
+@media (max-height: 375px) {
+  [data-component="command-dialog"] {
+    top: 12px;
+    min-height: 0;
+    max-height: calc(100dvh - 24px);
+  }
+}
+
+@media (max-width: 640px) {
+  [data-component="command-dialog"] [data-slot="command-dialog-row-text"] {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+  }
+
+  [data-component="command-dialog"] [data-slot="command-dialog-description"] {
+    max-width: 100%;
+  }
+}

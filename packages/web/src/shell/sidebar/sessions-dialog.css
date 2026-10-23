@@ -1,0 +1,64 @@
+[data-component="sessions-dialog"] [data-slot="sessions-section"] {
+  display: grid;
+  gap: 8px;
+}
+
+[data-component="sessions-dialog"] [data-slot="sessions-section"] + [data-slot="sessions-section"] {
+  margin-top: 24px;
+}
+
+[data-component="sessions-dialog"] [data-slot="sessions-heading"] {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 530;
+  letter-spacing: -0.04px;
+  color: var(--color-text-base);
+}
+
+[data-component="sessions-dialog"] [data-slot="session-list"],
+[data-component="sessions-dialog"] [data-slot="grant-list"] {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-component="sessions-dialog"] [data-slot="session-item"],
+[data-component="sessions-dialog"] [data-slot="grant-item"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+[data-component="sessions-dialog"] [data-slot="session-item"] + [data-slot="session-item"],
+[data-component="sessions-dialog"] [data-slot="grant-item"] + [data-slot="grant-item"] {
+  border-top: 1px solid var(--color-border-base);
+}
+
+[data-component="sessions-dialog"] [data-slot="session-item-text"] {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+[data-component="sessions-dialog"] [data-slot="session-item-title"] {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-base);
+  overflow-wrap: anywhere;
+}
+
+[data-component="sessions-dialog"] [data-slot="session-item-detail"] {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+[data-component="sessions-dialog"] [data-slot="sessions-empty"],
+[data-component="sessions-dialog"] [data-slot="sessions-status"] {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}

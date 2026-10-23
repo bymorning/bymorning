@@ -1,0 +1,326 @@
+---
+title: Inference API
+description: Call OpenAI, Anthropic, and Google-compatible endpoints backed by your Workspace's executable Models.
+---
+
+The Inference API exposes your Workspace's Models through OpenAI, Anthropic, and Google-compatible endpoints. Send a supported caller format with one API key. Gateway Plugins can customize the native request before destination resolution. The Gateway translates supported formats when needed and explicitly refuses features the destination cannot represent.
+
+```bash
+curl -X POST "https://<gateway>/inference/openai/v1/chat/completions" \
+  -H "Authorization: Bearer bm_…" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "glm-5p2", "messages": [{"role": "user", "content": "Say hi"}]}'
+```
+
+Every request is metered to your Workspace like Session usage, so gateway spend appears next to Session spend in [Gateway usage](/gateway/usage).
+
+Replace `https://<gateway>` in the examples with your ByMorning deployment host.
+
+## Auth
+
+Create a Service Account and key in the web app. Open **AI Gateway → Service accounts** at `/w/<workspace>/gateway/service-accounts`, create a Service Account, then create a key. Copy the `bm_…` secret when it is shown. ByMorning stores only its hash and never shows it again.
+
+Send the key as a bearer credential:
+
+```bash
+curl -X POST "https://<gateway>/inference/openai/v1/chat/completions" \
+  -H "Authorization: Bearer bm_…" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "glm-5p2", "messages": [{"role": "user", "content": "Say hi"}]}'
+```
+
+- Headers are checked in order: `Authorization: Bearer`, then `x-api-key`, then `x-goog-api-key`. Provider SDKs that send `x-api-key` or `x-goog-api-key` work without changes.
+- The credential selects the Workspace and Service Account. There is no workspace or organization header.
+- A credential starting with `bm_` is an inference API key. Any other credential is treated as a user OAuth access token, so a signed-in user can call the API with their own token.
+- Missing or invalid credentials return `401` with a `WWW-Authenticate: Bearer` header.
+
+Each request passes Workspace Plugin admission before the Gateway forwards it:
+
+| Layer | Controls | Denial |
+| --- | --- | --- |
+| Spend Limits | Monthly USD limits for the Workspace and the calling Service Account or member | `429` with `retry-after` until the month ends |
+| Workspace gateway config | Model allow-list, Workspace-wide `rpm` and `tpm` | `403` for a restricted Model, `429` for rate |
+| Workspace Plugin callback | Custom final-Model admission | `403` for refusal, `503` for an unavailable Plugin dependency |
+
+The server authenticates and authorizes the Actor, then passes only the Workspace to LLM Gateway. Gateway does not receive User or Service Account identity or apply their overrides. Gateway and Session inference share Workspace caps; Gateway usage is attributed to the Workspace.
+
+Spend Limits are checked before the request reaches the Gateway and settled with the priced usage after the response completes. `rpm` and `tpm` use 60-second windows; the token count settles with the real usage after the response completes.
+
+## Endpoints
+
+Every endpoint supports streaming. Set `"stream": true` in the body, or use `:streamGenerateContent` for Google. The Gateway preserves the caller's stream format, observes usage, and keeps invocation resources alive until body consumption ends. Cancellation closes the invocation and releases unsettled reservations.
+
+Model IDs are shared across endpoints: bare for direct Providers such as `gpt-5.6`, `claude-sonnet-5`, `gemini-2.5-flash`, and `glm-5p2`, and qualified for aggregator catalogs such as `opencode/<id>` and `bymorning/<id>`. A Model is callable only when its configured destination can represent the request, directly or through supported translation, and Workspace admission permits it.
+
+### Chat Completions
+
+`POST /inference/openai/v1/chat/completions`
+
+Compatible Models include `glm-5p2`, `kimi-k3`, `minimax-m3`, `opencode/kimi-k2.6`, `opencode/glm-5.2`, and `bymorning/deepseek-v4-pro`. This list is illustrative; call `GET /inference/openai/v1/models` for the full list.
+
+```bash
+curl -X POST "https://<gateway>/inference/openai/v1/chat/completions" \
+  -H "Authorization: Bearer bm_…" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "glm-5p2",
+    "messages": [{ "role": "user", "content": "Say hi" }]
+  }'
+```
+
+### Responses
+
+`POST /inference/openai/v1/responses`
+
+Compatible Models include `gpt-5.6`, `gpt-5.5-pro`, `gpt-5.3-codex`, `o3`, and `opencode/gpt-5.6-sol`. This list is illustrative; call `GET /inference/openai/v1/models` for the full list.
+
+```bash
+curl -X POST "https://<gateway>/inference/openai/v1/responses" \
+  -H "Authorization: Bearer bm_…" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5.6",
+    "input": "Say hi"
+  }'
+```
+
+### Messages
+
+`POST /inference/anthropic/v1/messages`
+
+Compatible Models include `claude-sonnet-5`, `claude-opus-5`, `claude-opus-4-8`, `claude-haiku-4-5`, and `opencode/claude-sonnet-5`. This list is illustrative.
+
+The Gateway adds `anthropic-version: 2023-06-01` when your request omits it.
+
+```bash
+curl -X POST "https://<gateway>/inference/anthropic/v1/messages" \
+  -H "Authorization: Bearer bm_…" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-5",
+    "max_tokens": 1024,
+    "messages": [{ "role": "user", "content": "Say hi" }]
+  }'
+```
+
+### GenerateContent
+
+`POST /inference/google/v1beta/models/{model}:generateContent`
+
+Compatible Models include `gemini-2.5-flash`, `gemini-2.5-pro`, `gemini-3.8-flash`, and `opencode/gemini-3.8-flash`. This list is illustrative.
+
+Google takes the Model from the URL path instead of the body. Stream with `:streamGenerateContent` instead of `:generateContent`. Percent-encode the `/` in qualified IDs, for example `opencode%2Fgemini-3.8-flash`.
+
+```bash
+curl -X POST "https://<gateway>/inference/google/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "Authorization: Bearer bm_…" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [{ "parts": [{ "text": "Say hi" }] }]
+  }'
+```
+
+### Models
+
+`GET /inference/openai/v1/models`
+
+Returns the Models executable on the two OpenAI-compatible endpoints, in OpenAI list shape:
+
+```jsonc
+{
+  "object": "list",
+  "data": [
+    { "id": "auto/general", "object": "model", "created": 1757000000, "owned_by": "bymorning" },
+    { "id": "gpt-5.6", "object": "model", "created": 1757000000, "owned_by": "bymorning" }
+  ]
+}
+```
+
+`GET /inference/anthropic/v1/models` returns the Models executable on the Anthropic Messages endpoint, in Anthropic list shape.
+
+```jsonc
+{
+  "data": [{ "type": "model", "id": "claude-sonnet-5", "display_name": "Claude Sonnet 5", "created_at": "2026-09-24T00:00:00.000Z" }],
+  "has_more": false,
+  "first_id": "claude-sonnet-5",
+  "last_id": "claude-sonnet-5"
+}
+```
+
+Both lists include each [Auto name](/configure/policies#auto) that has a target or Tier reachable in that format.
+
+## Headers
+
+Responses proxied from the upstream Provider carry these headers, including provider error responses. Errors generated by the Gateway itself do not.
+
+| Header | Value |
+| --- | --- |
+| `x-bymorning-request-id` | Gateway request ID, recorded with the usage row for this call |
+| `x-bymorning-endpoint-id` | Provider Endpoint that served the request, as `provider/model` |
+| `x-bymorning-upstream-model-id` | Upstream Model ID sent to the Provider |
+| `x-bymorning-route-cause` | How [Routing](/configure/policies#decisions) chose the Model: `rule`, `judge`, `pinned`, or `fallback`. Absent when no rule matched |
+| `x-bymorning-route-tier` | The Tier Routing chose, when the matched rule has Tiers |
+| `x-bymorning-route-fallback` | Why the default Tier served instead of a judged one: `timeout`, `invalid`, `unavailable`, `error`, or `unpinned`. Absent unless the cause is `fallback` |
+
+## Errors
+
+Errors the Gateway generates use the protocol you called: OpenAI `{ error: { message, type, code } }`, Anthropic `{ type: "error", error: { type, message } }`, and Google `{ error: { code, message, status } }`. An error response from the upstream Provider passes through unchanged.
+
+| Status | Meaning |
+| --- | --- |
+| `400` | Invalid JSON body or missing Model |
+| `401` | Missing or invalid credential |
+| `403` | Model denied by the Workspace allow-list or a Workspace Plugin |
+| `404` | `model_not_found`: unknown Model, an Auto name no rule matches, no active and executable Provider serves it for the protocol, or routing failed |
+| `429` | Spend Limit or rate limit (`rpm`/`tpm`) denial |
+| `499` | Caller disconnected before the response; empty body |
+| `502` | Upstream Provider request failed |
+| `503` | Required Plugin activation or inference dependency unavailable, or no Tier of the matched routing rule can serve the request |
+
+## Clients
+
+Point an SDK or CLI at the matching base path and pass the key as its API key.
+
+### SDK
+
+```ts
+import OpenAI from "openai"
+
+const openai = new OpenAI({
+  baseURL: "https://<gateway>/inference/openai/v1",
+  apiKey: "bm_…",
+})
+
+const response = await openai.responses.create({
+  model: "gpt-5.6",
+  input: "Summarize the incident",
+})
+```
+
+```ts
+import Anthropic from "@anthropic-ai/sdk"
+
+const anthropic = new Anthropic({
+  baseURL: "https://<gateway>/inference/anthropic",
+  apiKey: "bm_…",
+})
+
+const message = await anthropic.messages.create({
+  model: "claude-sonnet-5",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Say hi" }],
+})
+```
+
+```ts
+import { GoogleGenAI } from "@google/genai"
+
+const gemini = new GoogleGenAI({
+  apiKey: "bm_…",
+  httpOptions: { baseUrl: "https://<gateway>/inference/google" },
+})
+
+const answer = await gemini.models.generateContent({
+  model: "gemini-2.5-flash",
+  contents: "Say hi",
+})
+```
+
+### Claude Code
+
+Point Claude Code at `POST /inference/anthropic/v1/messages` so `claude` uses your Workspace key and available Anthropic Models. Give teammates the `bm_…` key. Do not share the upstream Anthropic API key.
+
+Connect the [Anthropic Provider](/gateway/models-and-providers) and enable the Claude Models you want before you configure Claude Code. Do not set `CLAUDE_CODE_USE_BEDROCK=1`. That sends Amazon Bedrock InvokeModel, which the Inference API does not expose.
+
+1. Create a Service Account key.
+
+   Open **AI Gateway → Service accounts**, create a Service Account, then create a key. Copy the `bm_…` secret when it is shown.
+
+2. Set the Claude Code environment.
+
+   Omit `/v1` from the base URL. Claude Code appends `/v1/messages`, which matches the Anthropic Messages endpoint.
+
+   ```bash
+   export ANTHROPIC_BASE_URL="https://<gateway>/inference/anthropic"
+   export ANTHROPIC_AUTH_TOKEN="bm_…"
+   unset ANTHROPIC_API_KEY
+   ```
+
+   `ANTHROPIC_AUTH_TOKEN` sends `Authorization: Bearer`. `ANTHROPIC_API_KEY` sends `x-api-key`. The Gateway accepts both. Prefer `ANTHROPIC_AUTH_TOKEN` and unset `ANTHROPIC_API_KEY` so Claude Code does not prompt to approve a first-party key.
+
+3. Persist the configuration.
+
+   Put the variables in `~/.claude/settings.json` so they apply to every `claude` process, including background agents. A settings-file `env` value wins over a shell export.
+
+   ```jsonc title="~/.claude/settings.json"
+   {
+     "env": {
+       "ANTHROPIC_BASE_URL": "https://<gateway>/inference/anthropic",
+       "ANTHROPIC_AUTH_TOKEN": "bm_…"
+     }
+   }
+   ```
+
+   Use the user file `~/.claude/settings.json`. A project `.claude/settings.json` applies only after Claude Code's first-run login, so Claude Code still asks for an Anthropic login if the key lives only there.
+
+4. Verify the connection.
+
+   Send the Anthropic Messages curl from [Messages](#messages) with the same key and a Workspace Claude Model such as `claude-sonnet-5`. Then run `claude` and `/status`.
+
+   `/status` must show your Gateway address as **Anthropic base URL** and `ANTHROPIC_AUTH_TOKEN` as the credential. A claude.ai login on that screen means the Gateway key did not reach the session.
+
+   Pin a Model Claude Code already knows, such as `claude-sonnet-5` or `claude-opus-5`. Match the ID to [Models](#models) or **AI Gateway → Models**.
+
+   To let [Routing](/configure/policies#auto) choose between cheaper and more capable Claude Models per request, pin an Auto name instead, such as `ANTHROPIC_MODEL=auto/claude`. Its Tiers must be Anthropic Models.
+
+   With `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`, Claude Code discovers Models from `GET /inference/anthropic/v1/models`, which lists the Workspace's Anthropic Models and every Auto name with an Anthropic Tier.
+
+In VS Code, set the same variables on the Claude Code extension:
+
+```jsonc
+{
+  "claudeCode.environmentVariables": [
+    { "name": "ANTHROPIC_BASE_URL", "value": "https://<gateway>/inference/anthropic" },
+    { "name": "ANTHROPIC_AUTH_TOKEN", "value": "bm_…" }
+  ]
+}
+```
+
+[Spend Limits](/configure/workspace-configuration#spend) and Workspace [RPM, TPM, and Model allow-list](/configure/workspace-configuration#gateway) apply to Claude Code traffic. Spend appears on [Gateway usage](/gateway/usage).
+
+<Callout type="warning" title="Claude Code capabilities the Gateway does not implement">
+  Claude Code can call optional Anthropic endpoints the Inference API does not serve. `/context` then uses a character estimate because `POST /v1/messages/count_tokens` is absent. Fast mode and the WebFetch domain safety check still call `api.anthropic.com` directly.
+</Callout>
+
+Connect Anthropic as the destination for Claude Code. Translation to Bedrock is not a Claude Code compatibility target. If Claude Code returns `400` with `Extra inputs are not permitted`, set `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` in the same `env` block so Claude Code omits pre-release body fields.
+
+### Codex
+
+Codex routes OpenAI Responses requests for its built-in `openai` provider through `OPENAI_BASE_URL`. A custom provider in `~/.codex/config.toml` works the same way with `wire_api = "responses"`:
+
+```bash
+export OPENAI_BASE_URL="https://<gateway>/inference/openai/v1"
+export OPENAI_API_KEY="bm_…"
+```
+
+Set `model = "auto/<name>"` in `~/.codex/config.toml` to use an Auto name whose Tiers are OpenAI Responses Models.
+
+### OpenCode
+
+OpenCode reads `options.baseURL` and `options.apiKey` for any provider in `opencode.json`. Its `@ai-sdk/anthropic` package appends only `/messages`, so the base URL keeps the `/v1`:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "bymorning": {
+      "npm": "@ai-sdk/anthropic",
+      "options": {
+        "baseURL": "https://<gateway>/inference/anthropic/v1",
+        "apiKey": "bm_…"
+      },
+      "models": { "claude-sonnet-5": { "name": "Claude Sonnet 5" } }
+    }
+  }
+}
+```

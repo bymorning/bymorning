@@ -1,0 +1,35 @@
+[data-component="session-composer"] {
+  position: relative;
+  display: grid;
+  min-height: 104px;
+  overflow: visible;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-2xl);
+  background: var(--color-bg-layer-1);
+}
+
+[data-component="session-composer"] [data-slot="session-composer-footer"] {
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 4px 6px 6px 12px;
+}
+
+[data-component="session-composer"] [data-slot="session-composer-status"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  color: var(--color-text-faint);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="session-composer"] [data-slot="session-composer-status"] [role="alert"] {
+  color: var(--color-danger-fg);
+}

@@ -1,0 +1,73 @@
+[data-session-ui] [data-component="session-header"] {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  display: flex;
+  min-width: 0;
+  height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: linear-gradient(to bottom, var(--color-bg-surface) 80%, transparent);
+}
+[data-session-ui] [data-component="session-header"] [data-slot="identity"],
+[data-session-ui] [data-component="session-header"] [data-slot="usage"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+[data-session-ui] [data-component="session-header"] [data-slot="identity"] {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+[data-session-ui] [data-component="session-header"] img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+[data-session-ui] [data-component="session-header"] h1 {
+  overflow: hidden;
+  margin: 0;
+  color: var(--color-text-base);
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-session-ui] [data-component="session-header"] > button {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+[data-session-ui] [data-component="session-header"] input {
+  min-width: 80px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  color: var(--color-text-base);
+  background: var(--color-bg-layer-2);
+  font: inherit;
+}
+[data-session-ui] [data-component="session-header"] [data-slot="status"] {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-info-fg);
+}
+[data-session-ui] [data-component="session-header"] [data-slot="usage"] {
+  margin-left: auto;
+  color: var(--color-text-faint);
+  font-size: 12px;
+}
+[data-session-ui] [data-component="session-header"] [data-slot="usage-ring"] {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: conic-gradient(var(--color-bg-accent) var(--usage), var(--color-border-muted) 0);
+}
+[data-session-ui] [data-component="session-header"] p {
+  color: var(--color-danger-fg);
+}

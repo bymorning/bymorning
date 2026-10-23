@@ -1,0 +1,14 @@
+[data-share-page] [data-slot="session-timeline-error"],
+[data-share-page] [data-slot="share-loading"] {
+  width: min(100%, 800px);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+[data-share-page] [data-slot="session-timeline-error"] {
+  color: var(--color-danger-fg);
+}
+
+[data-share-page] [data-slot="share-loading"] {
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,86 @@
+/*
+ * Edge fades on a clipped scroll region while it can scroll further; see createScrollFade.
+ * The fade is transparent-to-surface: set --scroll-fade-bg to the region's own background.
+ */
+[data-scroll-fade] {
+  --scroll-fade-bg: var(--color-bg-base);
+  --scroll-fade-size: 28px;
+  --scroll-fade-inset: 0px;
+  --scroll-fade-trail: 0px;
+  position: relative;
+}
+
+[data-scroll-fade]::before,
+[data-scroll-fade]::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+[data-scroll-fade]:not([data-fade-axis="x"])::before,
+[data-scroll-fade]:not([data-fade-axis="x"])::after {
+  inset-inline: 0;
+  height: var(--scroll-fade-size);
+}
+
+[data-scroll-fade]:not([data-fade-axis="x"])::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--scroll-fade-bg), transparent);
+}
+
+[data-scroll-fade]:not([data-fade-axis="x"])::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--scroll-fade-bg), transparent);
+}
+
+/*
+ * Horizontal regions are table frames: the frame owns the border, the rounded clip, and the surface (the scroller's own border is dropped), so
+ * nothing the scroller paints (cells, scrollbar track, fades) can reach outside the corners.
+ */
+[data-scroll-fade][data-fade-axis="x"] {
+  --scroll-fade-size: 32px;
+  --scroll-fade-bg: var(--color-bg-layer-1);
+  --scroll-fade-trail: 8px; /* the thin scrollbar below the content */
+  min-width: 0;
+  overflow: clip;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius);
+  background: var(--scroll-fade-bg);
+}
+
+[data-scroll-fade][data-fade-axis="x"] > :first-child {
+  border: 0;
+  border-radius: inherit;
+}
+
+[data-scroll-fade][data-fade-axis="x"]::before,
+[data-scroll-fade][data-fade-axis="x"]::after {
+  top: var(--scroll-fade-inset);
+  bottom: calc(var(--scroll-fade-inset) + var(--scroll-fade-trail));
+  width: var(--scroll-fade-size);
+}
+
+[data-scroll-fade][data-fade-axis="x"]::before {
+  left: var(--scroll-fade-inset);
+  background: linear-gradient(to right, var(--scroll-fade-bg), transparent);
+}
+
+[data-scroll-fade][data-fade-axis="x"]::after {
+  right: var(--scroll-fade-inset);
+  background: linear-gradient(to left, var(--scroll-fade-bg), transparent);
+}
+
+[data-scroll-fade][data-fade-above]::before,
+[data-scroll-fade][data-fade-below]::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scroll-fade]::before,
+  [data-scroll-fade]::after {
+    transition: none;
+  }
+}

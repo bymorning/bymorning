@@ -1,0 +1,113 @@
+[data-component="message-timeline"] {
+  width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 0 0 140px;
+}
+[data-component="message-timeline"][data-virtual] {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+[data-component="timeline-virtualizer"] {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+[data-component="timeline-virtualizer"] [data-index] {
+  width: 100%;
+}
+[data-timeline-virtual-content][data-timeline-reveal] {
+  animation: timeline-content-reveal 150ms ease-out;
+}
+@keyframes timeline-content-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-timeline-virtual-content][data-timeline-reveal] {
+    animation: none;
+  }
+}
+[data-component="message-timeline"] [data-slot="message-timeline-content"] {
+  padding-top: 40px;
+}
+[data-component="timeline-virtualizer"] [data-slot="message-timeline-empty"] {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  min-height: 40vh;
+  place-items: center;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+[data-component="timeline-virtualizer"] [data-slot="timeline-jump-latest"] {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(var(--session-composer-overlap, 0px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+[data-component="timeline-virtualizer"] [data-slot="timeline-older-error"] {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  left: 50%;
+  display: flex;
+  width: min(calc(100% - 40px), 800px);
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-inline: 8px;
+  transform: translateX(-50%);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+[data-component="timeline-virtualizer"] [data-slot="timeline-older-error"] > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-component="message-timeline"] [data-slot="message-timeline-turns"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-component="message-timeline"] [data-timeline-row="TurnGap"] {
+  height: 24px;
+}
+[data-component="message-timeline"] [data-message-id][data-timeline-row] {
+  width: 100%;
+  max-width: var(--session-content-width, 840px);
+  margin-inline: auto;
+}
+[data-component="message-timeline"] [data-slot="message-timeline-empty"] {
+  display: grid;
+  min-height: 40vh;
+  place-items: center;
+  margin: 0;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+@media (max-width: 600px) {
+  [data-component="message-timeline"] {
+    padding-bottom: 132px;
+  }
+
+  [data-component="message-timeline"] [data-slot="message-timeline-content"] {
+    padding-top: 28px;
+  }
+}

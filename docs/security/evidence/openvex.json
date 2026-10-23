@@ -1,0 +1,649 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://github.com/bymorning/enterprise/security/1.2.0/openvex",
+  "author": "ByMorning Security",
+  "timestamp": "2026-10-22T00:00:00Z",
+  "last_updated": "2026-10-22T00:00:00Z",
+  "version": 5,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2025-64756"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The glob CLI -c/--cmd command injection requires invoking the glob command line with attacker-controlled file names. The glob CLI is not on the image filesystem (the npm tree that vendors it is removed at build time), no JavaScript package manager ships (SEC-IMG-03), and the runtime starts only node /app/bymorning.mjs. The only child processes the bundle can start are fixed cloud-SDK credential helpers (Azure CLI and PowerShell fallbacks, AWS credential_process), none of which is glob. Matched only through the Node 22 RPM metadata."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-9496"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "component_not_present",
+      "impact_statement": "pacote is npm's package fetcher. npm and its entire dependency tree (including pacote) are removed from the runtime image; the match is a residual RPM-metadata association with the RHEL nodejs module. No package resolution, git fetch, or npm operation occurs at runtime."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-19534"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The flaw is in the WebSocket client of the undici copy vendored inside Node 22 (globalThis.WebSocket): a malicious server crashes the process during the opening handshake. No shipped composition constructs that client. The Gateway's only WebSocket client is the Kubernetes Code Interpreter's pods/exec channel to the operator-configured Kubernetes API server, which uses the separate ws library (8.21.3), not undici. The model SDK's optional WebSocket transport needs a WebSocket constructor layer that no shipped composition provides (source-audited)."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-84961"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The flaw is in undici's BalancedPool constructor discarding custom TLS certificate validation. The runtime never constructs a BalancedPool: the application's HTTP client is Effect's FetchHttpClient over Node's global fetch, which uses the default Agent, and the shipped bundle carries no undici copy of its own (checked in the image)."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-85152"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The cross-origin cache poisoning requires explicitly composing undici's cache or deduplicate interceptors onto a Client/Pool. No shipped code composes those interceptors (source-audited); the default dispatcher behind Node's global fetch does not include them."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-86145"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The pcre2_dfa_match out-of-bounds write is reachable only through PCRE2 consumers. Node.js executes regular expressions on V8's own engine; node and libnode do not link PCRE2 (verified with ldd in the image). The image's only PCRE2 consumer is libselinux, used by OS utilities the runtime never executes: the container runs a single non-root Node process."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-89161"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The pcre2_jit_match memory corruption is reachable only through PCRE2 consumers. Node.js uses V8's RegExp engine and does not link PCRE2; the only PCRE2 consumer in the image (libselinux, for OS utilities) is never executed at runtime."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-103111"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The out-of-bounds write requires an application that compiles an attacker-controlled regular expression with PCRE2's JIT interfaces. Node.js compiles regular expressions with V8, not PCRE2; node and libnode do not link PCRE2 (verified with ldd in the image), and the only PCRE2 consumer in the image (libselinux, for OS utilities) is never executed by the single non-root Node process. Red Hat has not published a fixed RHEL 9 build."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-53613"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_cannot_be_controlled_by_adversary",
+      "impact_statement": "The mount(8) TOCTOU requires a local unprivileged user with write access to an ancestor of a user/users fstab mount target. The container runs one non-root process (uid 65532), has no fstab user mounts, no mount execution, and no interactive or multi-user access path."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-75804"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The flaw is missing connection-level flow control in OpenSSL's QUIC implementation. The runtime serves TLS over TCP only and uses no QUIC listener or client, so the vulnerable path is never exercised. Matched against the RHEL 9 OpenSSL RPM; no fix is published yet."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-84782"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The flaw is in OpenSSL's DTLS handshake retransmission. The runtime uses TLS over TCP only and never initiates or accepts DTLS, so the vulnerable path is never exercised. Matched against the RHEL 9 OpenSSL RPM; no fix is published yet."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-93748"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "component_not_present",
+      "impact_statement": "The flaw is in the http-cache-semantics package, which the Node 22 RPM carries only inside npm's vendored tree. npm and /usr/lib/node_modules are removed from the image at build time (no http-cache-semantics file is on the image filesystem), and the application does not use http-cache-semantics (source-audited). Residual RPM-metadata match."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-9wv6-86v2-598j"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "component_not_present",
+      "impact_statement": "path-to-regexp 6.1.0 is pinned by @vercel/routing-utils, used by the documentation site's Vercel adapter only. The shipped server router does not use path-to-regexp; it is absent from the bundle and image."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-ch52-4w7c-c8xp"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "component_not_present",
+      "impact_statement": "http-cache-semantics 4.2.0 enters the lockfile only through astro, the documentation-site generator (packages/docs). It is not imported by the server bundle and is absent from the image. No patched version is published."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-qhr7-859c-m2p7"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "Accepted as affected in 1.1.0 (brace-expansion 5.0.9 via minimatch in the glob Tool); 1.2.0 resolves brace-expansion 5.0.12, which contains the fix."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-6j4f-fj2g-mc7p"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "Accepted as affected in 1.1.0 (brace-expansion 5.0.9 via minimatch in the glob Tool); 1.2.0 resolves brace-expansion 5.0.12, which contains the fix."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-r5fr-rjxr-66jc"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "lodash-es 4.17.23 (pinned by chevrotain in the documentation and diagram tooling, never shipped) is overridden to 4.18.1, which contains the fix."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-rfgv-xxqx-mfg5"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "The lockfile's undici 7.29.0 (documentation tooling via @scalar/json-magic, never shipped) is upgraded to 7.29.1, which contains the fix."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-w293-vg96-wgc3"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "The lockfile's undici 7.29.0 (documentation tooling via @scalar/json-magic, never shipped) is upgraded to 7.29.1, which contains the fix."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-p6vx-979v-rg4c"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "seroval 1.5.6 (pinned ~1.5.4 by solid-js 1.9.14) is overridden to 1.6.8, which contains the fix; seroval-plugins moves with it to 1.6.8. Only solid-js/web's server-rendering build imports seroval; the shipped web client uses the browser build, and neither the web assets nor the Gateway bundle contain seroval."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-jp82-f5mq-hwhp"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "seroval 1.5.6 (pinned ~1.5.4 by solid-js 1.9.14) is overridden to 1.6.8, which contains the fix (first fixed in 1.6.3). seroval is absent from the shipped web assets and the Gateway bundle."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-jqcg-44mw-7w3h"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "proxy-addr 2.0.7 is overridden to 2.0.8, which contains the fix. It enters the lockfile only through express in @modelcontextprotocol/sdk under blume, the documentation-site generator; the Gateway does not use express and its MCP libraries (@modelcontextprotocol/client, core and server) do not depend on it."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-68fv-2mgg-jv7q"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "source-map-js 1.2.1 (build tooling via postcss, tailwindcss, css-tree and magicast; never shipped) is overridden to 1.2.2, which contains the fix."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-pqg4-j6r4-53mv"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "shell-quote 1.9.0 (pinned by concurrently, a development-only dependency of the local host's dev script; never shipped) is overridden to 1.12.0, which contains the fix (first fixed in 1.11.0)."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-6qxp-vccf-f47h"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "@modelcontextprotocol/client 2.0.0, whose OAuth flow the Gateway's MCP connectors use, is upgraded to 2.2.0, which contains the fix; @modelcontextprotocol/core and server move with it to 2.2.0. The documentation tooling's @modelcontextprotocol/sdk 1.30.0 (via blume, never shipped) is overridden to 1.32.1."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-102276"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "brace-expansion stack exhaustion in parseCommaParts on crafted brace patterns (GHSA-6j4f-fj2g-mc7p). npm's copy is removed with /usr/lib/node_modules (empty in the image; no brace-expansion file on the filesystem). The Node 22 RPM's only remaining copy is inlined in Node's internal minimatch, which is reachable only through path.matchesGlob and fs.glob/globSync/promises.glob; neither the bundle nor any bundled plugin calls them (checked in the image). The application's own brace-expansion copies (5.0.12, 2.1.7, 1.1.21) are fixed versions. Red Hat lists no fixed build."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-102278"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "brace-expansion uncontrolled recursion in expand_ on deeply nested brace groups (GHSA-qhr7-859c-m2p7). The Node 22 RPM's only remaining copy is inlined in Node's internal minimatch (present: a deeply nested pattern exhausts the stack through path.matchesGlob in the image) and is reachable only through path.matchesGlob and fs.glob/globSync/promises.glob, which neither the bundle nor any bundled plugin calls. npm's copy is removed. The application's own brace-expansion copies (5.0.12, 2.1.7, 1.1.21) are fixed versions. Red Hat lists no fixed build."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-109383"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "undici's Agent drops a function-valued tls option (such as a custom checkServerIdentity for pinning) during option cloning (GHSA-2m5v-pch6-74hx). Node 22.23.2 vendors undici 6.28.0 but does not expose its Agent; the shipped bundle contains no undici code, dispatcher override, or setGlobalDispatcher call (checked in the image), so global fetch runs on the default Agent with no tls options and there is no custom verification callback to drop."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-109829"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Cache-key confusion when undici's redirect and cache interceptors are composed with a shared store (GHSA-4w7w-5xrc-9h26) affects undici 7.0.0-7.30.0 and 8.0.0-8.12.1. Node 22.23.2 vendors undici 6.28.0 (process.versions in the image), outside the affected range; no shipped code composes interceptors either."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-109855"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "The WebSocket-over-HTTP/2 failed-handshake crash (GHSA-qq8j-7v2v-3rwp) affects only undici 8.11.0 and 8.11.1. Node 22.23.2 vendors undici 6.28.0 (process.versions in the image), which does not contain the vulnerable code."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-109869"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "Node 22.23.2's vendored undici 6.28.0 (affected range 6.23.0-6.29.0; GHSA-xjj6-f33q-929c): a server that returns more than five content codings and closes the connection crashes the process even though the fetch() rejection is caught (reproduced in the image: unhandled UND_ERR_SOCKET, exit code 1). Impact is denial of service only: the Gateway process exits, dropping in-flight requests and background work on that replica, and is restarted by the container orchestrator; no data exposure. Exposure is limited to global-fetch destinations chosen by the operator or a Workspace administrator, or advertised by them: model provider endpoints, the OIDC issuer, admin-registered remote MCP servers and their OAuth authorization servers, and first-party plugin vendor APIs. Model-steered URLs use the node:http web-fetch Tool, not undici. No workaround exists upstream. Red Hat lists no fixed Node 22 RPM yet; the upstream fix is undici 6.29.1. Remediated by the first base-image update whose Node 22 RPM carries it (POA&M, section 13 SLA).",
+      "action_statement_timestamp": "2026-10-16T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-87018"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "Node 22.23.2's vendored undici 6.28.0 (affected range 4.2.1-6.29.0; GHSA-qrxm-fqhp-jwvm): an HTTPS server that negotiates TLS 1.2 and renegotiates with a different CA-trusted certificate whose hostname does not match triggers an uncaught assertion that terminates the process. Outbound TLS is not restricted to 1.3 (Node's default minimum is TLS 1.2), so any global-fetch endpoint can trigger it; not reproduced. Impact is denial of service only: the Gateway process exits, dropping in-flight requests and background work on that replica, and is restarted by the container orchestrator. Exposure is limited to global-fetch destinations chosen by the operator or a Workspace administrator, or advertised by them: model provider endpoints, the OIDC issuer, admin-registered remote MCP servers and their OAuth authorization servers, and first-party plugin vendor APIs. Model-steered URLs use the node:http web-fetch Tool, not undici. The upstream workaround (TLS 1.3-only outbound) is not applied because it would also constrain database and cloud-SDK TLS and is untested. Red Hat lists no fixed Node 22 RPM yet; the upstream fix is undici 6.29.1. Remediated by the first base-image update whose Node 22 RPM carries it (POA&M, section 13 SLA).",
+      "action_statement_timestamp": "2026-10-16T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-88647"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "GnuTLS Common Name fallback hostname-verification bypass. Node.js uses OpenSSL for TLS: node and libnode do not link GnuTLS (verified with ldd and the running process's /proc/self/maps in the image). The image's only GnuTLS consumer is /usr/bin/dirmngr (GnuPG), which the single non-root Node process never executes. Red Hat has not published a fixed RHEL 9 build."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-53615"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The libblkid DOS extended-partition integer overflow requires a libblkid consumer to probe a crafted disk image or removable medium. node and libnode do not link libblkid or libmount (verified with ldd in the image). The image's libblkid consumers (GLib/gio tools, microdnf/libdnf, librhsm) are never executed by the single non-root Node process (uid 65532), which probes no block devices. Red Hat has not published a fixed RHEL 9 build."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-103111"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libpcre2-8-0 10.46-1~deb13u2: an attacker-controlled regular expression compiled with PCRE2's JIT can write out of bounds in the calling process. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian fixed it in 10.46-1~deb13u3, which the pinned base does not yet carry; picked up by the next base re-pin.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-102010"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libstdc++6 14.2.0-19: priority-queue erase_if leaves a stale pointer in the calling C++ program. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. No fixed Debian 13 package is published; picked up by the first base-image refresh that carries one.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-95619"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libstdc++6 14.2.0-19: integer overflow in aligned operator new can corrupt memory in the calling C++ program. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. No fixed Debian 13 package is published; picked up by the first base-image refresh that carries one.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-85091"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "zlib1g 1.3.1: heap overflow in gz_vacate during non-blocking gzwrite in the calling process. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. No fixed Debian 13 package is published; picked up by the first base-image refresh that carries one.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-19499"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libc6 2.41: strfmon/strfmon_l can overflow the caller's buffer. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-5435"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libc6 2.41: the deprecated ns_printrr family can overflow the caller's buffer when printing TSIG records. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-69720"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "ncurses 6.5: stack overflow in the infocmp command-line tool. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-54369"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libacl1 2.3.2: symlink traversal in pathname-based ACL calls, a local privilege-escalation primitive against privileged callers. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-54370"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "libacl1 2.3.2: lstat/symlink TOCTOU in ACL calls, a local privilege-escalation primitive against privileged callers. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-76642"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "util-linux 2.41.5: mount runs post-mount hooks without checking the helper's exit status, a local privilege-escalation path through setuid mount. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-78408"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "util-linux 2.41.5: nsenter --join-cgroup leaks a root-opened cgroup.procs descriptor across credential changes, which requires running nsenter as root. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-78409"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "util-linux 2.41.5: X-mount.subdir symlink traversal in privileged mount. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-78410"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "util-linux 2.41.5: restricted fstab bind mounts can be redirected through setuid mount. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-82560"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "perl-base 5.40.1: Pod::Text CPU and memory exhaustion on deeply nested =over. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-9538"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "perl-base 5.40.1: Archive::Tar memory exhaustion from an attacker-controlled entry size. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian has deferred it for Debian 13 (no security update scheduled); picked up by the first base-image refresh that carries a fix.",
+      "action_statement_timestamp": "2026-10-05T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-587h-7wmj-h5pm"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "component_not_present",
+      "impact_statement": "launch-editor (bundled by vite 7.3.6 and 8.2.0) is reached only through the Vite development server's open-in-editor middleware, and the flaw (an fs.existsSync() check that can be bypassed on Windows) applies to Windows only. Vite is workspace build tooling: the Gateway image ships the built UI assets and no development server. A search of all 8 layers of the 1.3.0 Gateway image finds no launch-editor or vite file, and the bundle contains neither name. Fixed upstream in vite 7.3.7 and 8.2.4; the lockfile versions are not moved in this release."
+    }
+  ]
+}

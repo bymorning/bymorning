@@ -1,0 +1,13 @@
+id: no-core-server-import
+language: TypeScript
+message: Core must not import upward from the server package.
+severity: error
+files:
+  - packages/core/src/**/*.ts
+rule:
+  all:
+    - kind: import_statement
+    - has:
+        kind: string
+        regex: ^["'](?:@bymorning/server(?:/|["'])|.*(?:packages/)?server/src/)
+        stopBy: end

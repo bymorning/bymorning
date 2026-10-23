@@ -1,0 +1,16 @@
+[data-component="home-skills"] {
+  min-width: 0;
+}
+
+[data-component="workspace-page"]:has([data-component="home-skills"]) {
+  [data-slot="workspace-page-card"] {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  [data-slot="workspace-page-heading"] {
+    align-items: center;
+  }
+}

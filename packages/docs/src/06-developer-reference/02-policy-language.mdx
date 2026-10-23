@@ -1,0 +1,41 @@
+---
+title: Policy migration
+description: Replace the retired Policy language with Plugins and existing configuration authorities.
+---
+
+The managed Policy API, generic rule editor, and eight-kind interpreter are retired. Use [Plugins](/configure/plugins) for supported settings and [Inference hooks](/developer-reference/inference-hooks) for custom behavior. The Plugin context no longer exposes `context.policy`.
+
+| Legacy rule | Replacement |
+| --- | --- |
+| Model or Provider guardrail | `session.hook("model.invoke", ...)` and `gateway.hook("model.invoke", ...)` |
+| Permanent Tool permission | Administrator-authored Permission configuration |
+| Model route | `Config.routing`; Session and Gateway `model.request` hooks |
+| Static endpoint or authentication | Catalog, Provider, and Integration configuration |
+| Conditional Session endpoint | Existing Session `model.request` hook |
+| Tool input or output transformation | Session Tool hooks and inbound MCP gateway hooks |
+| Prompt rewrite | Session `prompt` hook; Gateway native `model.request` where applicable |
+| Per-request instruction | Session `context` hook |
+| Durable company guidance | Instruction-owned source |
+| Escalation | A Plugin callback with explicitly disposed Session-scoped state |
+
+MCP Tool calls do not consume inference allowance merely because they execute a Tool. If a Tool invokes ByMorning inference, that invocation follows its owning inference lifecycle.
+
+## Owners
+
+Map each retained definition to the authority that now owns it. An unsupported active rule must be resolved before replacement activation succeeds; absence from a new editor does not mean that a rule was safely converted.
+
+```ts
+await context.session.hook("model.invoke", (input) => {
+  if (input.model.provider === "restricted") {
+    return new ModelError({ reason: "denied", message: "This Provider is restricted." })
+  }
+})
+```
+
+## Evidence
+
+Retain the raw managed definitions and suppression records together with the conversion report. Review the report by original definition ID.
+
+Legacy `tool.input`, `tool.output`, and `escalate` definitions were not proven enforcement. Do not describe their migration as preserving a verified runtime restriction.
+
+Use Plugin and hook provenance for new diagnostics. The former Policy ID is migration evidence, not a new independently managed runtime identity. `ModelPolicy` remains Catalog reconciliation and is unrelated to the retired rule service.

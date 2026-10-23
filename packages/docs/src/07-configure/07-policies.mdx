@@ -1,0 +1,145 @@
+---
+title: Policies
+description: Restrict Providers and route requests to Models from Workspace configuration.
+---
+
+Set Provider admission and Model routing in Workspace configuration.
+
+```jsonc title="Workspace configuration"
+{
+  "providers": { "allow": ["openai", "anthropic"] },
+  "routing": [
+    {
+      "match": { "model": { "provider": "openai", "id": "gpt-5" } },
+      "to": { "provider": "anthropic", "id": "claude-sonnet-5" }
+    }
+  ]
+}
+```
+
+## Providers
+
+`providers.allow` is Workspace admission by Provider name. Session and LLM Gateway both enforce it before the Model is called.
+
+- Omit `providers.allow` to admit every active Provider.
+- List names to admit only those Providers.
+- Set `allow` to `[]` to admit none.
+
+```jsonc title="Workspace configuration"
+{
+  "providers": { "allow": ["openai"] }
+}
+```
+
+This is distinct from Provider Activation, Model enablement, Limiter admission by Model identity, and Permission.
+
+## Routing
+
+`routing` chooses which Catalog Model a request uses. Each rule has `match` conditions and a `to` target: one Model, or Tiers that a judge Model chooses between.
+
+```jsonc title="Workspace configuration"
+{
+  "routing": [
+    {
+      "match": { "model": { "provider": "anthropic", "id": "claude-opus-5" } },
+      "to": { "provider": "anthropic", "id": "claude-sonnet-5" }
+    },
+    {
+      "match": { "purpose": ["title", "compaction"] },
+      "to": { "provider": "anthropic", "id": "claude-haiku-5" }
+    }
+  ]
+}
+```
+
+- Omit `routing`, or set it to `[]`, to route nothing.
+- Every present condition must hold, and a rule needs at least one.
+- The last matching rule decides.
+- A request no rule matches uses the Model it asked for.
+
+### Conditions
+
+| Condition | Matches |
+| --- | --- |
+| `model` | The requested Model, or an [Auto name](#auto). Include `variant` to match one Variant. |
+| `purpose` | `assistant`, `title`, `compaction`, or `generate` requests. |
+| `text` | A regular expression tested against the first 20,000 characters of the latest participant message. `flags` may contain `i`, `m`, `s`, and `u`. |
+| `context` | Estimated request size in tokens, with inclusive `min` and `max`. |
+| `images` | Whether the request contains images. |
+| `agent` | The Agent a Session runs under. |
+| `tool` | A Tool that completed earlier in the Session. Session conversation turns only. |
+
+```jsonc title="Escalate security reviews"
+{
+  "match": { "text": { "pattern": "security|vulnerab|CVE-", "flags": "i" } },
+  "to": { "provider": "anthropic", "id": "claude-opus-5" }
+}
+```
+
+### Auto
+
+An Auto name is a Model reference with provider `auto` that only Routing resolves. Members select it in the model picker, Agents and Scheduled Tasks can prefer it, and LLM Gateway callers send it as the model name. Route it to Tiers so a judge Model picks the cheapest one that fits each request.
+
+```jsonc title="Workspace configuration"
+{
+  "match": { "model": { "provider": "auto", "id": "general" } },
+  "to": {
+    "tiers": [
+      { "name": "fast", "model": { "provider": "anthropic", "id": "claude-haiku-5" }, "description": "Short factual questions and small edits" },
+      { "name": "balanced", "model": { "provider": "anthropic", "id": "claude-sonnet-5" }, "description": "Everyday coding and writing" },
+      { "name": "deep", "model": { "provider": "anthropic", "id": "claude-opus-5" }, "description": "Multi-step architecture, debugging, and careful reasoning" }
+    ],
+    "default": "balanced",
+    "judge": { "model": { "provider": "anthropic", "id": "claude-haiku-5" }, "timeout": 3000 }
+  }
+}
+```
+
+- List Tiers from cheapest to most capable. Write each `description` as when to use that Tier.
+- The judge sees only participant messages: the latest one, plus up to `window` earlier ones (default `3`). It never sees assistant replies or Tool output.
+- `judge.instructions` adds guidance to the built-in rubric.
+- When the judge fails, times out (`timeout`, default `3000` ms), or names no offered Tier, the `default` Tier serves the request. Routing never fails a request because judging failed.
+- Tiers whose Model is unavailable, cannot accept images the request contains, or whose context window is too small are not offered.
+- Title and one-shot generation requests never call the judge; they use the `default` Tier. Neither does a rule with exactly one runnable Tier — that Tier serves directly.
+- An Auto name no rule matches cannot be invoked.
+
+Test an Auto name from **Console → Model routing → Test routing**. The judge runs for real and is charged to you; the chosen Model is not called.
+
+### Turns
+
+A Session routes once per participant message and keeps that Model for the turn's Tool calls, so the prompt cache survives and one Model finishes the work. A `tool` condition therefore takes effect at the next participant message.
+
+LLM Gateway routes once per participant ask. A request that only continues a Tool loop reuses the Tier chosen for its ask for up to an hour; if that choice is unknown, it uses the `default` Tier without judging.
+
+### Decisions
+
+Each routed assistant Message records `requestedModel`, the `model` that ran, and `route`: the `rule` index, the `tier`, and the `cause` (`rule`, `judge`, `pinned`, or `fallback`, with a `fallback` reason). LLM Gateway replies carry `x-bymorning-route-cause` and `x-bymorning-route-tier` headers, plus `x-bymorning-route-fallback` with that reason when the cause is `fallback`.
+
+The judge is its own inference: Budget reserves and settles it against the same Holders, Limiter admits it, and Usage records it.
+
+### Rules
+
+- Rules written as `{ "from", "when", "to" }` still load. ByMorning saves them in the `match` form.
+- Saving checks that every Model, Tier Model, and judge Model is in the Catalog, that the `default` Tier exists, that Tier names are unique, and that patterns compile. An Auto name cannot be a target or a judge.
+- Only Workspace administrators change `routing`.
+- Routing runs before Plugin `model.request` hooks, so Plugins see the routed Model and may still override it.
+- The resolved Model still owns destination, including endpoint, upstream name, and authentication.
+
+## Effects
+
+| Effect | Configuration | Behavior |
+| --- | --- | --- |
+| Provider admission | `providers.allow` | Session and Gateway refuse a Provider that is not on the allowlist. |
+| Model routing | `routing[].to` | Chooses which Catalog Model a request uses, directly or through judged Tiers. |
+
+Routing chooses Models; it is not a general policy language. Budget, Limiter, and Permission remain separate decisions. Any of them may refuse independently.
+
+## Owners
+
+| Change | Configuration |
+| --- | --- |
+| Provider allowlist | `providers` |
+| Model routing | `routing` |
+| Permanent Tool permissions | [Permission rules](/configure/permissions) |
+| Workspace Model, request, and token limits | `gateway` |
+| Spend Limits | **Gateway → Budgets** |

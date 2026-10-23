@@ -1,0 +1,11 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+outputs.json
+crash.log
+# Generated overlays hold customer values; only the example is tracked.
+k8s/overlays/*
+!k8s/overlays/example/
+modules/bymorning/.terraform.lock.hcl

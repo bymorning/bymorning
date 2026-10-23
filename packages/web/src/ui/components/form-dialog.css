@@ -1,0 +1,37 @@
+[data-component="dialog"] [data-slot="form-dialog-body"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+  padding-bottom: 16px;
+}
+
+[data-component="dialog"][data-variant="card"] [data-slot="form-dialog-body"] {
+  padding-bottom: 0;
+}
+
+/* The error sits outside the scrolling body so a save failure is always in view above the actions. */
+[data-component="dialog"] [data-slot="form-frame"] > [data-slot="form-error"] {
+  flex-shrink: 0;
+  margin-top: 16px;
+}
+
+/* Full-size form dialogs hand leftover height to their last field. */
+[data-component="dialog"][data-size="full"] [data-slot="form-dialog-body"] {
+  flex: 1;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+[data-component="dialog"][data-size="full"] [data-slot="form-fields"] {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+
+[data-component="dialog"][data-size="full"] [data-slot="form-fields"] > :last-child {
+  min-height: 0;
+  flex: 1;
+  align-items: stretch;
+}

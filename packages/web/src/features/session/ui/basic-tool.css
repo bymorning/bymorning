@@ -1,0 +1,167 @@
+[data-component="tool-collapsible"] {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  overflow: visible;
+}
+
+[data-component="tool-collapsible"] > [data-slot="tool-collapsible-trigger"] {
+  display: flex;
+  width: 100%;
+  height: 32px;
+  min-height: 28px;
+  align-items: center;
+  align-self: stretch;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: start;
+  user-select: none;
+}
+
+[data-component="tool-collapsible"] > button[data-slot="tool-collapsible-trigger"] {
+  cursor: pointer;
+}
+
+[data-component="tool-collapsible"] > button[data-slot="tool-collapsible-trigger"]:disabled {
+  cursor: default;
+}
+
+[data-component="tool-trigger"] {
+  content-visibility: auto;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  align-self: stretch;
+  justify-content: flex-start;
+}
+
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-trigger-content"] {
+  display: flex;
+  width: auto;
+  max-width: calc(100% - 24px);
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+}
+
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-info"] {
+  min-width: 0;
+  max-width: 100%;
+  flex: 0 1 auto;
+  font-size: 14px;
+}
+
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-info-structured"] {
+  display: inline-flex;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-info-main"] {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+  overflow: hidden;
+}
+
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-title"] {
+  flex-shrink: 0;
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 530;
+  line-height: 20px;
+}
+
+[data-component="tool-trigger"] :is([data-slot="basic-tool-tool-subtitle"], [data-slot="basic-tool-tool-arg"]) {
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 440;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="tool-collapsible"] [data-slot="tool-collapsible-arrow"] {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin-inline-start: 6px;
+  color: var(--color-icon-muted);
+  opacity: 0;
+  transition: transform 150ms ease;
+}
+
+[data-component="tool-collapsible"] > [data-slot="tool-collapsible-trigger"]:hover [data-slot="tool-collapsible-arrow"],
+[data-component="tool-collapsible"]
+  > [data-slot="tool-collapsible-trigger"][aria-expanded="true"]
+  [data-slot="tool-collapsible-arrow"] {
+  opacity: 1;
+}
+
+[data-component="tool-collapsible"][data-open="true"] [data-slot="tool-collapsible-arrow"] {
+  transform: rotate(180deg);
+}
+
+[data-component="tool-collapsible"][data-compact="true"] > [data-slot="tool-collapsible-trigger"] {
+  height: 28px;
+}
+
+[data-component="tool-collapsible"][data-compact="true"] [data-slot="basic-tool-tool-title"] {
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-component="tool-collapsible"][data-compact="true"] [data-slot="basic-tool-tool-subtitle"] {
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-component="tool-collapsible"]:not([data-rail="false"]) > [data-slot="tool-collapsible-content"] {
+  position: relative;
+  margin-inline-start: 12px;
+  padding-inline-start: 16px;
+}
+
+[data-component="tool-collapsible"]:not([data-rail="false"]) > [data-slot="tool-collapsible-content"]::before {
+  position: absolute;
+  inset-block: 0 12px;
+  inset-inline-start: 0;
+  width: 0.5px;
+  background: var(--color-border-muted);
+  content: "";
+}
+
+[data-component="tool-output"] {
+  max-height: 240px;
+  overflow: auto;
+  color: var(--color-text-muted);
+}
+
+[data-component="tool-output"] pre {
+  margin: 0;
+  padding: 8px 0 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 13px/20px var(--font-mono);
+}

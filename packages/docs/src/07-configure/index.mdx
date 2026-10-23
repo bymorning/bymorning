@@ -1,0 +1,34 @@
+---
+title: Configure
+description: Configure Models, Permissions, Policies, and Skills for your Workspace.
+---
+
+Configure the capabilities available across your Workspace. Start with the feature you want to change.
+
+<CardGroup cols={2}>
+  <Card title="Models" href="/configure/models" icon="brain">
+    Connect Providers, enable Models, choose defaults, and set limits.
+  </Card>
+  <Card title="Permissions" href="/configure/permissions" icon="shield-check">
+    Allow, deny, or require approval for Tool actions.
+  </Card>
+  <Card title="Policies" href="/configure/policies" icon="route">
+    Restrict Providers and route requests between Models.
+  </Card>
+  <Card title="Skills" href="/configure/skills" icon="sparkles">
+    Create reusable instructions for Agents.
+  </Card>
+</CardGroup>
+
+## More configuration
+
+| When you need to | Open |
+| --- | --- |
+| Understand which scope owns a setting | [Configuration surfaces](/configure/configuration-surfaces) |
+| Change shared Workspace defaults | [Workspace configuration](/configure/workspace-configuration) |
+| Control how Sessions start and run | [Session behavior](/configure/session-behavior) |
+| Connect MCP servers and web search | [Integrations](/configure/integrations) |
+| Extend ByMorning behavior | [Plugins](/configure/plugins) |
+| Configure the deployed server process | [Server runtime](/configure/server-runtime) |
+
+Choose the narrowest surface that owns the behavior. A Workspace setting applies within that Workspace. Session controls shape one run. Server runtime settings belong to the deployment.

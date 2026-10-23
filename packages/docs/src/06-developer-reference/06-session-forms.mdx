@@ -1,0 +1,388 @@
+---
+title: Session Forms
+description: Request structured input from a running Session and reconcile pending Forms safely.
+---
+
+A Session Form is an ephemeral, Workspace-scoped request for structured input. A persisted Session owns every Form. The Form remains pending until one reply or cancellation settles it.
+
+```ts title="session-form.ts"
+import {
+  ByMorning,
+  type FormListInput,
+  type WorkspaceListOutput
+} from "@bymorning/client"
+
+export async function runFormExample(
+  baseUrl: string,
+  sessionID: FormListInput["sessionID"],
+  workspaceID: WorkspaceListOutput[number]["id"]
+) {
+  const client = ByMorning.make({ baseUrl })
+
+  const form = await client.form.create({
+    sessionID,
+    title: "Configure deployment",
+    metadata: { kind: "deployment" },
+    fields: [
+      {
+        key: "environment",
+        type: "string",
+        title: "Environment",
+        required: true,
+        options: [
+          { value: "staging", label: "Staging" },
+          { value: "production", label: "Production" }
+        ]
+      },
+      {
+        key: "region",
+        type: "string",
+        title: "Production region",
+        required: true,
+        when: [{ key: "environment", op: "eq", value: "production" }]
+      },
+      {
+        key: "replicas",
+        type: "integer",
+        title: "Replicas",
+        minimum: 1,
+        maximum: 20,
+        default: 2,
+        required: true
+      },
+      {
+        key: "review",
+        type: "external",
+        title: "Review the deployment plan",
+        url: "https://deploy.example.com/plans/current"
+      }
+    ]
+  })
+
+  const [forSession, forWorkspace, fetched, pendingState] = await Promise.all([
+    client.form.list({ sessionID }),
+    client.form.request.list({ workspace: workspaceID }),
+    client.form.get({ sessionID, formID: form.id }),
+    client.form.state({ sessionID, formID: form.id })
+  ])
+
+  console.log({ forSession, forWorkspace, fetched, pendingState })
+
+  await client.form.reply({
+    sessionID,
+    formID: form.id,
+    answer: {
+      environment: "production",
+      region: "us-east-1",
+      replicas: 2,
+      review: true
+    }
+  })
+
+  const answeredState = await client.form.state({ sessionID, formID: form.id })
+
+  const disposable = await client.form.create({
+    sessionID,
+    title: "Optional follow-up",
+    fields: [{ key: "notes", type: "string", title: "Notes" }]
+  })
+  await client.form.cancel({ sessionID, formID: disposable.id })
+  const cancelledState = await client.form.state({ sessionID, formID: disposable.id })
+
+  return { answeredState, cancelledState }
+}
+```
+
+Session Forms are not durable records. ByMorning keeps them in the Workspace's process-local `Form.Service`, not in the event log or database. `list` returns pending Forms only. `get` and `state` retain an answered or cancelled Form for 10 minutes, then return not found.
+
+<Callout type="warning">
+  A server restart forgets every Form. Graceful `Form.Service` layer teardown attempts to cancel pending Forms and release their in-process waiters, but the entries disappear with the layer. Never use a Form as durable workflow state.
+</Callout>
+
+## Primitives
+
+Choose based on the user's intent and the lifetime of the input.
+
+| Primitive | Use it for | Do not use it for |
+| --- | --- | --- |
+| Session Form | Structured input requested while work is running in a persisted Session | Authorization, durable workflow state, or work without a Session |
+| Permission | Runtime authorization for an action and its resources, including saved grants | Collecting arbitrary field values |
+| Integration `Form.Fields` and `Form.Answer` | Synchronous fields returned during Integration discovery and submitted with a connect request | A pending request in the Session form dock |
+
+Permission and Form are independent. If an operation needs both consent and values, assert Permission first, then ask the Form. Do not encode authorization in `metadata.kind` or another metadata value.
+
+Integration authentication remains synchronous. An Integration publishes `Form.Fields`, and the connect call carries a `Form.Answer`. It does not create a Session Form, publish `form.*` events, or wait in `Form.Service`. See [Integration authentication](/developer-reference/integration-authentication).
+
+## Forms
+
+Use the generated `@bymorning/client` methods with a real persisted Session ID. Do not construct a sentinel or global Session ID.
+
+### Client
+
+The Session endpoints verify that the path Session owns the Form. A Form owned by another Session looks not found. Creating against a missing Session also fails. Omit `id` and let ByMorning generate a `frm_` ID unless you specifically need conflict detection with a caller-provided ID.
+
+```ts
+const form = await client.form.create({
+  sessionID,
+  title: "Optional follow-up",
+  fields: [{ key: "notes", type: "string", title: "Notes" }]
+})
+await client.form.cancel({ sessionID, formID: form.id })
+```
+
+Calling `reply` or `cancel` after settlement returns `Form.AlreadySettledError`; settlement is not an idempotent success. There is no HTTP `ask` operation. In-process code uses `Form.Service.ask`; HTTP code creates a pending Form and settles it through a later request.
+
+#### Reference
+
+```ts
+client.form.request.list(input?: {
+  workspace?: WorkspaceID
+}): Promise<FormInfo[]>
+
+client.form.list(input: {
+  sessionID: SessionID
+}): Promise<FormInfo[]>
+
+client.form.create(input: {
+  sessionID: SessionID
+  id?: FormID
+  title: string
+  metadata?: Record<string, JsonValue>
+  fields: [FormField, ...FormField[]]
+}): Promise<FormInfo>
+
+client.form.get(input: {
+  sessionID: SessionID
+  formID: FormID
+}): Promise<FormInfo>
+
+client.form.state(input: {
+  sessionID: SessionID
+  formID: FormID
+}): Promise<
+  | { status: "pending" }
+  | { status: "answered"; answer: FormAnswer }
+  | { status: "cancelled" }
+>
+
+client.form.reply(input: {
+  sessionID: SessionID
+  formID: FormID
+  answer: Record<string, string | number | boolean | string[]>
+}): Promise<void>
+
+client.form.cancel(input: {
+  sessionID: SessionID
+  formID: FormID
+}): Promise<void>
+```
+
+## Fields
+
+Every Form has at least one field. Field keys must be unique. `title`, `description`, and `required` apply to every field except `external`; `when` also applies only to non-external fields.
+
+| Type | Answer | Constraints and options |
+| --- | --- | --- |
+| `string` | `string` | `minLength`, `maxLength`, `pattern`, `placeholder`, `format`, `options`, `custom`, `default`, `secret` |
+| `number` | finite `number` | `minimum`, `maximum`, `default` |
+| `integer` | finite integer | `minimum`, `maximum`, `default` |
+| `boolean` | `boolean` | `default` |
+| `multiselect` | `string[]` | required `options`; `minItems`, `maxItems`, `custom`, `default` |
+| `external` | literal `true` | `url`, plus optional `title` and `description`; no `required`, `when`, or `default` |
+
+```ts
+const fields = [
+  {
+    key: "environment",
+    type: "string",
+    title: "Environment",
+    required: true,
+    options: [
+      { value: "staging", label: "Staging" },
+      { value: "production", label: "Production" }
+    ]
+  }
+] as const
+```
+
+For `string`, `format` accepts `email`, `uri`, `date`, or `date-time`. URI validation uses `URL.canParse`, so it requires an absolute parseable URI but does not restrict the scheme. Date validation requires a real `YYYY-MM-DD` date. Date-time validation accepts values parsed successfully by JavaScript `Date`. Pattern validation uses a JavaScript regular expression.
+
+`options` are closed unless `custom: true`. A closed string answer must equal one option value. Every closed multiselect answer must appear in `options`. `custom: true` allows values outside the declared options.
+
+Defaults initialize the built-in Session form dock for non-external fields. The server does not merge defaults into an answer. Send every value that should be present, including a required field's displayed default.
+
+### Conditions
+
+Use `when` to make a field active only when all its conditions match.
+
+```ts
+const fields = [
+  { key: "deploy", type: "boolean", required: true },
+  {
+    key: "reason",
+    type: "string",
+    required: true,
+    when: [{ key: "deploy", op: "eq", value: false }]
+  }
+] as const
+```
+
+Conditions follow these rules:
+
+- `when` is AND. An empty array leaves the field active.
+- A condition can reference only an earlier non-external field.
+- The condition value must match the referenced field's type. A closed option field also requires a declared option value.
+- For multiselect, `eq` means “includes this value” and `neq` means “does not include this value.”
+- An unanswered reference makes both `eq` and `neq` false.
+- An inactive field is neither required nor answerable. Sending its key is an invalid answer.
+- If one conditional field becomes inactive, later conditions that reference it are also false because it has no answer.
+
+### External
+
+An `external` field represents a link plus acknowledgement. The answer must contain its key with the literal value `true`. Omitting the key, sending `false`, or sending another value fails validation. This requirement applies even though the field has no `required` property.
+
+```ts
+{
+  key: "review",
+  type: "external",
+  title: "Review the deployment plan",
+  url: "https://deploy.example.com/plans/current"
+}
+```
+
+### Secrets
+
+Set `secret: true` only on a `string` field. The built-in UI renders it as a password input with `autocomplete="new-password"`. A secret field cannot have a default, and the server rejects the Form at creation if it does.
+
+```ts
+{
+  key: "token",
+  type: "string",
+  title: "Deploy token",
+  secret: true,
+  required: true
+}
+```
+
+<Callout type="warning">
+  `secret` controls presentation and forbids defaults. It does not redact transport or events. The answer is present in the reply request, the ephemeral `form.replied` event, and the answered in-memory state during terminal retention. Do not log these values, put them in metadata, or assume event subscribers cannot see them.
+</Callout>
+
+### Validation
+
+Treat client-side controls as convenience only. The server validates field definitions when it creates the Form and validates the complete answer before settlement.
+
+Creation rejects duplicate keys, invalid or forward `when` references, mismatched condition values, undeclared closed-option conditions, and secret defaults. Reply rejects unknown keys, missing active required fields, supplied inactive fields, wrong value types, invalid options, failed formats or patterns, out-of-range values, and missing external acknowledgements. A failed reply leaves the Form pending so the client can correct and retry it.
+
+## Events
+
+Subscribe to the central `/api/event` stream for low-latency updates. Each connection starts with `server.connected`; Events are volatile and never replayed. When you receive that marker, read the current pending Forms with `client.form.list` and buffer matching Form Events until the read finishes.
+
+```ts title="watch-session-forms.ts"
+import {
+  ByMorning,
+  type EventSubscribeOutput,
+  type FormInfo,
+  type FormListInput
+} from "@bymorning/client"
+
+export async function watchSessionForms(
+  baseUrl: string,
+  sessionID: FormListInput["sessionID"],
+  onChange: (forms: readonly FormInfo[]) => void,
+  signal: AbortSignal
+) {
+  const client = ByMorning.make({ baseUrl })
+  const pending = new Map<FormInfo["id"], FormInfo>()
+  const buffered: EventSubscribeOutput[] = []
+  let hydrating = false
+
+  const emit = () => onChange([...pending.values()])
+  const apply = (event: EventSubscribeOutput) => {
+    if (event.type === "form.created") pending.set(event.data.id, event.data)
+    if (event.type === "form.replied" || event.type === "form.cancelled") {
+      pending.delete(event.data.id)
+    }
+    if (event.type.startsWith("form.")) emit()
+  }
+
+  const hydrate = async () => {
+    hydrating = true
+    pending.clear()
+    for (const form of await client.form.list({ sessionID }, { signal })) {
+      pending.set(form.id, form)
+    }
+    hydrating = false
+    for (const event of buffered.splice(0)) apply(event)
+    emit()
+  }
+
+  for await (const event of client.event.subscribe(undefined, { signal })) {
+    if (event.type === "server.connected") {
+      void hydrate()
+      continue
+    }
+    if (!("sessionID" in event.data) || event.data.sessionID !== sessionID) continue
+    if (hydrating) buffered.push(event)
+    else apply(event)
+  }
+}
+```
+
+`form.created` carries the Form. `form.replied` and `form.cancelled` carry the Form ID and Session ID. Repeat the read after every reconnect. Preserve Events received while a list request is in flight; do not replace newer local changes with an older list result.
+
+## Question
+
+The built-in `question` Tool turns each question into a Form field and waits on `Form.Service.ask`. Single-choice questions become custom string options. Multiple-choice questions become custom multiselect options. The Tool returns `answers: string[][]` to the model.
+
+Before creating the Form, the Tool independently requests Permission with `action: "question"` and `resources: ["*"]`. It does not propose a saved grant. A Permission prompt therefore appears before the Form dock when policy requires approval. The built-in `general` Agent denies `question`; the built-in default Agent's allow-all rule permits it unless Workspace rules override that decision.
+
+While the question is pending, the Session composer is replaced by the Form dock. A running `question` Tool row is hidden because the dock represents that work. If Permission and Form requests are both pending, the Permission dock takes precedence.
+
+Cancelling the Form settles it as `cancelled`. The `question` Tool then enters the existing declined-tool path, interrupts the step, and does not send a Tool failure result to the model. Rejecting or denying the preceding Permission is Permission behavior, not Form cancellation.
+
+## Consumers
+
+Call Permission separately when the operation needs authorization, then call `Form.Service.ask`. Always branch on the terminal state before reading `answer`.
+
+```ts title="internal/request-deployment.ts"
+import { Form } from "@bymorning/core/form"
+import { Permission } from "@bymorning/core/permission"
+import { Session } from "@bymorning/schema/session"
+import { Effect } from "effect"
+
+export const requestDeployment = (sessionID: Session.ID) =>
+  Effect.gen(function* () {
+    const permissions = yield* Permission.Service
+    const forms = yield* Form.Service
+
+    yield* permissions.assert({
+      sessionID,
+      action: "deploy.configure",
+      resources: ["production"]
+    })
+
+    const state = yield* forms.ask({
+      sessionID,
+      title: "Configure deployment",
+      metadata: { kind: "deployment" },
+      fields: [
+        { key: "region", type: "string", required: true },
+        { key: "replicas", type: "integer", minimum: 1, required: true }
+      ]
+    })
+
+    if (state.status === "cancelled") return state
+    return { status: "ready" as const, configuration: state.answer }
+  })
+```
+
+Follow these constraints for every new consumer:
+
+- Use `metadata.kind` only to select presentation. Never treat it as authorization.
+- Handle `{ status: "cancelled" }` as an expected terminal outcome.
+- Never place a secret in `default` or metadata.
+- Use the real persisted `Session.ID`. Do not invent `global`, sentinel, or synthetic Session owners.
+- Do not use Session Forms for inbound MCP or another context that has no persisted Session.
+- Do not assume the Form survives restart or layer teardown.
+- Do not add web search or MCP Form behavior based on this API. Those are future candidates, not implemented consumers.

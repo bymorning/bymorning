@@ -1,0 +1,21 @@
+:root {
+  font-family: var(--font-body);
+  background: var(--color-bg-deep);
+  color: var(--color-text-base);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

@@ -1,0 +1,17 @@
+[data-component="question-answers"] {
+  display: flex;
+  margin: 4px 0 0;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[data-component="question-answers"] dt {
+  color: var(--color-text-muted);
+}
+
+[data-component="question-answers"] dd {
+  margin: 0;
+  color: var(--color-text-base);
+}

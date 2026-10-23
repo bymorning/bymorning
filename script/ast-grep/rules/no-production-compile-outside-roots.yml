@@ -1,0 +1,14 @@
+id: no-production-compile-outside-roots
+language: TypeScript
+message: Production LayerNode compilation belongs only in application.ts and workspace-map.ts.
+severity: error
+files:
+  - packages/core/src/**/*.ts
+  - packages/server/src/**/*.ts
+ignores:
+  - packages/core/src/**/*.test.ts
+  - packages/server/src/**/*.test.ts
+  - packages/server/src/application.ts
+  - packages/server/src/workspace-map.ts
+rule:
+  pattern: LayerNode.compile($$$ARGS)

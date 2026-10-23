@@ -1,0 +1,232 @@
+.toast-region {
+  z-index: 1000;
+  max-width: min(320px, calc(100vw - 64px));
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.toast {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  column-gap: 12px;
+  row-gap: 12px;
+  width: 320px;
+  max-width: 100%;
+  padding: 12px;
+  max-height: min(420px, calc(100dvh - 96px));
+  overflow: hidden;
+  pointer-events: auto;
+  box-sizing: border-box;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: var(--radius-xl);
+  color: var(--color-text-base);
+  background: var(--color-bg-layer-1);
+  box-shadow: var(--shadow-floating);
+  transition:
+    transform 280ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 160ms ease-out,
+    height 280ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 160ms ease-out;
+
+  &:has(> [data-icon]) {
+    grid-template-columns: 16px minmax(0, 1fr) 20px;
+  }
+
+  &:focus-visible {
+    box-shadow:
+      var(--shadow-floating),
+      0 0 0 2px var(--color-border-focus);
+  }
+
+  &[data-expanded="true"] {
+    overflow: visible;
+  }
+
+  &[data-expanded="false"][data-front="false"] > * {
+    opacity: 0;
+  }
+
+  &[data-expanded="false"][data-front="false"] {
+    --y: translateY(calc(-1 * var(--toasts-before) * 9.5px)) scale(calc(1 - var(--toasts-before) * 0.05));
+  }
+
+  > [data-icon] {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 20px;
+    color: var(--color-icon-base);
+  }
+
+  > [data-content] {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &:has(> [data-icon]) > [data-content] {
+    grid-column: 2;
+  }
+
+  > [data-close-button],
+  [data-slot="toast-close-button"] {
+    grid-column: 2;
+    grid-row: 1;
+    position: static;
+    align-self: start;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    transform: none;
+    background: transparent;
+    color: var(--color-icon-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:has(> [data-icon]) > [data-close-button] {
+    grid-column: 3;
+  }
+
+  > [data-close-button]:hover,
+  [data-slot="toast-close-button"]:hover {
+    background: var(--color-overlay-hover);
+    color: var(--color-icon-base);
+  }
+
+  > [data-close-button]:active,
+  [data-slot="toast-close-button"]:active {
+    background: var(--color-overlay-pressed);
+  }
+
+  > [data-close-button]:focus-visible,
+  [data-slot="toast-close-button"]:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  > [data-icon] > *,
+  > [data-icon] svg,
+  > [data-close-button] svg,
+  [data-slot="toast-close-button"] svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  [data-title],
+  [data-slot="toast-title"] {
+    color: var(--color-text-base);
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 530;
+    line-height: 20px;
+    letter-spacing: -0.04px;
+    font-synthesis: none;
+    margin: 0;
+  }
+
+  [data-description],
+  [data-slot="toast-description"] {
+    color: var(--color-text-muted);
+    text-wrap-style: pretty;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 440;
+    line-height: 20px;
+    letter-spacing: -0.04px;
+    font-synthesis: none;
+    margin: 0;
+  }
+
+  [data-slot="toast-actions"] {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &:has(> [data-icon]) [data-slot="toast-actions"] {
+    grid-column: 2;
+  }
+
+  [data-slot="toast-actions"] [data-component="button"] {
+    min-height: 24px;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 530;
+    line-height: 20px;
+    letter-spacing: -0.04px;
+    font-synthesis: none;
+  }
+
+  [data-slot="toast-icon"] {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 20px;
+    color: var(--color-icon-base);
+  }
+
+  [data-slot="toast-content"] {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast > * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .toast-region {
+    max-width: calc(100vw - 32px);
+  }
+
+  .toast {
+    width: 100%;
+  }
+}
+
+/* Lifted above the composer while one is on screen; see ToastRegion. Only applies while a
+   clearance is set so solid-sonner's own (mobile) bottom offset is untouched otherwise. */
+.toast-region[data-cleared][data-sonner-toaster][data-y-position="bottom"] {
+  bottom: var(--toast-clearance);
+}

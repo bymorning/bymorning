@@ -1,0 +1,27 @@
+{
+  "name": "@bymorning/plugin-code-interpreter-kubernetes",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bymorning/plugin": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "effect": "catalog:",
+    "ws": "^8.21.1",
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/ws": "^8.18.1",
+    "vitest": "catalog:"
+  }
+}

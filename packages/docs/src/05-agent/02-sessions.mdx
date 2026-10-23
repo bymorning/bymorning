@@ -1,0 +1,28 @@
+---
+title: Sessions
+description: Follow a transcript and control messages, tools, errors, and usage.
+hidden: true
+---
+
+A Session keeps the exchange between you, the Agent, the Model, and Tools. Open one from **Overview**, or expand a Project in the sidebar and select a Session.
+
+## Transcript
+
+- Send another prompt from **Ask ByMorning**. While work is active, submit becomes stop; stopping interrupts the current run.
+- Type `/` to search Session commands. **Compact session** summarizes the transcript to reduce context size.
+- Select the Session title to rename a top-level Session. Child Session titles are not editable from their header. Titles can be up to 255 characters.
+- Use **Session actions** to archive or restore a Session. Archiving hides it from Overview and the sidebar without deleting history. Open **Archived** on Overview to restore it.
+- Use **Copy message** on your prompt or **Copy response** on an Agent response.
+- Select expandable Tool rows for input, output, command, or other details. File changes show per-file additions, deletions, and diffs.
+- Select a failed Tool row to read the error, then use **Copy error**.
+- Read request-level failures in the transcript. A policy failure identifies the blocked Agent or Model and can offer **Review plugins**.
+
+Older messages load as you move back through a long transcript. The timeline follows new output while you remain near the latest message.
+
+## Usage
+
+The circular usage control in the header reports context percentage, total tokens, and cost. Hover or focus it for the complete label. When some model pricing is unavailable, the cost is an incomplete known subtotal.
+
+Agent, reasoning-summary, usage, and Model-variant visibility depend on your display settings. Tool activity and permission requests remain part of the Session even when those details are hidden.
+
+See [Tools and permissions](/agent/tools-and-permissions) and [subagents](/agent/subagents).

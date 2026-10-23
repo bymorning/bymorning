@@ -1,0 +1,12 @@
+@layer session-ui {
+  [data-session-ui] {
+    color: var(--session-ui-fg);
+    font-family: var(--session-ui-font);
+  }
+
+  [data-session-ui] *,
+  [data-session-ui] *::before,
+  [data-session-ui] *::after {
+    box-sizing: border-box;
+  }
+}

@@ -1,0 +1,42 @@
+id: no-core-cloud-sdk
+snapshots:
+  import { AwsClient } from "@smithy/smithy-client":
+    labels:
+    - source: import { AwsClient } from "@smithy/smithy-client"
+      style: primary
+      start: 0
+      end: 49
+    - source: '"@smithy/smithy-client"'
+      style: secondary
+      start: 26
+      end: 49
+  import { KMSClient } from "@aws-sdk/client-kms":
+    labels:
+    - source: import { KMSClient } from "@aws-sdk/client-kms"
+      style: primary
+      start: 0
+      end: 47
+    - source: '"@aws-sdk/client-kms"'
+      style: secondary
+      start: 26
+      end: 47
+  import { SecretClient } from "@azure/keyvault-secrets":
+    labels:
+    - source: import { SecretClient } from "@azure/keyvault-secrets"
+      style: primary
+      start: 0
+      end: 54
+    - source: '"@azure/keyvault-secrets"'
+      style: secondary
+      start: 29
+      end: 54
+  import { Storage } from "@google-cloud/storage":
+    labels:
+    - source: import { Storage } from "@google-cloud/storage"
+      style: primary
+      start: 0
+      end: 47
+    - source: '"@google-cloud/storage"'
+      style: secondary
+      start: 24
+      end: 47

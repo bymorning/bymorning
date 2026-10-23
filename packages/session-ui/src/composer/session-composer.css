@@ -1,0 +1,87 @@
+[data-session-ui] [data-component="session-composer"] {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  min-height: 104px;
+  padding: 10px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-2xl);
+  background: var(--color-bg-layer-1);
+  box-shadow: var(--shadow-overlay);
+}
+[data-session-ui] [data-component="session-composer"]:focus-within {
+  border-color: var(--color-bg-accent);
+}
+[data-session-ui] [data-component="session-composer"] textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  color: var(--color-text-base);
+  background: transparent;
+  font: inherit;
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="footer"],
+[data-session-ui] [data-component="session-composer"] [data-slot="attachments"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="footer"] {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="attachments"] {
+  overflow: auto;
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="attachments"] > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-layer-2);
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="completion"] {
+  position: absolute;
+  z-index: 1;
+  right: 8px;
+  bottom: calc(100% + 6px);
+  display: grid;
+  width: min(360px, calc(100% - 16px));
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-layer-2);
+  box-shadow: var(--shadow-overlay);
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="completion"] button {
+  display: grid;
+  grid-template-columns: 1fr;
+  text-align: start;
+}
+[data-session-ui] [data-component="session-composer"] [data-slot="completion"] [data-active] {
+  background: var(--color-overlay-hover);
+}
+[data-session-ui] [data-component="session-composer"] button,
+[data-session-ui] [data-component="session-composer"] select {
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-base);
+  background: var(--color-bg-layer-2);
+  font: inherit;
+  cursor: pointer;
+}
+[data-session-ui] [data-component="session-composer"] button {
+  padding: 5px 8px;
+}
+[data-session-ui] [data-component="session-composer"] button:disabled,
+[data-session-ui] [data-component="session-composer"] textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

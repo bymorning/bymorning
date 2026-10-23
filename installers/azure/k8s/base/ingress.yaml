@@ -1,0 +1,33 @@
+# Placeholder: ingress is the customer's choice.
+#  - NGINX ingress: keep this resource, set the host, and terminate TLS with a
+#    certificate Secret (or cert-manager). Set TRUSTED_PROXIES to the ingress
+#    controller pod/node CIDR so X-Forwarded-For is honoured for rate limiting.
+#  - Application Gateway for Containers: delete this resource and add a Gateway
+#    API HTTPRoute to Service bymorning:80 in an overlay.
+# The Gateway serves plain HTTP on 3210 unless TLS_CERT and TLS_KEY are set; if
+# you enable listener TLS, switch the probes and backend protocol to HTTPS.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bymorning
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - bymorning.example.com
+      secretName: bymorning-tls
+  rules:
+    - host: bymorning.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bymorning
+                port:
+                  name: http

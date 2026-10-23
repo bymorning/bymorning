@@ -1,0 +1,278 @@
+---
+title: Integration authentication
+description: Discover Integrations and manage key, AWS SigV4, OAuth, command, and stored connections safely.
+---
+
+Integration discovery tells you which authentication methods an installation exposes. Always select a returned method instead of assuming that an Integration supports a particular flow.
+
+```ts title="list-integrations.ts"
+import { ByMorning } from "@bymorning/client"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const [workspace] = await client.workspace.list()
+
+if (!workspace) throw new Error("No Workspace is available")
+
+const integrations = await client.integration.list({ workspace: workspace.id })
+
+for (const integration of integrations) {
+  console.log(integration.id, integration.methods, integration.connections)
+}
+```
+
+Integration field schemas are synchronous connect inputs. They share `Form.Fields` and `Form.Answer` with [Session Forms](/developer-reference/session-forms), but they do not create a pending Session Form.
+
+This repository marks `@bymorning/client` and `@bymorning/schema` as private workspace packages. Use these examples only when your ByMorning distribution exposes both packages. Otherwise, call the HTTP operations below and use the [generated API reference](/api) for the authoritative schemas.
+
+`client.integration.get` returns one Integration or `undefined`. Both operations return a transport-safe projection:
+
+- `methods` describes available `key`, `aws-sigv4`, `oauth`, `command`, `env`, and `env-group` methods;
+- `connections` identifies your accessible stored credentials by ID, label, `scope`, and per-scope `active` status, or environment connections by public environment name;
+- stored regional connections expose an ID, label, authentication kind, and AWS region, while regional environment connections expose only their authentication kind and region; and
+- an OAuth client configuration exposes its field definitions and a `configured` boolean, never its stored answers.
+
+The response never contains API keys, AWS access values, OAuth access or refresh tokens, OAuth metadata, or OAuth client secrets. Do not log request payloads that contain those values.
+
+## Ownership
+
+Gmail and remote MCP OAuth connections belong to the member who connects. Other Integrations can use a personal connection or a shared Workspace default.
+
+| Connection policy | Selection order | Omitted connect `scope` |
+| --- | --- | --- |
+| `member-only` | Your active connection | `member` |
+| `member-or-workspace` or omitted | Your active connection → Workspace active connection → declared environment connection | `workspace` |
+
+Set `scope: "member"` on key, AWS SigV4, OAuth, or command connect requests to save a personal connection. Set `scope: "workspace"` to save a shared connection where permitted; member-only Integrations always save under your membership.
+
+```ts
+await client.integration.connect.key({
+  workspace: workspace.id,
+  integrationID: integration.id,
+  key: apiKey,
+  scope: "member",
+  label: "Production"
+})
+```
+
+A failed selected credential never falls back to a different identity. Discovery and credential operations exclude other members' personal connections. Existing Workspace management permissions remain unchanged.
+
+## Keys
+
+Use the key endpoint only after discovery returns a `key` method. Supply `answer` when the method's `form` requests additional values.
+
+```ts title="connect-key.ts"
+import { ByMorning } from "@bymorning/client"
+
+export async function connectKey(baseUrl: string, integrationID: string, apiKey: string) {
+  const client = ByMorning.make({ baseUrl })
+  const [workspace] = await client.workspace.list()
+
+  if (!workspace) throw new Error("No Workspace is available")
+
+  const integration = (await client.integration.list({ workspace: workspace.id })).find(
+    (candidate) => candidate.id === integrationID
+  )
+
+  if (!integration?.methods.some((method) => method.type === "key")) {
+    throw new Error("This Integration has no key method")
+  }
+
+  await client.integration.connect.key({
+    workspace: workspace.id,
+    integrationID: integration.id,
+    key: apiKey,
+    label: "Production"
+  })
+}
+```
+
+For a key method with a form, build `answer` from its returned field keys. Required and conditional fields are validated by the server. `configuration: { type: "aws-region", region }` is the legacy regional key form; do not send it together with `answer`.
+
+## AWS
+
+Use the dedicated AWS SigV4 method for an Integration that advertises `aws-sigv4`.
+
+```ts title="connect-aws.ts"
+import { ByMorning } from "@bymorning/client"
+import { AwsRegion } from "@bymorning/schema/aws-region"
+
+export async function connectAws(
+  baseUrl: string,
+  accessKeyId: string,
+  secretAccessKey: string,
+  sessionToken?: string
+) {
+  const client = ByMorning.make({ baseUrl })
+  const [workspace] = await client.workspace.list()
+
+  if (!workspace) throw new Error("No Workspace is available")
+
+  const integration = (await client.integration.list({ workspace: workspace.id })).find(
+    (candidate) => candidate.methods.some((method) => method.type === "aws-sigv4")
+  )
+  const method = integration?.methods.find((candidate) => candidate.type === "aws-sigv4")
+
+  if (!integration || !method) throw new Error("No AWS SigV4 Integration is available")
+
+  await client.integration.connect.awsSigV4({
+    workspace: workspace.id,
+    integrationID: integration.id,
+    methodID: method.id,
+    accessKeyId,
+    secretAccessKey,
+    ...(sessionToken ? { sessionToken } : {}),
+    region: AwsRegion.make("us-east-1"),
+    label: "Production us-east-1"
+  })
+}
+```
+
+The public AWS region schema currently accepts `us-east-1` and `us-west-2`. A session token is optional for temporary AWS credentials. Environment-backed regional methods report only whether the required environment is available; they do not project variable names or values.
+
+## OAuth
+
+An OAuth method can require shared Workspace client configuration before authorization begins. Client answers and account tokens use the same credential store with separate purposes; client answers never appear as executable connections.
+
+Inspect `method.client.fields`, collect answers by field key, and save them with `client.integration.oauth.client.put`.
+
+```ts title="connect-oauth.ts"
+import { ByMorning, type IntegrationOauthClientPutInput } from "@bymorning/client"
+
+export async function connectOAuth(
+  baseUrl: string,
+  integrationID: string,
+  clientAnswer: IntegrationOauthClientPutInput["answer"]
+) {
+  const client = ByMorning.make({ baseUrl })
+  const [workspace] = await client.workspace.list()
+
+  if (!workspace) throw new Error("No Workspace is available")
+
+  const integration = (await client.integration.list({ workspace: workspace.id })).find(
+    (candidate) => candidate.id === integrationID
+  )
+  const method = integration?.methods.find((candidate) => candidate.type === "oauth")
+
+  if (!integration || !method) throw new Error("OAuth is unavailable")
+
+  if (method.client) {
+    await client.integration.oauth.client.put({
+      workspace: workspace.id,
+      integrationID: integration.id,
+      methodID: method.id,
+      answer: clientAnswer
+    })
+  }
+
+  const attempt = await client.integration.oauth.connect({
+    workspace: workspace.id,
+    integrationID: integration.id,
+    methodID: method.id
+  })
+
+  window.open(attempt.url, "_blank", "noopener,noreferrer")
+  return { client, workspaceID: workspace.id, integrationID: integration.id, attempt }
+}
+```
+
+The returned attempt includes `attemptID`, `url`, `instructions`, `mode`, and a `time` object with `created` and `expires` timestamps. Follow the returned instructions, then read status with:
+
+```ts
+const status = await client.integration.oauth.status({
+  workspace: workspaceID,
+  integrationID,
+  attemptID: attempt.attemptID
+})
+```
+
+Status is `pending`, `complete`, `failed`, or `expired`. In `auto` mode, the provider callback completes the attempt. In `code` mode, collect the authorization code and call `client.integration.oauth.complete` with `code`. Call `client.integration.oauth.cancel` to abandon a pending attempt. Remove saved client configuration with `client.integration.oauth.client.remove`; this does not return the previous values.
+
+## Commands
+
+A command method runs the Integration's declared authentication command on the ByMorning server. Discovery exposes the command and arguments. Only run command methods contributed by plugins you trust. The command's standard output becomes a stored credential only after successful completion.
+
+```ts
+const attempt = await client.integration.command.connect({
+  workspace: workspaceID,
+  integrationID,
+  methodID,
+  label: "Local CLI"
+})
+
+const status = await client.integration.command.status({
+  workspace: workspaceID,
+  integrationID,
+  attemptID: attempt.attemptID
+})
+```
+
+Command status is `pending`, `complete`, `failed`, or `expired`; a pending status may include command progress text. Use `client.integration.command.cancel` to stop a pending attempt. There is no separate command-complete request.
+
+## Connections
+
+Every successful key, AWS SigV4, OAuth, or command connection creates a stored credential and activates it within its owner's group. Each member and the Workspace keep independent selections for the same Integration.
+
+In `connections`, personal records precede shared records, and each group's selected connection appears first with `active: true`. The first available connection is the effective selection.
+
+Use the public credential operations with a stored connection's `id`:
+
+```ts
+await client.credential.update({
+  workspace: workspaceID,
+  credentialID,
+  label: "Primary account"
+})
+
+await client.credential.activate({ workspace: workspaceID, credentialID })
+await client.credential.remove({ workspace: workspaceID, credentialID })
+```
+
+These operations rename, activate, or remove a stored connection. They do not accept or return credential material. Removing the active connection promotes the newest remaining stored credential belonging to the same owner, if one exists. Environment connections have no credential ID and cannot be renamed, activated, or removed through this API; change the server environment instead.
+
+## Gmail
+
+The bundled `google-gmail` Integration exposes an OAuth method with ID `oauth`. Configure a Google OAuth **Web application** client with:
+
+- the authorized redirect URI `<ByMorning origin>/auth/integration/callback`;
+- a client ID in the `client_id` field; and
+- a client secret in the secret `client_secret` field.
+
+Authorization requests `openid`, `email`, `https://www.googleapis.com/auth/gmail.readonly`, and `https://www.googleapis.com/auth/gmail.compose`. The resulting Gmail Tools can search and read messages, read threads, list labels, and list or create editors. They do not expose a send-message operation. Each Tool still passes through its `gmail_<operation>` Permission action.
+
+Use the generic OAuth workflow above. The Google client is shared by the Workspace; your Gmail tokens and selected account belong to your membership. Your teammates must connect their own accounts before using Gmail Tools.
+
+Discovery reports whether the Gmail client is configured without exposing its ID or secret. After upgrading from shared Gmail credentials, reconnect your Google account; ByMorning retains legacy records without guessing their member owner.
+
+See [Provider integration plugins](/developer-reference/provider-integration-plugins) to build the same lifecycle into a Project or package plugin.
+
+## MCP
+
+The Workspace configures the MCP server URL and settings. Each member authorizes separately; their tokens, authenticated MCP client, and discovered Tools follow their own connection.
+
+```text
+Workspace MCP definition
+  ├── Alice authorizes → Alice's tokens → Alice's remote access
+  └── Bob authorizes   → Bob's tokens   → Bob's remote access
+```
+
+MCP OAuth is inherently member-only; there is no MCP configuration policy field or connection-scope selector. Switching your account reconnects your client without changing another member's selection.
+
+Public MCP servers and configured static authentication headers keep their existing behavior. A shared static token represents a shared remote identity. Dynamically registered OAuth client information stays with its account connection.
+
+After upgrading from shared MCP OAuth credentials, each member reconnects. Legacy tokens remain stored but cannot act as a personal connection.
+
+## HTTP
+
+The [generated API reference](/api) is authoritative for payloads, responses, and errors.
+
+| Task | HTTP operation |
+| --- | --- |
+| List or get Integrations | `GET /api/integration`, `GET /api/integration/:integrationID` |
+| Connect a key or AWS SigV4 credential | `POST /api/integration/:integrationID/connect/key`, `POST /api/integration/:integrationID/connect/aws-sigv4` |
+| Save or remove OAuth client configuration | `PUT` or `DELETE /api/integration/:integrationID/oauth/:methodID/client` |
+| Start OAuth | `POST /api/integration/:integrationID/connect/oauth` |
+| Inspect or cancel OAuth | `GET` or `DELETE /api/integration/:integrationID/connect/oauth/:attemptID` |
+| Complete code-mode OAuth | `POST /api/integration/:integrationID/connect/oauth/:attemptID/complete` |
+| Start a command | `POST /api/integration/:integrationID/connect/command` |
+| Inspect or cancel a command | `GET` or `DELETE /api/integration/:integrationID/connect/command/:attemptID` |
+| Rename, activate, or remove a stored connection | `PATCH /api/credential/:credentialID`, `POST /api/credential/:credentialID/activate`, `DELETE /api/credential/:credentialID` |

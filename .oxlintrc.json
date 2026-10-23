@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "require-yield": "off",
+    "no-control-regex": "off",
+    "no-shadow": "off",
+    "typescript/no-floating-promises": "warn",
+    "typescript/no-misused-spread": "warn",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/no-array-reverse": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/require-module-specifiers": "off"
+  },
+  "ignorePatterns": [
+    "**/node_modules",
+    "**/dist",
+    "**/.sst",
+    "**/*.d.ts",
+    "**/generated/**",
+    "packages/client/src/effect/api/api.ts"
+  ]
+}

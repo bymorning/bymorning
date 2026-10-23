@@ -1,0 +1,6930 @@
+import type { GeneratedModel } from "../../src/normalized.js"
+
+export const models = [
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/amazon.nova-2-lite-v1:0",
+      "digest": "70794af1c8d80da695159b5325237404bc606f81cf6dd208785197e1bd2c566c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "amazon.nova-2-lite-v1:0"
+    },
+    "apiID": "amazon.nova-2-lite-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Nova 2 Lite",
+      "description": "Multimodal reasoning model for visual analysis, planning, and tool use",
+      "family": "nova",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.33,
+        "output": 2.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/amazon.nova-lite-v1:0",
+      "digest": "dcfe0a6a8afb5356503b85264be0e25366d6a855603dfd77d43555fa207214fc"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "amazon.nova-lite-v1:0"
+    },
+    "apiID": "amazon.nova-lite-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Nova Lite",
+      "description": "Efficient model for low-latency assistance, extraction, and routine automation",
+      "family": "nova-lite",
+      "releaseDate": "2024-12-03",
+      "lastUpdated": "2024-12-03",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 300000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.06,
+        "output": 0.24,
+        "cache_read": 0.015
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/amazon.nova-micro-v1:0",
+      "digest": "0772159461ffd8abc231ea7fb2db9326b8cba90e45635473ed3f720eaf0d12a6"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "amazon.nova-micro-v1:0"
+    },
+    "apiID": "amazon.nova-micro-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Nova Micro",
+      "description": "Efficient model for low-latency assistance, extraction, and routine automation",
+      "family": "nova-micro",
+      "releaseDate": "2024-12-03",
+      "lastUpdated": "2024-12-03",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.035,
+        "output": 0.14,
+        "cache_read": 0.00875
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/amazon.nova-pro-v1:0",
+      "digest": "dafa4e3f5192ef11350ed2fdb6d24140d5cf3fa9fbbadc249d51f5b42e22d02a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "amazon.nova-pro-v1:0"
+    },
+    "apiID": "amazon.nova-pro-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Nova Pro",
+      "description": "Flagship model for demanding analysis, coding, and production agent workflows",
+      "family": "nova-pro",
+      "releaseDate": "2024-12-03",
+      "lastUpdated": "2024-12-03",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 300000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.8,
+        "output": 3.2,
+        "cache_read": 0.2
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-fable-5",
+      "digest": "f76ee740ffa37817dcf179e16b417281ce804655a47cbe69d07fef899b911b45"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-fable-5"
+    },
+    "apiID": "anthropic.claude-fable-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5",
+      "description": "Claude model for creative writing, analysis, and controlled agent workflows",
+      "family": "claude-fable",
+      "releaseDate": "2026-06-09",
+      "lastUpdated": "2026-06-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 1,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-fable-5-1",
+      "digest": "8e997f29d30584dbe8bbf0374768b47fff8293af0daf6bfcc13a77e19a4439de"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-fable-5-1"
+    },
+    "apiID": "anthropic.claude-fable-5-1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5.1",
+      "description": "Claude model for demanding reasoning and long-horizon agentic work",
+      "family": "claude-fable",
+      "releaseDate": "2026-09-01",
+      "lastUpdated": "2026-09-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 0.25,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "digest": "e7baae3bd0071b5a63cb944063dae7c86ec76442efa09a1cbd07e5a2f8e37a01"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    "apiID": "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Haiku 4.5",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1,
+        "output": 5,
+        "cache_read": 0.1,
+        "cache_write": 1.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-opus-4-1-20250805-v1:0",
+      "digest": "4319b65ec32f68752e40b9960b9ca4ebd5f0496c8b415aabea3615ef9039cccb"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-opus-4-1-20250805-v1:0"
+    },
+    "apiID": "anthropic.claude-opus-4-1-20250805-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "deprecated",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.1",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 15,
+        "output": 75,
+        "cache_read": 1.5,
+        "cache_write": 18.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-opus-4-5-20251101-v1:0",
+      "digest": "74e1b98bb46455d670da506bad02254cb9213cc2f5179517d78a3c6deee1477c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-opus-4-5-20251101-v1:0"
+    },
+    "apiID": "anthropic.claude-opus-4-5-20251101-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.5",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-11-24",
+      "lastUpdated": "2025-08-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-opus-4-6-v1",
+      "digest": "0f688b2693d662af9585462d7ca1bef39b83fd4ce41add8b2f2e9c73d3b96ce9"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-opus-4-6-v1"
+    },
+    "apiID": "anthropic.claude-opus-4-6-v1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.6",
+      "description": "High-end Claude for difficult coding, planning, and slower expert reasoning",
+      "family": "claude-opus",
+      "releaseDate": "2026-02-05",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-opus-4-7",
+      "digest": "85b38dc957dd19593f461d9ef782e10211ed283a0a2b6a17b01676e850d39776"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-opus-4-7"
+    },
+    "apiID": "anthropic.claude-opus-4-7",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.7",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-opus-4-8",
+      "digest": "03cd77e1501ba9bfa0cc1700588ab868a94df2d2b0d0546cae2336880e62827b"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-opus-4-8"
+    },
+    "apiID": "anthropic.claude-opus-4-8",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.8",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-opus-5",
+      "digest": "7059baee0c94ef8fda4b307794b4057d1aae463345428cb507f6eea865ff204c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-opus-5"
+    },
+    "apiID": "anthropic.claude-opus-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 5",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "digest": "4c0dbcecc200a75f7b7da1446f1b2bc11f96b6498fd6220cbf62e46e0890587b"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "apiID": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.5",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-sonnet-4-6",
+      "digest": "7ef69ae105a245ee5c84bd57b9895de9a6248a44fefce49457f5e6a8aa7f7a21"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-sonnet-4-6"
+    },
+    "apiID": "anthropic.claude-sonnet-4-6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.6",
+      "description": "Claude workhorse for coding agents, careful analysis, and production cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/anthropic.claude-sonnet-5",
+      "digest": "5bfc998187a79afb0b057b13a58cd72b3b27be155d2ca07f309d6ed06643295a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "anthropic.claude-sonnet-5"
+    },
+    "apiID": "anthropic.claude-sonnet-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 5",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "digest": "492eed49d01e49577044e9ecbb608337e4e6b118f2f80ac17d195348fc2e41eb"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    "apiID": "au.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Haiku 4.5 (AU)",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1,
+        "output": 5,
+        "cache_read": 0.1,
+        "cache_write": 1.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-opus-4-6-v1",
+      "digest": "1b089c1e85a9650f0c0bf2b63c30345cf1b659973b01ad3fc3dd946185409090"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-opus-4-6-v1"
+    },
+    "apiID": "au.anthropic.claude-opus-4-6-v1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "AU Anthropic Claude Opus 4.6",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-02-05",
+      "lastUpdated": "2026-02-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 16.5,
+        "output": 82.5,
+        "cache_read": 1.65,
+        "cache_write": 20.625
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-opus-4-8",
+      "digest": "dbebbe2ed660cd0cfd2acdb8538527d9c23ad43b0e1eea0a9ff0d76fb63a8484"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-opus-4-8"
+    },
+    "apiID": "au.anthropic.claude-opus-4-8",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.8 (AU)",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-opus-5",
+      "digest": "1012363818474c4ff6a590fdc0af2af2e291db9efac9c0cbc48cf6ae7ab28d8c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-opus-5"
+    },
+    "apiID": "au.anthropic.claude-opus-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 5 (AU)",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "digest": "5eed383b60edfcfa99fe243bd6e25e623dfd261ff6c8a47051e094f5c75d2a33"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "apiID": "au.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.5 (AU)",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-sonnet-4-6",
+      "digest": "36a2fcff1a1df4fcc829efb7901b7be4a58fd0d4ee288650ac82f4e7dec03470"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-sonnet-4-6"
+    },
+    "apiID": "au.anthropic.claude-sonnet-4-6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "AU Anthropic Claude Sonnet 4.6",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-02-17",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/au.anthropic.claude-sonnet-5",
+      "digest": "0e63533428546e3d7e68b01ab7fe5dc2c3f188242ce3635c5f0f6acc961db1bd"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "au.anthropic.claude-sonnet-5"
+    },
+    "apiID": "au.anthropic.claude-sonnet-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 5 (AU)",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/deepseek.r1-v1:0",
+      "digest": "fbd687da1fa20a341b654ba4b941711216fabfee4a127f7854ebb02cee52c579"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "deepseek.r1-v1:0"
+    },
+    "apiID": "deepseek.r1-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "DeepSeek-R1",
+      "description": "DeepSeek reasoning model for multi-step analysis, math, coding, and tools",
+      "family": "deepseek-thinking",
+      "releaseDate": "2025-01-20",
+      "lastUpdated": "2025-05-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 32768
+      },
+      "cost": {
+        "input": 1.35,
+        "output": 5.4
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/deepseek.v3-v1:0",
+      "digest": "0b6cf89f27bdaf4874388c642ed7a6f0fee59c23cb771fc76ac6e70e0b8ded9a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "deepseek.v3-v1:0"
+    },
+    "apiID": "deepseek.v3-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "DeepSeek-V3.1",
+      "description": "DeepSeek chat model for instruction following, coding, and analysis",
+      "family": "deepseek",
+      "releaseDate": "2025-09-18",
+      "lastUpdated": "2025-09-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 163840,
+        "output": 81920
+      },
+      "cost": {
+        "input": 0.58,
+        "output": 1.68
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/deepseek.v3.2",
+      "digest": "03cb7733c6df997e70326daa920980cf6ffad0c744c8a6e49b4386cef4c8dffd"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "deepseek.v3.2"
+    },
+    "apiID": "deepseek.v3.2",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "DeepSeek-V3.2",
+      "description": "DeepSeek chat model for instruction following, coding, and analysis",
+      "family": "deepseek",
+      "releaseDate": "2026-02-06",
+      "lastUpdated": "2026-02-06",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 163840,
+        "output": 81920
+      },
+      "cost": {
+        "input": 0.62,
+        "output": 1.85
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-fable-5",
+      "digest": "7d9d52b3c056db7929e95da9fd573ff1b5f9d7bd0ce81abaf19002d53b5d3b69"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-fable-5"
+    },
+    "apiID": "eu.anthropic.claude-fable-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5 (EU)",
+      "description": "Claude model for creative writing, analysis, and controlled agent workflows",
+      "family": "claude-fable",
+      "releaseDate": "2026-06-09",
+      "lastUpdated": "2026-06-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 11,
+        "output": 55,
+        "cache_read": 1.1,
+        "cache_write": 13.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "digest": "95833058eead200f70e8d7c3e867f5e661763ceebac3686fe878914585991659"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    "apiID": "eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Haiku 4.5 (EU)",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1.1,
+        "output": 5.5,
+        "cache_read": 0.11,
+        "cache_write": 1.375
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-opus-4-5-20251101-v1:0",
+      "digest": "b70a2f084db0c8f5aec3f246cf6d24e8202dfd731ec6259f35af82698b49d0ab"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-opus-4-5-20251101-v1:0"
+    },
+    "apiID": "eu.anthropic.claude-opus-4-5-20251101-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.5 (EU)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-11-24",
+      "lastUpdated": "2025-08-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-opus-4-6-v1",
+      "digest": "d762ced060a1e27884e669ef2778a221b1f1b800772a7d1cd358c4f63885efd6"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-opus-4-6-v1"
+    },
+    "apiID": "eu.anthropic.claude-opus-4-6-v1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.6 (EU)",
+      "description": "High-end Claude for difficult coding, planning, and slower expert reasoning",
+      "family": "claude-opus",
+      "releaseDate": "2026-02-05",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-opus-4-7",
+      "digest": "1be5b0541246b9ae96899a06dcdc9c43c8a1b96c6e113bc39568c5eed0735e6c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-opus-4-7"
+    },
+    "apiID": "eu.anthropic.claude-opus-4-7",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.7 (EU)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-opus-4-8",
+      "digest": "878d025e5ea6def087804ad998bc3be7918f7a1a4f3019f669d24e93d2e191f8"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-opus-4-8"
+    },
+    "apiID": "eu.anthropic.claude-opus-4-8",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.8 (EU)",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-opus-5",
+      "digest": "707568fef2447a07e8549b06e3a6c49d87b12780656a042effeabb8dd4019b9a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-opus-5"
+    },
+    "apiID": "eu.anthropic.claude-opus-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 5 (EU)",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "digest": "9b1b2a1e1855fff064d78c70276791e7b26da726ceacf601b6ed9452ca627f0a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "apiID": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.5 (EU)",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-sonnet-4-6",
+      "digest": "9e2020f5e4271e65bb48fb5d23cbdf0579b8af0fefc706e3921459bb374d6c46"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-sonnet-4-6"
+    },
+    "apiID": "eu.anthropic.claude-sonnet-4-6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.6 (EU)",
+      "description": "Claude workhorse for coding agents, careful analysis, and production cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/eu.anthropic.claude-sonnet-5",
+      "digest": "400dddaf1dff39f4df0e35a3c6b86a6f7c3f049bd7991eda21ce804ec5f6b0e2"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "eu.anthropic.claude-sonnet-5"
+    },
+    "apiID": "eu.anthropic.claude-sonnet-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 5 (EU)",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2.2,
+        "output": 11,
+        "cache_read": 0.22,
+        "cache_write": 2.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-fable-5",
+      "digest": "20c6246cfcf406a0b2290a30a301aa9213fcd181e753552a7d4ee83194649f27"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-fable-5"
+    },
+    "apiID": "global.anthropic.claude-fable-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5 (Global)",
+      "description": "Claude model for creative writing, analysis, and controlled agent workflows",
+      "family": "claude-fable",
+      "releaseDate": "2026-06-09",
+      "lastUpdated": "2026-06-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 1,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-fable-5-1",
+      "digest": "5db626a056439bb6f4bb14e7bfdf9258493f752f9cc4c3b43717dc89b3483e78"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-fable-5-1"
+    },
+    "apiID": "global.anthropic.claude-fable-5-1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5.1 (Global)",
+      "description": "Claude model for demanding reasoning and long-horizon agentic work",
+      "family": "claude-fable",
+      "releaseDate": "2026-09-01",
+      "lastUpdated": "2026-09-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 0.25,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "digest": "9c726aeb948e7b620528dd31bf181ee8e9d681b2d6ae9beceeb95fac52933d8e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    "apiID": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Haiku 4.5 (Global)",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1,
+        "output": 5,
+        "cache_read": 0.1,
+        "cache_write": 1.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-opus-4-5-20251101-v1:0",
+      "digest": "3b37478fd0711bb1a37b98c6f0c92c0dd9b1696070a7f6e374366bd1cb23621e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-opus-4-5-20251101-v1:0"
+    },
+    "apiID": "global.anthropic.claude-opus-4-5-20251101-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.5 (Global)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-11-24",
+      "lastUpdated": "2025-08-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-opus-4-6-v1",
+      "digest": "699f286ee2d87c4c733456804f3c50318e2322dca072bf615d45bd59f372b0cf"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-opus-4-6-v1"
+    },
+    "apiID": "global.anthropic.claude-opus-4-6-v1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.6 (Global)",
+      "description": "High-end Claude for difficult coding, planning, and slower expert reasoning",
+      "family": "claude-opus",
+      "releaseDate": "2026-02-05",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-opus-4-7",
+      "digest": "0791d2030d4c2de7425953ebac74d1716340540cae7de0987994d0fbc8780ec0"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-opus-4-7"
+    },
+    "apiID": "global.anthropic.claude-opus-4-7",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.7 (Global)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-opus-4-8",
+      "digest": "d28a7302f846a1d5be0ad051af35351d465c4f14b373209f6deddc7232859d29"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-opus-4-8"
+    },
+    "apiID": "global.anthropic.claude-opus-4-8",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.8 (Global)",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-opus-5",
+      "digest": "e0b3c0da5e354d0b74fac1d94ac8cd807860c27723fa6b04992e878ccffaf02e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-opus-5"
+    },
+    "apiID": "global.anthropic.claude-opus-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 5 (Global)",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "digest": "7b9103a6b709b80720cdec995fb40899429403497e8c017986b89b3fccf5eb53"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "apiID": "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.5 (Global)",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-sonnet-4-6",
+      "digest": "82fbb32419ecbde51f44502eea78f239a15874c05f829a5bad5e07bc241f4bd9"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-sonnet-4-6"
+    },
+    "apiID": "global.anthropic.claude-sonnet-4-6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.6 (Global)",
+      "description": "Claude workhorse for coding agents, careful analysis, and production cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.anthropic.claude-sonnet-5",
+      "digest": "b7b6b1be2f0ba6acc599fc0128aad24913d2981694a94f388998590e8c368dd5"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.anthropic.claude-sonnet-5"
+    },
+    "apiID": "global.anthropic.claude-sonnet-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 5 (Global)",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.openai.gpt-5.6-luna",
+      "digest": "f3e584b30fec421ff55f1bb056ebb918f208389a2a1d97f1093ffa2c8bf88da8"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.openai.gpt-5.6-luna"
+    },
+    "apiID": "global.openai.gpt-5.6-luna",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GPT-5.6 Luna (Global)",
+      "description": "Cost-efficient GPT-5.6 model for fast, high-volume workloads",
+      "family": "gpt-luna",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.2,
+        "output": 1.2,
+        "cache_read": 0.02,
+        "cache_write": 0.25,
+        "tiers": [
+          {
+            "input": 0.4,
+            "output": 1.8,
+            "cache_read": 0.04,
+            "cache_write": 0.5,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 0.4,
+          "output": 1.8,
+          "cache_read": 0.04,
+          "cache_write": 0.5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.openai.gpt-5.6-sol",
+      "digest": "739622b2b0095c8528e5c63eb81f20ec7cdfce15e8909d4bc25b903b337627db"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.openai.gpt-5.6-sol"
+    },
+    "apiID": "global.openai.gpt-5.6-sol",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GPT-5.6 Sol (Global)",
+      "description": "Frontier GPT-5.6 model for complex professional work, coding, and agentic workflows",
+      "family": "gpt-sol",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 4,
+        "output": 20,
+        "cache_read": 0.4,
+        "cache_write": 5,
+        "tiers": [
+          {
+            "input": 8,
+            "output": 30,
+            "cache_read": 0.8,
+            "cache_write": 10,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 8,
+          "output": 30,
+          "cache_read": 0.8,
+          "cache_write": 10
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/global.openai.gpt-5.6-terra",
+      "digest": "813cf6a5e21485dce3618bacb52ad7bcd5fa8a9205c8c15e5312c2b7a3ed1897"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "global.openai.gpt-5.6-terra"
+    },
+    "apiID": "global.openai.gpt-5.6-terra",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GPT-5.6 Terra (Global)",
+      "description": "Balanced GPT-5.6 model for capable, cost-efficient everyday work",
+      "family": "gpt-terra",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 12,
+        "cache_read": 0.2,
+        "cache_write": 2.5,
+        "tiers": [
+          {
+            "input": 4,
+            "output": 18,
+            "cache_read": 0.4,
+            "cache_write": 5,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4,
+          "output": 18,
+          "cache_read": 0.4,
+          "cache_write": 5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/google.gemma-3-12b-it",
+      "digest": "6e5494f2764dd305f100d4e859e85e29952ff64ad0710fb366dc7059bb70dc99"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "google.gemma-3-12b-it"
+    },
+    "apiID": "google.gemma-3-12b-it",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Google Gemma 3 12B",
+      "description": "Open Gemma instruction model for efficient chat and self-hosted deployments",
+      "family": "gemma",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": false,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 131072,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.049999999999999996,
+        "output": 0.09999999999999999
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/google.gemma-3-27b-it",
+      "digest": "534e2a9e256a0611f9915aa5f687a6d5a46b99a739ba43bebc5c1868ce342972"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "google.gemma-3-27b-it"
+    },
+    "apiID": "google.gemma-3-27b-it",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Google Gemma 3 27B Instruct",
+      "description": "Open Gemma instruction model for efficient chat and self-hosted deployments",
+      "family": "gemma",
+      "releaseDate": "2025-07-27",
+      "lastUpdated": "2025-07-27",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 202752,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.12,
+        "output": 0.2
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/google.gemma-3-4b-it",
+      "digest": "ed15c3eba23599f0d617c799023df03f0eef401f67eead6a98e5b183d9d8716e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "google.gemma-3-4b-it"
+    },
+    "apiID": "google.gemma-3-4b-it",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Gemma 3 4B IT",
+      "description": "Open Gemma instruction model for efficient chat and self-hosted deployments",
+      "family": "gemma",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.04,
+        "output": 0.08
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "digest": "3d12278e6bb6d628e067735dad15b59ba3751b8d76d172b5fb38b69c34d0fbbb"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    "apiID": "jp.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Haiku 4.5 (JP)",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1,
+        "output": 5,
+        "cache_read": 0.1,
+        "cache_write": 1.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-opus-4-7",
+      "digest": "bbdc8b4314f8c30a22648d03311969ae701e11185a854485de7e353fa00ac58a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-opus-4-7"
+    },
+    "apiID": "jp.anthropic.claude-opus-4-7",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.7 (JP)",
+      "description": "Stronger Opus tier for advanced software work and high-stakes reasoning",
+      "family": "claude-opus",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-opus-4-8",
+      "digest": "be8d4fa263a3fb079313206dc3d85b83d783c848aab75359bd94c82edf1bc5d5"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-opus-4-8"
+    },
+    "apiID": "jp.anthropic.claude-opus-4-8",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.8 (JP)",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-opus-5",
+      "digest": "12abf2c618b7c3e25295e342a46625408808890fd4ff917b41837399a6b44aec"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-opus-5"
+    },
+    "apiID": "jp.anthropic.claude-opus-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 5 (JP)",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "digest": "a70183aada3b230169e8c5005ecd340cdd83ec8b4f771ac6d997dcf38d20ab25"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "apiID": "jp.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.5 (JP)",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-sonnet-4-6",
+      "digest": "3985c7948a35d3f0171daea0d03337fcb075753089540ee0aaed1293a5ed2284"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-sonnet-4-6"
+    },
+    "apiID": "jp.anthropic.claude-sonnet-4-6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.6 (JP)",
+      "description": "Claude workhorse for coding agents, careful analysis, and production cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/jp.anthropic.claude-sonnet-5",
+      "digest": "56f0dadd4a4933b260448852e672a7ef5c909667ffd636b7bfcd2d167e40726b"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "jp.anthropic.claude-sonnet-5"
+    },
+    "apiID": "jp.anthropic.claude-sonnet-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 5 (JP)",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/meta.llama3-1-70b-instruct-v1:0",
+      "digest": "b7bb9dda6d16cf9578a71ca0f2efa765952b517200e6dcaf47398a918d544a54"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "meta.llama3-1-70b-instruct-v1:0"
+    },
+    "apiID": "meta.llama3-1-70b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 3.1 70B Instruct",
+      "description": "Open Llama instruction model for multilingual chat, reasoning, and coding",
+      "family": "llama",
+      "releaseDate": "2024-07-23",
+      "lastUpdated": "2024-07-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.72,
+        "output": 0.72
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/meta.llama3-1-8b-instruct-v1:0",
+      "digest": "0f593c479f096509001f207dc5dbdcc1a0943ef9ab901af9e4caf993114c351c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "meta.llama3-1-8b-instruct-v1:0"
+    },
+    "apiID": "meta.llama3-1-8b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 3.1 8B Instruct",
+      "description": "Open Llama instruction model for multilingual chat, reasoning, and coding",
+      "family": "llama",
+      "releaseDate": "2024-07-23",
+      "lastUpdated": "2024-07-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 0.22
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/meta.llama3-3-70b-instruct-v1:0",
+      "digest": "63845051930939c49966a51051a041cdd275dc04023abdddff33f9f632818df4"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "meta.llama3-3-70b-instruct-v1:0"
+    },
+    "apiID": "meta.llama3-3-70b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 3.3 70B Instruct",
+      "description": "Open Llama instruction model for multilingual chat, reasoning, and coding",
+      "family": "llama",
+      "releaseDate": "2024-12-06",
+      "lastUpdated": "2024-12-06",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.72,
+        "output": 0.72
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/meta.llama4-maverick-17b-instruct-v1:0",
+      "digest": "6c31abd20217bb72872ee22d1fa8dea73e19437870ebce8bdf804b8cd684bb60"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "meta.llama4-maverick-17b-instruct-v1:0"
+    },
+    "apiID": "meta.llama4-maverick-17b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 4 Maverick 17B Instruct",
+      "description": "Open multimodal Llama model for strong reasoning and fast responses",
+      "family": "llama",
+      "releaseDate": "2025-04-05",
+      "lastUpdated": "2025-04-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.24,
+        "output": 0.97
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/meta.llama4-scout-17b-instruct-v1:0",
+      "digest": "566dfd8b9bc1b3285e42069c395435c6787099fd0a730cb52be90a22469f5226"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "meta.llama4-scout-17b-instruct-v1:0"
+    },
+    "apiID": "meta.llama4-scout-17b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 4 Scout 17B Instruct",
+      "description": "Open multimodal Llama model for long-context analysis and efficient agents",
+      "family": "llama",
+      "releaseDate": "2025-04-05",
+      "lastUpdated": "2025-04-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 3500000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.17,
+        "output": 0.66
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/minimax.minimax-m2",
+      "digest": "f5663176c9688a9d1590b0dafbd2b2f219edf49922c3f92848e828c772bd75b9"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "minimax.minimax-m2"
+    },
+    "apiID": "minimax.minimax-m2",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "MiniMax M2",
+      "description": "MiniMax model for chat, coding, office work, and agentic tasks",
+      "family": "minimax",
+      "releaseDate": "2025-10-27",
+      "lastUpdated": "2025-10-27",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204608,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/minimax.minimax-m2.1",
+      "digest": "6e46f24914094d43549c381425e019f174e180c0430b5da856c9464c704c2324"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "minimax.minimax-m2.1"
+    },
+    "apiID": "minimax.minimax-m2.1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "MiniMax M2.1",
+      "description": "MiniMax model for chat, coding, office work, and agentic tasks",
+      "family": "minimax",
+      "releaseDate": "2025-12-23",
+      "lastUpdated": "2025-12-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/minimax.minimax-m2.5",
+      "digest": "e8fc980108561a73ef3be1ac1838fed6b6f7b366477d35da7b80e78cc416aeee"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "minimax.minimax-m2.5"
+    },
+    "apiID": "minimax.minimax-m2.5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "MiniMax M2.5",
+      "description": "MiniMax model for chat, coding, office work, and agentic tasks",
+      "family": "minimax",
+      "releaseDate": "2026-03-18",
+      "lastUpdated": "2026-03-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 196608,
+        "output": 98304
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.devstral-2-123b",
+      "digest": "dcb21bc2798351a0a96c42c2eb32063ea4837a0eb7cbf949b86034a92d69355b"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.devstral-2-123b"
+    },
+    "apiID": "mistral.devstral-2-123b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Devstral 2 123B",
+      "description": "Mistral coding agent model for repository tasks and software engineering workflows",
+      "family": "devstral",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-02-17",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.4,
+        "output": 2
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.magistral-small-2509",
+      "digest": "e0a2175ef122867ef08e443be37b3233926806201a25c26676fe47b583cc61bd"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.magistral-small-2509"
+    },
+    "apiID": "mistral.magistral-small-2509",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Magistral Small 1.2",
+      "description": "Mistral reasoning model for transparent analysis, math, and complex decisions",
+      "family": "magistral",
+      "releaseDate": "2025-12-02",
+      "lastUpdated": "2025-12-02",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 40000
+      },
+      "cost": {
+        "input": 0.5,
+        "output": 1.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.ministral-3-14b-instruct",
+      "digest": "53998d002a9f0a4d0488901261b33979d460be5529eccbac91152667b664ddd9"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.ministral-3-14b-instruct"
+    },
+    "apiID": "mistral.ministral-3-14b-instruct",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Ministral 14B 3.0",
+      "description": "Compact Mistral model for edge, latency-sensitive, and cost-efficient workloads",
+      "family": "ministral",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.2,
+        "output": 0.2
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.ministral-3-3b-instruct",
+      "digest": "6d851820d137c813fc270aee2a4a918b0ffb6ca303e65fd6844a7954aace0da3"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.ministral-3-3b-instruct"
+    },
+    "apiID": "mistral.ministral-3-3b-instruct",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Ministral 3 3B",
+      "description": "Compact Mistral model for edge, latency-sensitive, and cost-efficient workloads",
+      "family": "ministral",
+      "releaseDate": "2025-12-02",
+      "lastUpdated": "2025-12-02",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.1,
+        "output": 0.1
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.ministral-3-8b-instruct",
+      "digest": "9a419b84129d8a946e12929ccc4e23893045ab7e96cf9481a6cad26d7212f693"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.ministral-3-8b-instruct"
+    },
+    "apiID": "mistral.ministral-3-8b-instruct",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Ministral 3 8B",
+      "description": "Compact Mistral model for edge, latency-sensitive, and cost-efficient workloads",
+      "family": "ministral",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.15
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.mistral-large-3-675b-instruct",
+      "digest": "79ff632b6095bbb598cb39e64f10caa65a520a114308abac00b90ccd7db98af6"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.mistral-large-3-675b-instruct"
+    },
+    "apiID": "mistral.mistral-large-3-675b-instruct",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Mistral Large 3",
+      "description": "Flagship Mistral model for advanced reasoning, coding, and multilingual work",
+      "family": "mistral",
+      "releaseDate": "2025-12-02",
+      "lastUpdated": "2025-12-02",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.5,
+        "output": 1.5
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.pixtral-large-2502-v1:0",
+      "digest": "ab54970f816a02700963299b9f1f5748264527c0b5cdfd904c55e5d2be46efec"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.pixtral-large-2502-v1:0"
+    },
+    "apiID": "mistral.pixtral-large-2502-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Pixtral Large (25.02)",
+      "description": "Mistral vision-language model for image understanding and multimodal chat",
+      "family": "mistral",
+      "releaseDate": "2025-04-08",
+      "lastUpdated": "2025-04-08",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 2,
+        "output": 6
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.voxtral-mini-3b-2507",
+      "digest": "9c9dd77d9ec3bf0cc7d97d0b4ee65930bfe3d38cc612a93853609e387a0e709e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.voxtral-mini-3b-2507"
+    },
+    "apiID": "mistral.voxtral-mini-3b-2507",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Voxtral Mini 3B 2507",
+      "description": "Efficient Mistral model for fast chat, extraction, and production assistants",
+      "family": "mistral",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "audio",
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.04,
+        "output": 0.04
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/mistral.voxtral-small-24b-2507",
+      "digest": "3ccb39914ec9e8743904e5617b67a46b475a256fa613d554c77153d45a42cc56"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "mistral.voxtral-small-24b-2507"
+    },
+    "apiID": "mistral.voxtral-small-24b-2507",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Voxtral Small 24B 2507",
+      "description": "Efficient Mistral model for fast chat, extraction, and production assistants",
+      "family": "mistral",
+      "releaseDate": "2025-07-01",
+      "lastUpdated": "2025-07-01",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 32000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.35
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/moonshot.kimi-k2-thinking",
+      "digest": "76af6bae6a65c51676a9dee40ce5f445ac5a26e2b8c61e8f9f7d8fb220046689"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "moonshot.kimi-k2-thinking"
+    },
+    "apiID": "moonshot.kimi-k2-thinking",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Kimi K2 Thinking",
+      "description": "Kimi reasoning model for long-horizon research, planning, and tool use",
+      "family": "kimi-thinking",
+      "releaseDate": "2025-12-02",
+      "lastUpdated": "2025-12-02",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262143,
+        "output": 16000
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": true
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/moonshotai.kimi-k2.5",
+      "digest": "ea843e092208afbc24c53eca637ed242c4169ed51bd4bee0aaf6d29bb6284192"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "moonshotai.kimi-k2.5"
+    },
+    "apiID": "moonshotai.kimi-k2.5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Kimi K2.5",
+      "description": "Kimi multimodal agent model for visual understanding, coding, and planning",
+      "family": "kimi",
+      "releaseDate": "2026-02-06",
+      "lastUpdated": "2026-02-06",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262143,
+        "output": 16000
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 3
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": true
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/nvidia.nemotron-nano-12b-v2",
+      "digest": "09b8fda533ce206b43438688620e64a7b707ed6a133acb2ba135c33b6629157e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "nvidia.nemotron-nano-12b-v2"
+    },
+    "apiID": "nvidia.nemotron-nano-12b-v2",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "NVIDIA Nemotron Nano 12B v2 VL BF16",
+      "description": "Nemotron multimodal model for visual reasoning and agentic AI workflows",
+      "family": "nemotron",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.2,
+        "output": 0.6
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/nvidia.nemotron-nano-3-30b",
+      "digest": "3769b395bcdfa7911a1cc72164776ba7cc4f2e1f1c0e5047cc9d4545771ff35c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "nvidia.nemotron-nano-3-30b"
+    },
+    "apiID": "nvidia.nemotron-nano-3-30b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "NVIDIA Nemotron Nano 3 30B",
+      "description": "Small Nemotron 3 MoE for efficient coding, math, and long-context agents",
+      "family": "nemotron",
+      "releaseDate": "2025-12-23",
+      "lastUpdated": "2025-12-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.06,
+        "output": 0.24
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/nvidia.nemotron-nano-9b-v2",
+      "digest": "c2752302d8b388bc521cb5ae94f184dbab0c488a9a1d1860d17b7e2eb587d3cb"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "nvidia.nemotron-nano-9b-v2"
+    },
+    "apiID": "nvidia.nemotron-nano-9b-v2",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "NVIDIA Nemotron Nano 9B v2",
+      "description": "Compact Nemotron model for efficient reasoning and deployable AI agents",
+      "family": "nemotron",
+      "releaseDate": "2024-12-01",
+      "lastUpdated": "2024-12-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 4096
+      },
+      "cost": {
+        "input": 0.06,
+        "output": 0.23
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/nvidia.nemotron-super-3-120b",
+      "digest": "2f2aa5960f32c0cde3d82db598623377445d7255e581b970c168d5e7c0c031ef"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "nvidia.nemotron-super-3-120b"
+    },
+    "apiID": "nvidia.nemotron-super-3-120b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "NVIDIA Nemotron 3 Super 120B A12B",
+      "description": "Nemotron middle tier for collaborative agents and high-volume reasoning workloads",
+      "family": "nemotron",
+      "releaseDate": "2026-03-11",
+      "lastUpdated": "2026-03-11",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.65
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-5.4",
+      "digest": "9eba224ea68a2c8c4f29cc63bd5936f635bc8d3aa112569c5dcfb22985d2450d"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-5.4"
+    },
+    "apiID": "openai.gpt-5.4",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "GPT-5.4",
+      "description": "Agent-ready GPT for coding and computer-use workflows at a lower cost",
+      "family": "gpt",
+      "releaseDate": "2026-03-05",
+      "lastUpdated": "2026-06-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2.75,
+        "output": 16.5,
+        "cache_read": 0.275
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-5.5",
+      "digest": "a4d91d9a4a8632774de6da33570da95cc79c95a3eec9bd83fabb528b0d04f2c1"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-5.5"
+    },
+    "apiID": "openai.gpt-5.5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "GPT-5.5",
+      "description": "Default frontier GPT for coding, computer use, research, and knowledge work",
+      "family": "gpt",
+      "releaseDate": "2026-04-23",
+      "lastUpdated": "2026-06-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5.5,
+        "output": 33,
+        "cache_read": 0.55
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-5.6-luna",
+      "digest": "dace4645732265de3d49ae0fc3d34cf5682961e0d328faf4822bd7a147818f15"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-5.6-luna"
+    },
+    "apiID": "openai.gpt-5.6-luna",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "GPT-5.6 Luna",
+      "description": "Cost-efficient GPT-5.6 model for fast, high-volume workloads",
+      "family": "gpt-luna",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 1.32,
+        "cache_read": 0.022,
+        "cache_write": 0.275,
+        "tiers": [
+          {
+            "input": 0.44,
+            "output": 1.98,
+            "cache_read": 0.044,
+            "cache_write": 0.55,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 0.44,
+          "output": 1.98,
+          "cache_read": 0.044,
+          "cache_write": 0.55
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-5.6-sol",
+      "digest": "48c38c0c88d32329113916cabd64e5e6607fc105eae601a3b1bf9b43ce39246c"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-5.6-sol"
+    },
+    "apiID": "openai.gpt-5.6-sol",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "GPT-5.6 Sol",
+      "description": "Frontier GPT-5.6 model for complex professional work, coding, and agentic workflows",
+      "family": "gpt-sol",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 4.4,
+        "output": 22,
+        "cache_read": 0.44,
+        "cache_write": 5.5,
+        "tiers": [
+          {
+            "input": 8.8,
+            "output": 33,
+            "cache_read": 0.88,
+            "cache_write": 11,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 8.8,
+          "output": 33,
+          "cache_read": 0.88,
+          "cache_write": 11
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-5.6-terra",
+      "digest": "06ad6e6008a248d0896cc113dccc4ee69caed48a7bee1a039bae835b141580c8"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-5.6-terra"
+    },
+    "apiID": "openai.gpt-5.6-terra",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "GPT-5.6 Terra",
+      "description": "Balanced GPT-5.6 model for capable, cost-efficient everyday work",
+      "family": "gpt-terra",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2.2,
+        "output": 13.2,
+        "cache_read": 0.22,
+        "cache_write": 2.75,
+        "tiers": [
+          {
+            "input": 4.4,
+            "output": 19.8,
+            "cache_read": 0.44,
+            "cache_write": 5.5,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4.4,
+          "output": 19.8,
+          "cache_read": 0.44,
+          "cache_write": 5.5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-oss-120b",
+      "digest": "f2368cde5fc6301b1906e1f1c00505a438b7cb6073249a258bf7c68ec32c1e90"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-oss-120b"
+    },
+    "apiID": "openai.gpt-oss-120b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "gpt-oss-120b",
+      "description": "Open-weight GPT model for self-hosted reasoning and instruction-following workloads",
+      "family": "gpt-oss",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.6
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-oss-120b-1:0",
+      "digest": "e42e3dbe8d3aa7ca433bb0fc21313a02d277b2a21ee7c65b5ffb85d5da5495af"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-oss-120b-1:0"
+    },
+    "apiID": "openai.gpt-oss-120b-1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "gpt-oss-120b",
+      "description": "Open-weight GPT model for self-hosted reasoning and instruction-following workloads",
+      "family": "gpt-oss",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.6
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-oss-20b",
+      "digest": "9e043eb70d4d5e3079be9ce6ca78cde1ee7f3d83006184018941b90a18a5d10a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-oss-20b"
+    },
+    "apiID": "openai.gpt-oss-20b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "gpt-oss-20b",
+      "description": "Open-weight GPT model for self-hosted reasoning and instruction-following workloads",
+      "family": "gpt-oss",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.07,
+        "output": 0.3
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-oss-20b-1:0",
+      "digest": "ea4abcda39ba3c186f9e27b235bee05fa12991f7c20c6518efa3d04abed2343f"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-oss-20b-1:0"
+    },
+    "apiID": "openai.gpt-oss-20b-1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "gpt-oss-20b",
+      "description": "Open-weight GPT model for self-hosted reasoning and instruction-following workloads",
+      "family": "gpt-oss",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.07,
+        "output": 0.3
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-oss-safeguard-120b",
+      "digest": "69b6a7f45a6af48ed9c04e1b00514768a000cadc27867c5df20dcf8f9ce95535"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-oss-safeguard-120b"
+    },
+    "apiID": "openai.gpt-oss-safeguard-120b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GPT OSS Safeguard 120B",
+      "description": "Safety model for policy screening, moderation, and risk-aware routing workflows",
+      "family": "gpt-oss",
+      "releaseDate": "2025-10-29",
+      "lastUpdated": "2025-10-29",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.6
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/openai.gpt-oss-safeguard-20b",
+      "digest": "5a94464b34df03aa1d4f5e8cadbc8f3e22dcea4b79baefacfb5bf9c4a8731d63"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "openai.gpt-oss-safeguard-20b"
+    },
+    "apiID": "openai.gpt-oss-safeguard-20b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GPT OSS Safeguard 20B",
+      "description": "Safety model for policy screening, moderation, and risk-aware routing workflows",
+      "family": "gpt-oss",
+      "releaseDate": "2025-10-29",
+      "lastUpdated": "2025-10-29",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.07,
+        "output": 0.2
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-235b-a22b-2507-v1:0",
+      "digest": "c3a56ac9ba8551e673268776a43cb0b5736da71cb2d7e4d5817479888c446fde"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-235b-a22b-2507-v1:0"
+    },
+    "apiID": "qwen.qwen3-235b-a22b-2507-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen3 235B A22B 2507",
+      "description": "Qwen instruction model for multilingual chat, reasoning, and tool use",
+      "family": "qwen",
+      "releaseDate": "2025-09-18",
+      "lastUpdated": "2025-09-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 0.88
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-32b-v1:0",
+      "digest": "66c8a34a981b38153392b7e1d0be797ff4a3f25208b248c8281143cd686e2e72"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-32b-v1:0"
+    },
+    "apiID": "qwen.qwen3-32b-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen3 32B (dense)",
+      "description": "Qwen instruction model for multilingual chat, reasoning, and tool use",
+      "family": "qwen",
+      "releaseDate": "2025-09-18",
+      "lastUpdated": "2025-09-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 16384,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.6
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-coder-30b-a3b-v1:0",
+      "digest": "950c7b50ad6b7ac36dbd0b36c240fd385edd587a94bacf4f44fda26776d90940"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-coder-30b-a3b-v1:0"
+    },
+    "apiID": "qwen.qwen3-coder-30b-a3b-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen3 Coder 30B A3B Instruct",
+      "description": "Qwen coding model for software agents, repository edits, and code reasoning",
+      "family": "qwen",
+      "releaseDate": "2025-09-18",
+      "lastUpdated": "2025-09-18",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.15,
+        "output": 0.6
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-coder-480b-a35b-v1:0",
+      "digest": "6847793fc285db18d15ff88cf560748fc04f14abeae00a52178a607b380d3d0b"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-coder-480b-a35b-v1:0"
+    },
+    "apiID": "qwen.qwen3-coder-480b-a35b-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen3 Coder 480B A35B Instruct",
+      "description": "Qwen coding model for software agents, repository edits, and code reasoning",
+      "family": "qwen",
+      "releaseDate": "2025-09-18",
+      "lastUpdated": "2025-09-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 131072,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 1.8
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-coder-next",
+      "digest": "714441c2cc2e395fcc053033334965298faa9b2041f4b0c72b322f61a2e2405d"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-coder-next"
+    },
+    "apiID": "qwen.qwen3-coder-next",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen3 Coder Next",
+      "description": "Qwen coding model for software agents, repository edits, and code reasoning",
+      "family": "qwen",
+      "releaseDate": "2026-02-06",
+      "lastUpdated": "2026-02-06",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 131072,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.22,
+        "output": 1.8
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-next-80b-a3b",
+      "digest": "976a6f1c1e6867ea33654c30cb94dc82a322e3b9ab410ae93e729b23a3fe79ed"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-next-80b-a3b"
+    },
+    "apiID": "qwen.qwen3-next-80b-a3b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "description": "Qwen instruction model for multilingual chat, reasoning, and tool use",
+      "family": "qwen",
+      "releaseDate": "2025-09-18",
+      "lastUpdated": "2025-11-25",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262000,
+        "output": 262000
+      },
+      "cost": {
+        "input": 0.14,
+        "output": 1.4
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/qwen.qwen3-vl-235b-a22b",
+      "digest": "a4b7f20e3678740b5df483d3a20c20bf6285de3db90eaebe8572fef995eb6f53"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "qwen.qwen3-vl-235b-a22b"
+    },
+    "apiID": "qwen.qwen3-vl-235b-a22b",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+      "description": "Qwen vision-language model for visual reasoning, documents, and agent tasks",
+      "family": "qwen",
+      "releaseDate": "2025-10-04",
+      "lastUpdated": "2025-11-25",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262000,
+        "output": 262000
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.5
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-fable-5",
+      "digest": "31d74be6adb020f0f74829f2835d69ebe1a66f747e6e1dea9f1f1bd848620e54"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-fable-5"
+    },
+    "apiID": "us.anthropic.claude-fable-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5 (US)",
+      "description": "Claude model for creative writing, analysis, and controlled agent workflows",
+      "family": "claude-fable",
+      "releaseDate": "2026-06-09",
+      "lastUpdated": "2026-06-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 1,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-fable-5-1",
+      "digest": "ba87f7bef6c6d69659f8d5a49a31281d417c45ef4df1fd818436ee43d3fad77e"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-fable-5-1"
+    },
+    "apiID": "us.anthropic.claude-fable-5-1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Fable 5.1 (US)",
+      "description": "Claude model for demanding reasoning and long-horizon agentic work",
+      "family": "claude-fable",
+      "releaseDate": "2026-09-01",
+      "lastUpdated": "2026-09-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 11,
+        "output": 55,
+        "cache_read": 0.275,
+        "cache_write": 13.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-haiku-4-5-20251001-v1:0",
+      "digest": "9785da767ea16d8effd7c8ecef559688878ebb1f7cd5b82720000d132d61f364"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    },
+    "apiID": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Haiku 4.5 (US)",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1,
+        "output": 5,
+        "cache_read": 0.1,
+        "cache_write": 1.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-opus-4-1-20250805-v1:0",
+      "digest": "7e8e3140fd3937a8465cf7462aadb33c84eaecf69fd4c57dedf7e0f995beae56"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-opus-4-1-20250805-v1:0"
+    },
+    "apiID": "us.anthropic.claude-opus-4-1-20250805-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "deprecated",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.1 (US)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 15,
+        "output": 75,
+        "cache_read": 1.5,
+        "cache_write": 18.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-opus-4-5-20251101-v1:0",
+      "digest": "8add1b9e4b9c4b9abf195aacce95004bd2a60eb5182b87924c3b65d3e418be40"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-opus-4-5-20251101-v1:0"
+    },
+    "apiID": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.5 (US)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-11-24",
+      "lastUpdated": "2025-08-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-opus-4-6-v1",
+      "digest": "eca23f1a71fa246f03e69fe33da1de87360d66acea06e01d0ae227db81b7a6cd"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-opus-4-6-v1"
+    },
+    "apiID": "us.anthropic.claude-opus-4-6-v1",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.6 (US)",
+      "description": "High-end Claude for difficult coding, planning, and slower expert reasoning",
+      "family": "claude-opus",
+      "releaseDate": "2026-02-05",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-opus-4-7",
+      "digest": "7fa49d4a663e13b333b6060c7a915a0e9f64df0138e90b2b075b2f0ae8a5f95f"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-opus-4-7"
+    },
+    "apiID": "us.anthropic.claude-opus-4-7",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.7 (US)",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-opus-4-8",
+      "digest": "cfaa2802ca945f86021102f200fae17563a3969916bb9fef012c005ce75adee5"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-opus-4-8"
+    },
+    "apiID": "us.anthropic.claude-opus-4-8",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 4.8 (US)",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-opus-5",
+      "digest": "294b7a8315c241c877b0717b19e5741a11fc7f0cebabe3b7adbf540e7b391039"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-opus-5"
+    },
+    "apiID": "us.anthropic.claude-opus-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Opus 5 (US)",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "digest": "d2d95aefaf6ae124422c8ac05d89828675bebe59dc9a4b994b91b6f0685da4a4"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "apiID": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.5 (US)",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-sonnet-4-6",
+      "digest": "3421701e243a51b271355233a2847fe83f8d03b0487b15a5f13f762a236316f2"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-sonnet-4-6"
+    },
+    "apiID": "us.anthropic.claude-sonnet-4-6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 4.6 (US)",
+      "description": "Claude workhorse for coding agents, careful analysis, and production cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.anthropic.claude-sonnet-5",
+      "digest": "7aca4b8b2bc514e62fee7b47bda95ef8576dc5f7055899613b85727a82546a24"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.anthropic.claude-sonnet-5"
+    },
+    "apiID": "us.anthropic.claude-sonnet-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Claude Sonnet 5 (US)",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.deepseek.r1-v1:0",
+      "digest": "87c6f6d5ea7f630d615b27c9f193df22d8d18c4b8669ce52e9d03cbedad40de0"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.deepseek.r1-v1:0"
+    },
+    "apiID": "us.deepseek.r1-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "DeepSeek-R1 (US)",
+      "description": "Classic open reasoning model for transparent math, coding, and deliberate problem solving",
+      "family": "deepseek-thinking",
+      "releaseDate": "2025-01-20",
+      "lastUpdated": "2025-05-29",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "output": 32768
+      },
+      "cost": {
+        "input": 1.35,
+        "output": 5.4
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.meta.llama4-maverick-17b-instruct-v1:0",
+      "digest": "bc863102fc0c2452ed8ef4c9692be9ffff96760c4311ea338ced6546d05706a1"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.meta.llama4-maverick-17b-instruct-v1:0"
+    },
+    "apiID": "us.meta.llama4-maverick-17b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 4 Maverick 17B Instruct (US)",
+      "description": "Open multimodal Llama for strong reasoning with efficient everyday serving",
+      "family": "llama",
+      "releaseDate": "2025-04-05",
+      "lastUpdated": "2025-04-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.24,
+        "output": 0.97
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/us.meta.llama4-scout-17b-instruct-v1:0",
+      "digest": "a39a7248f4f8b1dc48409364de062be60c527442f51fd7855b37b3260a43ad46"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "us.meta.llama4-scout-17b-instruct-v1:0"
+    },
+    "apiID": "us.meta.llama4-scout-17b-instruct-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Llama 4 Scout 17B Instruct (US)",
+      "description": "Open Llama with long-context vision for efficient multimodal agents",
+      "family": "llama",
+      "releaseDate": "2025-04-05",
+      "lastUpdated": "2025-04-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 3500000,
+        "output": 16384
+      },
+      "cost": {
+        "input": 0.17,
+        "output": 0.66
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/writer.palmyra-x4-v1:0",
+      "digest": "3de4431dc3b801c34108b21e15a8aeea12631ca3bd3dc8700e992747e5fcbf24"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "writer.palmyra-x4-v1:0"
+    },
+    "apiID": "writer.palmyra-x4-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Palmyra X4",
+      "description": "Reasoning model for deliberate analysis, multi-step problem solving, and tool use",
+      "family": "palmyra",
+      "releaseDate": "2025-04-28",
+      "lastUpdated": "2025-04-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 122880,
+        "output": 8192
+      },
+      "cost": {
+        "input": 2.5,
+        "output": 10
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/writer.palmyra-x5-v1:0",
+      "digest": "1096294756f99138c8c79cb6ebbc07e8f43b46ae4bbf480400aa281234b5c73a"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "writer.palmyra-x5-v1:0"
+    },
+    "apiID": "writer.palmyra-x5-v1:0",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "Palmyra X5",
+      "description": "Reasoning model for deliberate analysis, multi-step problem solving, and tool use",
+      "family": "palmyra",
+      "releaseDate": "2025-04-28",
+      "lastUpdated": "2025-04-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1040000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 6
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/xai.grok-4.3",
+      "digest": "1af434c704adafd8ae208f41a3d2bd8aa34dbfe05e4553138c17df226a91426d"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "xai.grok-4.3"
+    },
+    "apiID": "xai.grok-4.3",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "Grok 4.3",
+      "description": "xAI's default Grok for chat, coding, agentic tools, and lower hallucination risk",
+      "family": "grok",
+      "releaseDate": "2026-04-17",
+      "lastUpdated": "2026-06-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1.25,
+        "output": 2.5,
+        "cache_read": 0.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/xai.grok-4.6",
+      "digest": "e7115e0fc4fbcf9811f192253b4152cd8d3a84c7513ce2bc0b4578a6bf44d8aa"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "xai.grok-4.6"
+    },
+    "apiID": "xai.grok-4.6",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "mantle-responses",
+    "metadata": {
+      "name": "Grok 4.6",
+      "description": "xAI's frontier model for long-running agents, coding, knowledge work, and visual projects",
+      "family": "grok",
+      "releaseDate": "2026-08-12",
+      "lastUpdated": "2026-08-18",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 500000,
+        "output": 500000
+      },
+      "cost": {
+        "input": 2.2,
+        "output": 6.6,
+        "cache_read": 0.55
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/amazon-bedrock/mantle",
+        "api": "https://bedrock-mantle.${AWS_REGION}.api.aws/openai/v1",
+        "shape": "responses"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/zai.glm-4.7",
+      "digest": "6b5efa22eb36ff320be7984a43f3af7a19fde263cb45fe4be9e531b83ff1f2f7"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "zai.glm-4.7"
+    },
+    "apiID": "zai.glm-4.7",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GLM-4.7",
+      "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+      "family": "glm",
+      "releaseDate": "2025-12-22",
+      "lastUpdated": "2025-12-22",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 2.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/zai.glm-4.7-flash",
+      "digest": "8d0adbaa6dd2fc1734fc0374aece914eac08d9ddfb1e9df4575a481cad734777"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "zai.glm-4.7-flash"
+    },
+    "apiID": "zai.glm-4.7-flash",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GLM-4.7-Flash",
+      "description": "Efficient GLM model for fast reasoning, coding, and agent workflows",
+      "family": "glm-flash",
+      "releaseDate": "2026-01-19",
+      "lastUpdated": "2026-01-19",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.07,
+        "output": 0.4
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "amazon-bedrock",
+      "path": "providers/amazon-bedrock/models/zai.glm-5",
+      "digest": "bd0aa23435fec02ad2bd8b28ff850c26c47c4919592b02d24ff7c7e5c192f988"
+    },
+    "local": {
+      "provider": "amazon-bedrock",
+      "id": "zai.glm-5"
+    },
+    "apiID": "zai.glm-5",
+    "format": "bedrock-converse",
+    "lifecycle": "active",
+    "transport": "converse",
+    "metadata": {
+      "name": "GLM-5",
+      "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+      "family": "glm",
+      "releaseDate": "2026-03-18",
+      "lastUpdated": "2026-03-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 202752,
+        "output": 101376
+      },
+      "cost": {
+        "input": 1,
+        "output": 3.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  }
+] as const satisfies ReadonlyArray<GeneratedModel>

@@ -1,0 +1,11 @@
+[data-slot="oauth-workspace-list"] {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-slot="oauth-workspace-list"] li {
+  display: grid;
+}

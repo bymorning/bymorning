@@ -1,0 +1,75 @@
+---
+title: Inbound MCP
+description: Connect an external MCP client to a Workspace.
+hidden: true
+---
+
+Inbound MCP lets an external client run allowed Workspace Tools through ByMorning's `/mcp` endpoint. Direct Tools are listed by their effective names. Other Tools are available through the shared `execute` Code Mode Tool. Do not add the client as an outbound server.
+
+The same member-bound Tool snapshot supplies Sessions and inbound MCP. Built-in Tools are excluded from inbound MCP. Agents continue to receive their normal core, custom plugin, and outbound MCP Tools.
+
+## Connect
+
+1. Open **MCP Gateway**. Select **Copy endpoint** beside the connection endpoint. The copied URL ends in `/mcp` and uses the current ByMorning origin.
+2. Add that URL as a Streamable HTTP MCP server in your client. The client starts an OAuth flow in your browser.
+3. Sign in if prompted. Select the Workspace the client may access, or **Cancel**.
+
+The client receives access only to the Workspace you select. An unavailable, invalid, or expired request cannot be approved.
+
+## Tools
+
+`codemode: false` Tools are direct MCP definitions. All other admitted Tools appear in the shared `execute` Code Mode catalog.
+
+## Permissions
+
+| Effect | Inbound behavior |
+| --- | --- |
+| **Allow** | The action is allowed at resource `*`. A resource-specific rule can still change the result. |
+| **Ask** | The Tool may be advertised, but its assertion fails because inbound MCP cannot open a pending approval. |
+| **Deny** | The protected operation fails. A wholly denied Code Mode Tool is omitted from `execute`; direct Tools are filtered independently. |
+
+An unmatched Permission defaults to **Allow**. Inbound MCP cannot pause for approval, so every **Ask** assertion fails closed. Code Mode calls also require permission for the outer `execute` action.
+
+Set Tool rules through [Workspace configuration](/configure/permissions), or use the Tool permission controls on **Integrations**. Workspace administrators can edit the Workspace default or select one member. Saving a selected member's displayed value creates or updates that member's wildcard rule. The current API cannot remove a member override.
+
+<Callout type="warning">
+  Inbound MCP uses the Workspace Tool rules captured for the request, but not Agent rules, User rules, saved grants, pending approvals, or persisted Sessions. Every **Ask** or **Deny** permission assertion prevents the protected operation. Custom host Tools must call `context.permission` before sensitive side effects.
+</Callout>
+
+## Elicitation
+
+ByMorning selects native MCP elicitation per request when the client advertises a matching `elicitation.form` or `elicitation.url` capability. Native forms require a representable field shape. Native responses use the MCP SDK `inputRequired` protocol.
+
+Legacy, stateless, and otherwise unsupported clients use an authenticated browser Form. The initial `tools/call` result is:
+
+```json
+{
+  "status": "pending",
+  "mode": "browser",
+  "url": "https://app.example/w/ws_example/form/frm_example",
+  "continuation": "signed-opaque-value"
+}
+```
+
+The browser Form is the only way to answer a browser request. Its `response` payload cannot settle the request.
+
+Use `/mcp?elicitation=model` to return a model-handled pending result:
+
+```json
+{
+  "status": "pending",
+  "mode": "model",
+  "request": { "mode": "form", "title": "…", "fields": [] },
+  "continuation": "signed-opaque-value"
+}
+```
+
+The model must return a validated response through `mcp_resume` with `{ continuation, response? }`. `response` accepts the requested structured answer, decline, or cancel. An empty schema still requires explicit confirmation; decline and cancel remain distinct.
+
+The continuation state is process-local and expires after ten minutes. Restarting the server, losing the state, or replying after expiry fails the Tool call. ByMorning does not replay it.
+
+## Inbound vs outbound
+
+Inbound MCP points an external client at ByMorning's `/mcp` endpoint. [Outbound MCP](/agent/outbound-mcp) points ByMorning at a remote MCP server.
+
+Manage both from **MCP Gateway**. Manage model Provider connections from **AI Gateway Models** under **Providers**.

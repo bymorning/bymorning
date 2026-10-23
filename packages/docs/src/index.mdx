@@ -1,0 +1,137 @@
+---
+title: Intro
+description: ByMorning is a self-hosted gateway between AI and your internal systems.
+---
+
+ByMorning is a self-hosted gateway between AI and your internal systems. The ByMorning chat client, coding agents like Claude Code, and your own applications connect through it to reach Models and Tools. Every request is permission-checked and logged — who asked, what was accessed, what came back — and you configure Providers, integrations, permissions, policies, and budgets in one place.
+
+<div class="ddiag-wrap">
+  <div
+    class="ddiag"
+    role="img"
+    aria-label="Architecture diagram: clients — the ByMorning chat client, coding agents such as Claude Code, and your own applications — connect to the self-hosted ByMorning gateway through its LLM gateway (OpenAI and Anthropic APIs) and MCP gateway (Streamable HTTP with OAuth). The gateway enforces permissions, policies, and budgets, then routes requests to configured model providers and MCP server integrations."
+  >
+    <div class="ddiag-stage">
+      <span class="ddiag-label">Clients</span>
+      <div class="ddiag-nodes">
+        <div class="ddiag-node">
+          <span class="ddiag-icon">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <rect x="3" y="4.5" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.4" />
+              <path d="M7 9h.01M13 9h.01M7.5 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <path d="M10 2.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span>
+            <b>Agents and apps</b>
+            <small>Claude Code, Codex and more via MCP · apps via API</small>
+          </span>
+        </div>
+        <div class="ddiag-node">
+          <span class="ddiag-mark">b</span>
+          <span>
+            <b>ByMorning chat client</b>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ddiag-link" />
+
+    <div class="ddiag-stage">
+      <span class="ddiag-label">Your Workspace</span>
+      <div class="ddiag-org">
+        <div class="ddiag-gateway">
+          <div class="ddiag-gtitle">
+            <span class="ddiag-mark">b</span>
+            <span>
+              <b>ByMorning Gateway</b>
+              <small>Self-hosted access layer</small>
+            </span>
+          </div>
+          <div class="ddiag-surfs">
+            <div class="ddiag-surf">
+              <b>LLM gateway</b>
+              <small>OpenAI and Anthropic APIs</small>
+            </div>
+            <div class="ddiag-surf">
+              <b>MCP gateway</b>
+              <small>Streamable HTTP + OAuth</small>
+            </div>
+          </div>
+          <div class="ddiag-chips">
+            <span class="ddiag-chip">Permissions</span>
+            <span class="ddiag-chip">Policies</span>
+            <span class="ddiag-chip">Budget</span>
+          </div>
+        </div>
+
+        <svg class="ddiag-fan" viewBox="0 0 32 172" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 86 C 18 86, 14 56, 32 56" />
+          <path d="M0 86 C 18 86, 14 116, 32 116" />
+        </svg>
+
+        <div class="ddiag-routes">
+          <div class="ddiag-route ddiag-models">
+            <span class="ddiag-icon">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path
+                  d="M10 2.5l1.4 4.1 4.1 1.4-4.1 1.4-1.4 4.1-1.4-4.1L4.5 8l4.1-1.4L10 2.5z"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M15.5 13l.7 2.1 2.1.7-2.1.7-.7 2.1-.7-2.1-2.1-.7 2.1-.7.7-2.1z"
+                  stroke="currentColor"
+                  stroke-width="1.1"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span>
+              <b>Models</b>
+              <small>Self-hosted or approved cloud Providers</small>
+            </span>
+          </div>
+          <div class="ddiag-route ddiag-tools">
+            <span class="ddiag-icon">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path
+                  d="M11.8 4.1a4 4 0 01-4.9 5L3 13l4 4 3.9-3.9a4 4 0 005-4.9l-2.6 2.6-2.1-2.1 2.6-2.6a4 4 0 00-2-.5z"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span>
+              <b>Integrations</b>
+              <small>MCP servers → internal Tools</small>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+## LLM gateway
+
+Point applications at ByMorning using the OpenAI, Anthropic, and Google protocols they already speak. ByMorning routes each request to the configured Provider — self-hosted or cloud — and keeps Model availability, Provider selection, and spending controls in the Workspace, so you can swap Models without changing clients. See [Inference API](/developer-reference/inference-api) for endpoints and authentication.
+
+## MCP gateway
+
+Register internal Tools from MCP servers, then make them available through ByMorning's MCP gateway — the same permissions and authorized data for every client. Permissions control which actions each person and Agent may perform, policies apply session-aware rules to Tool activity, and every Tool call is recorded. See [Integrations](/configure/integrations) to connect a server, and the [Permission model](/developer-reference/permission-model) for inbound MCP.
+
+## Configure
+
+Define Models, integrations, permissions, policies, and budgets in [Workspace configuration](/configure). Choose the surface that owns the behavior you want to change.
+
+## Console
+
+Use [Members](/admin/members) to invite people, and [AI Gateway](/gateway/usage) to review usage and control Models for each Workspace.
+
+## Architecture
+
+Read [How the ByMorning gateway works](https://bymorning.ai/journal/gateway-under-the-hood) for a technical tour of the control plane, Model routing, Tool catalogs, Provider failover, permissions, budgets, and policy.

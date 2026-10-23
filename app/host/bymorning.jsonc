@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "@bymorning/plugin-google",
+    "@bymorning/plugin-share",
+    {
+      "package": "@bymorning/plugin-code-interpreter-agentcore",
+      "options": {
+        "identifier": { "env": "CODE_INTERPRETER_ID" },
+        "region": { "env": "AWS_REGION" },
+      },
+    },
+  ],
+  "code_interpreter": { "implementation": "agentcore" },
+}

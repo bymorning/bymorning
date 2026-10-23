@@ -1,0 +1,6 @@
+{
+  // Installation document for the Gateway on AKS. Mirrors the image's
+  // /app/bymorning.azure.jsonc (Google, Atlassian, Share; no Code Interpreter);
+  // add the code-interpreter-kubernetes component to enable code execution.
+  "plugins": ["@bymorning/plugin-google", "@bymorning/plugin-atlassian", "@bymorning/plugin-share"],
+}

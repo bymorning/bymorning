@@ -1,0 +1,32 @@
+[data-component="session-composer-input"] {
+  position: relative;
+  min-width: 0;
+}
+
+[data-component="session-composer-input"] [data-slot="session-composer-editor"] {
+  width: 100%;
+  min-height: 60px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 0;
+  padding: 12px 14px 4px;
+  outline: none;
+  background: transparent;
+  color: var(--color-text-base);
+  font-size: 15px;
+  font-weight: 450;
+  line-height: 24px;
+  letter-spacing: -0.1px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+[data-component="session-composer-input"] [data-slot="session-composer-editor"]:empty::before {
+  content: attr(data-placeholder);
+  color: color-mix(in srgb, var(--color-text-base) 38%, var(--color-bg-layer-1));
+  pointer-events: none;
+}
+
+[data-component="session-composer-input"] [data-slot="session-composer-editor"]:focus-visible {
+  outline: none;
+}

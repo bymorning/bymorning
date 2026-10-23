@@ -1,0 +1,120 @@
+---
+title: Deploy on AWS
+description: Deploy a ByMorning stage into an AWS account with SST.
+---
+
+Deploy a ByMorning stage to commercial AWS with [SST](https://sst.dev) 4. For Kubernetes, see [Azure](/deploy/azure). One `sst deploy` creates the network, Aurora PostgreSQL, the Gateway on ECS Fargate behind an Application Load Balancer, the web UI on S3 and CloudFront, a Bedrock AgentCore Code Interpreter, and a migration Lambda that runs before each Gateway rollout.
+
+## Architecture
+
+```text
+Browser
+  │
+  ▼
+CloudFront distribution (Router)  ──  single public origin, APP_ORIGIN
+  ├── /auth /api /mcp /system /oauth /.well-known /inference ──▶ ALB ──▶ ECS Fargate: Gateway (public subnets)
+  └── everything else ────────────────────────────────────────▶ S3: Web assets
+
+Gateway ──▶ Aurora PostgreSQL Serverless v2 (private subnets)
+        ──▶ S3: Storage bucket
+        ──▶ Bedrock models (InvokeModel / Converse)
+        ──▶ AgentCore Code Interpreter (private subnets, no egress)
+
+Migration Lambda (private subnets) ──▶ Aurora   runs on every deploy, gates the Gateway rollout
+```
+
+The CloudFront Router is the only public origin. Its request function routes API paths to the ALB and serves the built web UI for everything else, so the browser, the API, and the authentication callback all share one origin. GovCloud `us-gov-west-1` has no CloudFront, so this SST deployment does not apply there.
+
+## Prerequisites
+
+1. The stack deploys to `us-east-1` as configured in `sst.config.ts`. Enable access to the Bedrock models you intend to use in that region. Model access is an account-level setting that the deploy does not manage.
+2. Give the person or CI job running `sst deploy` credentials for one deployment role in the target account, for example `ByMorningDeployer`, with the [deployer policy](/deploy/aws-permissions#deployer-policy) attached. The `sst.config.ts` selects the AWS profile by stage: `bymorning-production` for `production`, `bymorning-dev` for every other stage. Configure those profiles locally, typically through IAM Identity Center.
+3. Have an identity provider where you can create an OIDC web client. Its redirect URL is `<web-origin>/auth/callback/<providerID>`; the web origin is the CloudFront URL printed by the first deploy and the provider ID is allocated by Setup, so you register the client after deploying.
+
+   Do not set OIDC values as deployment secrets: after the first deploy, configure SSO in Setup with the setup token from the Gateway task.
+
+4. Bun, Node 22+, Docker, and the AWS CLI. SST builds the Gateway container image locally with Docker from the root `Dockerfile` and pushes it to ECR. It is the same image every installer ships.
+
+## Secrets
+
+The Gateway reads two values from SST secrets. Set them for the stage before the first deploy:
+
+```sh
+sst secret set WEB_COOKIE_KEY <base64url-32-bytes> --stage production
+sst secret set BYMORNING_API_KEY <key> --stage production
+```
+
+This stack does not pass OIDC settings (`AUTH_*`). Configure SSO at runtime in Setup with the setup token from the Gateway task, and replace the connection later through Settings → Security (Auth Provider). The task writes the token to `/tmp/bymorning/setup-token`; the `Auth Provider setup pending` log line names the file, and ECS Exec can read it.
+
+`WEB_COOKIE_KEY` must decode from base64url to exactly 32 bytes. Generate one with:
+
+```sh
+openssl rand 32 | basenc --base64url | tr -d '='
+```
+
+SST encrypts secrets in its state bucket and injects them into the ECS task definition as environment variables. The remaining Gateway environment (`DATABASE_URL`, `APP_ORIGIN`, `STORAGE_BUCKET`, `CODE_INTERPRETER_ID`, `AWS_REGION`, `PORT`) is derived from the created resources, and `infra/server.ts` binds the image to AWS with `STORAGE_PROVIDER=s3`, `CIPHER_BACKEND=kms`, `AWS_USE_FIPS_ENDPOINT=true`, and `BYMORNING_CONFIG=/app/bymorning.jsonc`. See [Server runtime](/configure/server-runtime) for what each variable controls.
+
+## Deploy
+
+```sh
+sst deploy --stage production
+```
+
+The first deploy in an account also bootstraps SST: an S3 state bucket, an S3 asset bucket, an `sst-asset` ECR repository, and SSM parameters holding bootstrap metadata and the state passphrase. These are created once per account and region and are not part of the stage.
+
+A deploy proceeds in this order:
+
+1. Network, IAM roles, Aurora, buckets, the Code Interpreter, and the CloudFront Router.
+2. Docker build and push of the Gateway image; bundle and upload of the migration Lambda.
+3. Migration Lambda invocation. It is re-run whenever the migration bundle hash changes and the Gateway service depends on it, so a failed migration blocks the rollout.
+4. ECS rolling update with `wait: true`, so the command does not return until the new task is healthy behind the ALB.
+5. Web UI build (`bun run build` in `packages/web`), upload to the web assets bucket, and CloudFront invalidation.
+
+The command prints two outputs:
+
+| Output    | Value                                                               |
+| --------- | ------------------------------------------------------------------- |
+| `Gateway` | The ALB URL. Internal; do not publish it.                           |
+| `Web`     | The CloudFront URL. This is `APP_ORIGIN` and the URL to give users. |
+
+Infrastructure is declared in `sst.config.ts`, `infra/server.ts`, `infra/web.ts`, and `infra/router.ts`. See [AWS resources](/deploy/aws-resources) for the full inventory and [AWS permissions](/deploy/aws-permissions) for the deployer policy and application roles.
+
+## Verify
+
+1. `curl https://<web-origin>/system/health` returns a success response through CloudFront and the ALB.
+2. Open the web origin. On first boot, open Setup with the setup token from the Gateway task, register the callback URL it shows with your issuer, then enter the provider's credentials.
+
+   Then sign in through your issuer and confirm the redirect back to `/auth/callback/<providerID>` succeeds. If it fails, compare the redirect URL registered with the issuer against the one Settings → Security shows.
+
+3. Confirm the Workspace finishes loading. As a Workspace administrator, open **AI Gateway → Models**, add Amazon Bedrock, and choose **Use deployment AWS credentials** to set activation to `enabled`.
+4. Start a Session with a Bedrock Model to confirm Model access and the task role's inference permissions.
+5. In CloudWatch, check the `DatabaseMigrator` log group for a successful run and the Gateway log group for a clean start. In ECS, the `Gateway` service should show one running task on the latest task definition revision.
+
+## Update
+
+Re-run `sst deploy --stage production`. Only changed resources are touched.
+
+- A code change rebuilds and pushes the image, re-runs the migration if the bundle changed, and rolls the ECS service.
+- A web-only change uploads new assets and invalidates the distribution.
+
+The Gateway runs with `min: 1, max: 1` because OAuth callback state is process-local. Deploys and restarts invalidate any in-flight OAuth attempts; drain traffic or deploy during a quiet window.
+
+## Remove
+
+```sh
+sst remove --stage production
+```
+
+Removal deletes every stage resource including the Aurora cluster and both buckets. Take a snapshot and export anything you need from the storage bucket first. The SST bootstrap resources remain in the account.
+
+## Stages
+
+`infra/server.ts` uses `$app.stage` to size the stage:
+
+| Setting                 | `production`                               | Other stages |
+| ----------------------- | ------------------------------------------ | ------------ |
+| VPC NAT                 | Two fck-nat EC2 instances with Elastic IPs | None         |
+| Bastion                 | First NAT instance, key pair stored in SSM | None         |
+| Aurora minimum capacity | 4 ACU                                      | 1 ACU        |
+
+SST places Gateway tasks in the public subnets with public IPs, so the Gateway reaches external Providers with or without NAT. NAT only affects private-subnet workloads: the migration Lambda, which needs only Aurora, and the Code Interpreter, which has no egress by design. The bastion gives operators an SSM-reachable host inside the VPC for database access.

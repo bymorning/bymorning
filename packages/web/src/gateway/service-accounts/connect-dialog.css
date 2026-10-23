@@ -1,0 +1,74 @@
+[data-component="connect-dialog"] [data-slot="secret-key-fields"] {
+  display: grid;
+  gap: 16px;
+}
+
+[data-component="connect-dialog"] [data-slot="connect"] {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-muted);
+}
+
+[data-component="connect-dialog"] [data-slot="connect"] h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+[data-component="connect-dialog"] [data-slot="connect-tabs"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+[data-component="connect-dialog"] [data-slot="connect-config"] {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-layer-2);
+  font: var(--font-mono);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+[data-component="connect-dialog"] [data-slot="connect-actions"] {
+  display: flex;
+  justify-content: flex-end;
+}
+
+[data-component="connect-dialog"] [data-slot="connect-note"] {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+[data-component="connect-dialog"] [data-slot="secret-warning"] {
+  margin: 12px 0 0;
+  color: var(--color-warning-fg);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Size to the content (up to the viewport) so every client's configuration and its copy action stay visible. */
+[data-component="dialog"][data-fit][data-size="large"]
+  > [data-component="connect-dialog"][data-slot="dialog-container"] {
+  height: auto;
+  max-height: 100%;
+}
+
+[data-component="connect-dialog"] [data-slot="connect-config"] {
+  max-height: 14rem;
+}
+
+/* A key longer than the field ends in an ellipsis rather than being cut mid-character. */
+[data-component="connect-dialog"] [data-slot="secret-key-fields"] input {
+  text-overflow: ellipsis;
+}

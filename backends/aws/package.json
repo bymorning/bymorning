@@ -1,0 +1,29 @@
+{
+  "name": "@bymorning/backend-aws",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kms": "^3.1114.0",
+    "@aws-sdk/client-s3": "^3.1114.0",
+    "@aws-sdk/lib-storage": "^3.1114.0",
+    "@bymorning/core": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "@effect/platform-node": "catalog:",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@bymorning/testing": "workspace:*",
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

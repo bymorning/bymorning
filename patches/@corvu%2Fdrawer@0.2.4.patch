@@ -1,0 +1,80 @@
+diff --git a/dist/index.js b/dist/index.js
+index c5248382bac4a58b510b48e023e27d14b89c390c..3bc445c418db0053ecc6cc8037fe79a34ab8c779 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -470,13 +470,16 @@ var DrawerRoot = (props) => {
+   const [transitionAwareOpen, setTransitionAwareOpen] = createSignal(false);
+   createEffect(() => {
+     const _open = open();
++    let cancelled = false;
++    onCleanup(() => { cancelled = true; });
+     untrack(() => {
+-      if (transitionAwareOpen() === _open) {
++      if (transitionAwareOpen() === _open && transitionState() !== "closing") {
+         return;
+       }
+       if (_open) {
+         setTransitionAwareOpen(true);
+         afterPaint(() => {
++          if (cancelled) return;
+           batch(() => {
+             setTransitionState("opening");
+             setActiveSnapPoint(localProps.defaultSnapPoint);
+@@ -487,13 +490,15 @@ var DrawerRoot = (props) => {
+           }
+         });
+       } else {
++        const alreadyClosed = activeSnapPoint() === 0 && transitionState() === null;
+         batch(() => {
+           setTransitionState("closing");
+           setActiveSnapPoint(0);
+         });
+         afterPaint(() => {
++          if (cancelled) return;
+           const transitionDuration = parseFloat(drawerStyles().transitionDuration);
+-          if (transitionDuration === 0) {
++          if (transitionDuration === 0 || alreadyClosed) {
+             closeDrawer();
+           }
+         });
+diff --git a/dist/index.jsx b/dist/index.jsx
+index fa3ca91ca526e9c11a10819a8bda27dcbb884af7..cf004a9ac66340f0836ca72e907ee6ca40d1c064 100644
+--- a/dist/index.jsx
++++ b/dist/index.jsx
+@@ -560,13 +560,16 @@ var DrawerRoot = (props) => {
+   const [transitionAwareOpen, setTransitionAwareOpen] = createSignal(false);
+   createEffect2(() => {
+     const _open = open();
++    let cancelled = false;
++    onCleanup(() => { cancelled = true; });
+     untrack(() => {
+-      if (transitionAwareOpen() === _open) {
++      if (transitionAwareOpen() === _open && transitionState() !== "closing") {
+         return;
+       }
+       if (_open) {
+         setTransitionAwareOpen(true);
+         afterPaint(() => {
++          if (cancelled) return;
+           batch2(() => {
+             setTransitionState("opening");
+             setActiveSnapPoint(localProps.defaultSnapPoint);
+@@ -579,15 +582,17 @@ var DrawerRoot = (props) => {
+           }
+         });
+       } else {
++        const alreadyClosed = activeSnapPoint() === 0 && transitionState() === null;
+         batch2(() => {
+           setTransitionState("closing");
+           setActiveSnapPoint(0);
+         });
+         afterPaint(() => {
++          if (cancelled) return;
+           const transitionDuration = parseFloat(
+             drawerStyles().transitionDuration
+           );
+-          if (transitionDuration === 0) {
++          if (transitionDuration === 0 || alreadyClosed) {
+             closeDrawer();
+           }
+         });

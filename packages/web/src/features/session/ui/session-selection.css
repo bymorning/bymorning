@@ -1,0 +1,21 @@
+[data-component="session-selection"] {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  overflow: hidden;
+  /* Room inside the clip so focus rings of the toolbar buttons are not cut off. */
+  padding: 3px;
+  margin: -3px;
+}
+
+[data-component="session-selection"] > [data-slot="session-selection-choice"] {
+  flex: none;
+}
+
+[data-component="session-selection"] [data-slot="session-selection-error"] {
+  overflow: hidden;
+  color: var(--color-danger-fg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

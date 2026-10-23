@@ -1,0 +1,36 @@
+{
+  "name": "@bymorning/plugin-example",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    "./company-context": "./src/company-context.ts",
+    "./incident-response": "./src/incident-response.ts",
+    "./release-review": "./src/release-review.ts",
+    "./service-catalog": "./src/service-catalog.ts",
+    "./service-lookup": "./src/service-lookup.ts",
+    "./company-policy": "./src/company-policy.ts",
+    "./redaction": "./src/redaction.ts",
+    "./injection": "./src/injection.ts",
+    "./providers": "./src/providers.ts",
+    "./tool-guard": "./src/tool-guard.ts",
+    "./model-routing": "./src/model-routing.ts",
+    "./tool-activity": "./src/tool-activity.ts",
+    "./request-tags": "./src/request-tags.ts",
+    "./retry-control": "./src/retry-control.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bymorning/plugin": "workspace:*",
+    "@bymorning/schema": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

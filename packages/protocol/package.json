@@ -1,0 +1,26 @@
+{
+  "name": "@bymorning/protocol",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "generate": "bun run script/generate-openapi.ts",
+    "check:generated": "bun run script/generate-openapi.ts --check",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./*": "./src/*.ts",
+    "./groups/*": "./src/groups/*.ts"
+  },
+  "dependencies": {
+    "@bymorning/schema": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "prettier": "catalog:",
+    "vitest": "catalog:"
+  }
+}

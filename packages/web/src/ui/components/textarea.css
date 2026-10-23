@@ -1,0 +1,119 @@
+[data-component="textarea"] {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0 2px 2px 0;
+  width: 280px;
+  min-height: 80px;
+  border: 0;
+  border-radius: var(--radius);
+  outline: 1px solid transparent;
+  outline-offset: 0;
+  background:
+    linear-gradient(180deg, var(--color-alpha-light-2) 0%, var(--color-alpha-light-0) 100%), var(--color-bg-base);
+  box-shadow: var(--shadow-button-neutral);
+  flex: none;
+  align-self: stretch;
+  transition:
+    background 85ms ease-out,
+    outline-color 85ms ease-out,
+    box-shadow 85ms ease-out;
+}
+
+[data-component="textarea"][data-appearance="diagnostic"] {
+  width: 100%;
+  height: min(240px, 32vh);
+}
+
+[data-component="textarea"][data-appearance="full-width"] {
+  width: 100%;
+}
+
+/* Grow to the height its flex parent offers; the textarea itself does not resize. */
+[data-component="textarea"][data-appearance="fill"] {
+  width: 100%;
+  min-height: 120px;
+  flex: 1;
+}
+
+[data-component="textarea"][data-appearance="fill"] [data-slot="textarea-textarea"] {
+  flex: 1;
+  min-height: 0;
+  resize: none;
+}
+
+[data-component="textarea"][data-appearance="diagnostic"] [data-slot="textarea-textarea"] {
+  resize: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre;
+}
+
+@media (max-width: 600px) {
+  [data-component="textarea"][data-appearance="diagnostic"] {
+    height: min(200px, 30vh);
+  }
+}
+
+[data-component="textarea"]:where(:hover):not([data-disabled], [data-invalid]):not(:focus-within) {
+  background:
+    linear-gradient(0deg, var(--color-overlay-hover), var(--color-overlay-hover)),
+    linear-gradient(180deg, var(--color-alpha-light-2) 0%, var(--color-alpha-light-0) 100%), var(--color-bg-base);
+}
+
+[data-component="textarea"]:where(:focus-within):not([data-disabled], [data-invalid]) {
+  outline-color: var(--color-border-focus);
+  box-shadow: none;
+}
+
+[data-component="textarea"]:where([data-invalid]):not([data-disabled]) {
+  outline-color: var(--color-danger-fg);
+  box-shadow: none;
+}
+
+[data-component="textarea"]:where([data-disabled]) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-component="textarea"] [data-slot="textarea-textarea"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 80px;
+  height: 100%;
+  padding: 8px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  resize: vertical;
+  font-style: normal;
+  font-weight: 440;
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: -0.04px;
+  color: var(--color-text-base);
+  font-variation-settings: "slnt" 0;
+}
+
+[data-component="textarea"] [data-slot="textarea-textarea"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+[data-component="textarea"][data-invalid]:not([data-disabled]) [data-slot="textarea-textarea"] {
+  color: var(--color-danger-fg);
+  caret-color: var(--color-danger-fg);
+}
+
+[data-component="textarea"][data-invalid]:not([data-disabled]) [data-slot="textarea-textarea"]::placeholder {
+  color: var(--color-danger-fg);
+  opacity: 1;
+}
+
+/* The light-theme focus colour is a pale tint; deepen it and widen the ring so the focused field stands out. */
+:root[data-color-scheme="light"] [data-component="textarea"]:where(:focus-within):not([data-disabled], [data-invalid]) {
+  outline-width: 2px;
+  outline-color: color-mix(in srgb, var(--color-border-focus) 65%, var(--color-text-base));
+}

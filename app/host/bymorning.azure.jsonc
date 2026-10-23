@@ -1,0 +1,11 @@
+{
+  // Installation config declares plugins enabled by default and their non-secret options.
+  // Code execution is required on Azure and is provided by the Kubernetes
+  // Code Interpreter plugin, which is bundled but NOT enabled here: it needs a
+  // digest-pinned execution image that only the deployment knows. Supply it
+  // through BYMORNING_CONFIG (the installer's ConfigMap component
+  // installers/azure/k8s/components/code-interpreter-kubernetes), whose
+  // config/bymorning.jsonc is the template. Selecting the
+  // "kubernetes" implementation without that image refuses startup.
+  "plugins": ["@bymorning/plugin-google", "@bymorning/plugin-atlassian", "@bymorning/plugin-share"],
+}

@@ -1,0 +1,11 @@
+---
+title: Microsoft Entra sign-in
+description: Where to find the Microsoft Entra ID setup guide for ByMorning.
+---
+
+ByMorning signs people in with Microsoft Entra ID in the commercial cloud or Azure Government. The app registration, the optional `email` and `xms_edov` claims, admitted domains, Gateway network access, and troubleshooting by sign-in failure reason are in [Microsoft Entra](/deploy/entra).
+
+| Cloud            | Issuer ByMorning derives                             |
+| ---------------- | ---------------------------------------------------- |
+| Commercial       | `https://login.microsoftonline.com/<tenant-id>/v2.0` |
+| Azure Government | `https://login.microsoftonline.us/<tenant-id>/v2.0`  |

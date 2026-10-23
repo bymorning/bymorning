@@ -1,0 +1,58 @@
+{
+  // Example Workspace Config. Copy fields into Console → Workspace configuration
+  // or PUT /api/config. Relative plugin paths resolve from the server cwd.
+  //
+  // Native inference policy is only gateway.* plus permissions.
+  // Everything else is a Plugin under plugins/example/src/.
+
+  "gateway": {
+    "budget": 1000,
+    "limits": { "rpm": 300, "tpm": 500000 },
+    "models": ["anthropic/claude-sonnet-4", "openai/gpt-5.6"],
+  },
+
+  "permissions": [
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "rm *", "effect": "deny" },
+    { "action": "web_fetch", "resource": "*", "effect": "deny" },
+  ],
+
+  "plugins": [
+    {
+      "package": "./plugins/example/src/model-routing.ts",
+      "options": {
+        "requested": "openai/gpt-5.6",
+        "target": "anthropic/claude-sonnet-4",
+      },
+    },
+    {
+      "package": "./plugins/example/src/providers.ts",
+      "options": { "allowed": "anthropic,openai" },
+    },
+    {
+      "package": "./plugins/example/src/company-policy.ts",
+      "options": { "restrictProvider": true },
+    },
+    {
+      "package": "./plugins/example/src/redaction.ts",
+      "options": { "enabled": true },
+    },
+    {
+      "package": "./plugins/example/src/injection.ts",
+      "options": {
+        "enabled": true,
+        "pattern": "ignore (all )?previous instructions|dan mode",
+      },
+    },
+    {
+      "package": "./plugins/example/src/tool-guard.ts",
+      "options": { "tool": "shell", "substring": "rm -rf" },
+    },
+    {
+      "package": "./plugins/example/src/retry-control.ts",
+      "options": { "maxRetries": 2, "minDelay": 1000 },
+    },
+    "./plugins/example/src/company-context.ts",
+    "./plugins/example/src/tool-activity.ts",
+  ],
+}

@@ -1,0 +1,47 @@
+[data-session-ui] [data-component="tool"] {
+  border-inline-start: 2px solid var(--color-border);
+}
+[data-session-ui] [data-slot="tool-trigger"] {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  text-align: start;
+}
+[data-session-ui] [data-slot="tool-summary"] {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-session-ui] [data-slot="tool-status"] {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: var(--line-height-compact, 16px);
+}
+[data-session-ui] [data-slot="tool-content"] {
+  padding: 6px 0 10px;
+}
+[data-session-ui] [data-slot="tool-output"],
+[data-session-ui] [data-slot="tool-source"],
+[data-session-ui] [data-slot="tool-command"],
+[data-session-ui] [data-slot="tool-diff"] pre {
+  overflow: auto;
+  padding: 8px;
+  background: var(--color-bg-layer-2);
+}
+[data-session-ui] [data-slot="tool-input"] {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 10px;
+}
+[data-session-ui] [data-slot="tool-input"] dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

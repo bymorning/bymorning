@@ -1,0 +1,14 @@
+[data-component="tool-loaded-item"] > button[data-slot="tool-loaded-value"] {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+[data-component="tool-loaded-item"] > button[data-slot="tool-loaded-value"]:hover {
+  text-decoration: underline;
+}

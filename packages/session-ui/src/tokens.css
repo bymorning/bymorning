@@ -1,0 +1,14 @@
+/* Session UI consumes host theme tokens and never establishes a document theme. */
+@layer session-ui.tokens {
+  [data-session-ui] {
+    --session-ui-bg: var(--color-bg-surface, Canvas);
+    --session-ui-fg: var(--color-text-base, CanvasText);
+    --session-ui-muted: var(--color-text-muted, GrayText);
+    --session-ui-border: var(--color-border-base, color-mix(in srgb, CanvasText 16%, transparent));
+    --session-ui-radius: var(--radius, 6px);
+    --session-ui-font: var(--font-body, system-ui, sans-serif);
+    --session-ui-mono: var(--font-mono, ui-monospace, monospace);
+    --session-ui-line-compact: var(--line-height-compact, 16px);
+    --session-ui-line-base: var(--line-height-base, 20px);
+  }
+}

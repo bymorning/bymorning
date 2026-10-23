@@ -1,0 +1,117 @@
+# One replica, never two versions at once: OAuth callback state and the scheduler
+# are process-local. Recreate stops the old pod before the new one starts.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bymorning
+  labels:
+    app.kubernetes.io/name: bymorning
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bymorning
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bymorning
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: bymorning-gateway
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Applies migrations to completion before the Gateway starts.
+        - name: migrate
+          image: bymorning
+          command: ["node", "/app/bymorning.mjs", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: bymorning-env
+            - secretRef:
+                name: bymorning
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            # The migrator loads the whole 20 MB Gateway bundle: about 490 MB resident when
+            # measured natively, and it was OOMKilled at 512Mi under emulation. Keep headroom.
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: config
+              mountPath: /config
+              readOnly: true
+      containers:
+        # Keep the Gateway first: components patch containers/0.
+        - name: gateway
+          image: bymorning
+          ports:
+            - name: http
+              containerPort: 3210
+          envFrom:
+            - configMapRef:
+                name: bymorning-env
+            - secretRef:
+                name: bymorning
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /system/health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            httpGet:
+              path: /system/health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /system/health
+              port: http
+            periodSeconds: 20
+            failureThreshold: 3
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        # HOME is /tmp; the migrator and the generated Setup token use it.
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+        - name: config
+          configMap:
+            name: bymorning-config

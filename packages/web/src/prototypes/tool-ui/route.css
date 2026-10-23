@@ -1,0 +1,337 @@
+[data-component="tool-ui-prototype"] {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  color: var(--color-text-base);
+  background: var(--color-bg-deep);
+}
+
+[data-component="tool-ui-prototype"] [data-slot="prototype-page"] {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+}
+
+[data-component="tool-ui-prototype"] [data-slot="prototype-toolbar"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-component="tool-ui-prototype"] h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -.02em;
+}
+
+[data-component="tool-ui-prototype"] [data-slot="prototype-controls"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: end;
+}
+
+[data-component="tool-ui-prototype"] label,
+[data-component="tool-ui-prototype"] legend {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+[data-component="tool-ui-prototype"] label {
+  display: grid;
+  gap: 3px;
+}
+
+[data-component="tool-ui-prototype"] fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+[data-component="tool-ui-prototype"] legend {
+  margin-bottom: 3px;
+}
+
+[data-component="tool-ui-prototype"] [data-slot="result-count"] {
+  margin: 8px 0 4px;
+  color: var(--color-text-faint);
+  font-size: 11px;
+}
+
+[data-component="tool-ui-prototype"] [data-slot="comparison-header"],
+[data-component="prototype-scenario"] {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+[data-component="tool-ui-prototype"] [data-slot="comparison-header"] {
+  position: sticky;
+  z-index: 4;
+  top: 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border-muted);
+  color: var(--color-text-muted);
+  background: var(--color-bg-deep);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+[data-component="prototype-scenario"] {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+[data-component="prototype-scenario"] > header {
+  min-width: 0;
+  padding-top: 4px;
+}
+
+[data-component="prototype-scenario"] h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+[data-component="prototype-scenario"] [data-slot="state-label"] {
+  display: block;
+  width: max-content;
+  margin-top: 3px;
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+[data-component="prototype-scenario"] [data-slot="comparison-grid"] {
+  display: contents;
+}
+
+[data-component="prototype-scenario"] [data-slot="comparison-cell"] {
+  min-width: 0;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius);
+  background: var(--color-bg-base);
+}
+
+[data-component="prototype-scenario"] [data-slot="comparison-cell"] > h3 {
+  display: none;
+}
+
+[data-component="prototype-scenario"] [data-slot="renderer-stage"] {
+  min-width: 0;
+  padding: 6px 8px;
+  overflow: hidden;
+}
+
+[data-component="prototype-scenario"] pre {
+  max-width: 100%;
+  overflow: auto;
+}
+
+[data-component="suggested-tool"] {
+  min-width: 0;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-summary"],
+[data-component="suggested-tool"] [data-slot="suggested-file"] {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 24px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--radius);
+  color: inherit;
+  text-align: left;
+  background: transparent;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-summary"][aria-expanded],
+[data-component="suggested-tool"] [data-slot="suggested-file"] {
+  cursor: pointer;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-summary"][aria-expanded]:hover,
+[data-component="suggested-tool"] [data-slot="suggested-file"]:hover {
+  background: var(--color-overlay-hover);
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-phrase"] {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
+[data-component="suggested-tool"] [data-tone="danger"] {
+  color: var(--color-danger-fg);
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-verb"] {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-kind"] {
+  white-space: nowrap;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-subject"],
+[data-component="suggested-tool"] [data-slot="suggested-secondary"],
+[data-component="suggested-tool"] [data-slot="suggested-file"] bdi {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  unicode-bidi: isolate;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-subject"][data-mono],
+[data-component="suggested-tool"] [data-slot="suggested-file"] bdi {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-secondary"],
+[data-component="suggested-tool"] [data-slot="suggested-file"] span {
+  color: var(--color-text-muted);
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-file"] span {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-output"] {
+  margin-top: 4px;
+  padding: 6px 8px;
+  overflow: auto;
+  border-radius: var(--radius);
+  background: var(--color-bg-layer-1);
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-output"][hidden] {
+  display: none;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-output"] :is(pre, p) {
+  margin: 0;
+}
+
+[data-component="suggested-tool"] [data-slot="suggested-output"] pre {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre;
+}
+
+[data-component="suggested-permission"] {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-layer-2);
+}
+
+[data-component="suggested-permission"] p {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-component="suggested-permission"] [data-slot="suggested-permission-preamble"] {
+  color: var(--color-text-muted);
+}
+
+[data-component="suggested-permission"] [data-slot="suggested-permission-action"],
+[data-component="suggested-permission"] [data-slot="suggested-permission-resource"] {
+  color: var(--color-text-base);
+  font-weight: 600;
+}
+
+[data-component="suggested-permission"] [data-slot="suggested-permission-resource"] {
+  unicode-bidi: isolate;
+}
+
+[data-component="suggested-permission"] [data-slot="suggested-permission-resource"][data-mono] {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+[data-component="suggested-permission"] [data-slot="suggested-permission-error"] {
+  color: var(--color-danger-fg);
+  font-weight: 400;
+}
+
+[data-component="suggested-permission"] [data-slot="suggested-permission-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+[data-component="projection-hidden"] {
+  padding: 4px 6px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="projection-hidden"] p {
+  margin: 2px 0 0;
+}
+
+[data-component="tool-ui-prototype"] [data-slot="empty-filter"] {
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 760px) {
+  [data-component="tool-ui-prototype"] [data-slot="comparison-header"] {
+    display: none;
+  }
+
+  [data-component="prototype-scenario"] {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  [data-component="prototype-scenario"] [data-slot="comparison-grid"] {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  [data-component="prototype-scenario"] [data-slot="comparison-cell"] > h3 {
+    display: block;
+    margin: 0;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--color-border-muted);
+    color: var(--color-text-muted);
+    font-size: 10px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  [data-component="suggested-tool"] [data-slot="suggested-secondary"] {
+    display: none;
+  }
+
+  [data-component="suggested-permission"] [data-slot="suggested-permission-actions"] {
+    justify-content: flex-start;
+  }
+}

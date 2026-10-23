@@ -1,0 +1,72 @@
+id: no-explicit-inferred-variable-type
+snapshots:
+  'const list: Interface["list"] = makeList()':
+    labels:
+      - source: 'list: Interface["list"] = makeList()'
+        style: primary
+        start: 6
+        end: 42
+      - source: ': Interface["list"]'
+        style: secondary
+        start: 10
+        end: 29
+      - source: makeList()
+        style: secondary
+        start: 32
+        end: 42
+  'const name: string = "value"':
+    labels:
+      - source: 'name: string = "value"'
+        style: primary
+        start: 6
+        end: 28
+      - source: ": string"
+        style: secondary
+        start: 10
+        end: 18
+      - source: '"value"'
+        style: secondary
+        start: 21
+        end: 28
+  "const values: Array<string> = []":
+    labels:
+      - source: "values: Array<string> = []"
+        style: primary
+        start: 6
+        end: 32
+      - source: ": Array<string>"
+        style: secondary
+        start: 12
+        end: 27
+      - source: "[]"
+        style: secondary
+        start: 30
+        end: 32
+  "const { name }: User = user":
+    labels:
+      - source: "{ name }: User = user"
+        style: primary
+        start: 6
+        end: 27
+      - source: ": User"
+        style: secondary
+        start: 14
+        end: 20
+      - source: user
+        style: secondary
+        start: 23
+        end: 27
+  "let count: number = 0":
+    labels:
+      - source: "count: number = 0"
+        style: primary
+        start: 4
+        end: 21
+      - source: ": number"
+        style: secondary
+        start: 9
+        end: 17
+      - source: "0"
+        style: secondary
+        start: 20
+        end: 21

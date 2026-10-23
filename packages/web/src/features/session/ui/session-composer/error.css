@@ -1,0 +1,6 @@
+[data-component="session-composer-error"] {
+  overflow: hidden;
+  color: var(--color-danger-fg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,22 @@
+{
+  "plugins": [
+    "@bymorning/plugin-google",
+    "@bymorning/plugin-atlassian",
+    "@bymorning/plugin-share",
+    {
+      "package": "@bymorning/plugin-code-interpreter-kubernetes",
+      "options": {
+        "namespace": "bymorning-sandbox",
+        // Execution image, pinned by digest (the plugin refuses a tag).
+        "image": "REGISTRY.azurecr.us/bymorning-code-interpreter@sha256:REPLACE",
+        "serviceAccountName": "bymorning-sandbox",
+        // Kata VM isolation (needs the Terraform sandbox_node_pool flag and AKS pod
+        // sandboxing). Use "" for ordinary containers on the user pool.
+        "runtimeClassName": "",
+        // "nodeSelector": { "bymorning.dev/pool": "sandbox" },
+        // "tolerations": [{ "key": "bymorning.dev/sandbox", "operator": "Equal", "value": "true", "effect": "NoSchedule" }],
+      },
+    },
+  ],
+  "code_interpreter": { "implementation": "kubernetes" },
+}

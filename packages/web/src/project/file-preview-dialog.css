@@ -1,0 +1,17 @@
+[data-component="file-preview-dialog"] [data-slot="file-preview-loading"] {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 24px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+[data-component="file-preview-dialog"] [data-slot="file-preview-loading"] p {
+  margin: 0;
+}

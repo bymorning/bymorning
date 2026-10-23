@@ -1,0 +1,5753 @@
+import type { GeneratedModel } from "../../src/normalized.js"
+
+export const models = [
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/big-pickle",
+      "digest": "fc85042e4218dc443511a949bca6a5cc6c144a296f854f2e6027a3e1f6f884ef"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "big-pickle"
+    },
+    "apiID": "big-pickle",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Big Pickle",
+      "description": "Reasoning model for deliberate analysis, multi-step problem solving, and tool use",
+      "family": "big-pickle",
+      "releaseDate": "2025-10-17",
+      "lastUpdated": "2025-10-17",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "input": 160000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0,
+        "cache_write": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-3-5-haiku",
+      "digest": "a67eb19c6a431dd058fd838c87d5e56b32b6d37921639213917f7ab9085344d2"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-3-5-haiku"
+    },
+    "apiID": "claude-3-5-haiku",
+    "format": "anthropic",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Claude Haiku 3.5",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "claude-haiku",
+      "releaseDate": "2024-10-22",
+      "lastUpdated": "2024-10-22",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 8192
+      },
+      "cost": {
+        "input": 0.8,
+        "output": 4,
+        "cache_read": 0.08,
+        "cache_write": 1
+      }
+    },
+    "unsupported": {
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-fable-5",
+      "digest": "12212e67eff470b2c17d6cc259947f1bc5eff9aa183d134ec8819e77fce13edd"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-fable-5"
+    },
+    "apiID": "claude-fable-5",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Fable 5",
+      "description": "Claude model for creative writing, analysis, and controlled agent workflows",
+      "family": "claude-fable",
+      "releaseDate": "2026-06-09",
+      "lastUpdated": "2026-06-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 1,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-fable-5-1",
+      "digest": "89c94e6ea53970989a81006f5aef87957279960dd520f03cc6f60bc1baea571a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-fable-5-1"
+    },
+    "apiID": "claude-fable-5-1",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Fable 5.1",
+      "description": "Claude model for demanding reasoning and long-horizon agentic work",
+      "family": "claude-fable",
+      "releaseDate": "2026-09-01",
+      "lastUpdated": "2026-09-01",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 10,
+        "output": 50,
+        "cache_read": 0.25,
+        "cache_write": 12.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-haiku-4-5",
+      "digest": "32e3d6c7bab3f878c1a90788910489631e96ed45023f2b4cbae1f22a4d7be9c4"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-haiku-4-5"
+    },
+    "apiID": "claude-haiku-4-5",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Haiku 4.5",
+      "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
+      "family": "claude-haiku",
+      "releaseDate": "2025-10-15",
+      "lastUpdated": "2025-10-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 1,
+        "output": 5,
+        "cache_read": 0.1,
+        "cache_write": 1.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-opus-4-1",
+      "digest": "1cd8dda9354fafc4c0ef00b1a08f0f97b87c3ab8770f857fae48e1eee4f915c5"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-opus-4-1"
+    },
+    "apiID": "claude-opus-4-1",
+    "format": "anthropic",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Claude Opus 4.1",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-08-05",
+      "lastUpdated": "2025-08-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 15,
+        "output": 75,
+        "cache_read": 1.5,
+        "cache_write": 18.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-opus-4-5",
+      "digest": "ded688bb99793adef4613bd3050001f5aa0919963008a1304833e9e033916045"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-opus-4-5"
+    },
+    "apiID": "claude-opus-4-5",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Opus 4.5",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2025-11-24",
+      "lastUpdated": "2025-11-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-opus-4-6",
+      "digest": "d76eba276eac2d90a8c927e40e3fe6ff5a0578221d537a20a964f526e878b914"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-opus-4-6"
+    },
+    "apiID": "claude-opus-4-6",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Opus 4.6",
+      "description": "High-end Claude for difficult coding, planning, and slower expert reasoning",
+      "family": "claude-opus",
+      "releaseDate": "2026-02-05",
+      "lastUpdated": "2026-03-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-opus-4-7",
+      "digest": "5f0a3792575d7b84d0400040485c6a7ed0554540e00cc42fef0492334def8ec5"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-opus-4-7"
+    },
+    "apiID": "claude-opus-4-7",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Opus 4.7",
+      "description": "Flagship Claude model for deep reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-opus-4-8",
+      "digest": "60ab091a4231c12cb844e86b1703b50555d257e54089a986a2350249f19cff1b"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-opus-4-8"
+    },
+    "apiID": "claude-opus-4-8",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Opus 4.8",
+      "description": "Top Claude Opus tier for the hardest reasoning, coding, and long-horizon agents",
+      "family": "claude-opus",
+      "releaseDate": "2026-05-28",
+      "lastUpdated": "2026-05-28",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-opus-5",
+      "digest": "0552c1ba6e5aa020cba08ceccbc49b680706108f0f32bec04eb8d7b7c147e402"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-opus-5"
+    },
+    "apiID": "claude-opus-5",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Opus 5",
+      "description": "Strongest Claude Opus model for coding, agents, and professional work",
+      "family": "claude-opus",
+      "releaseDate": "2026-07-24",
+      "lastUpdated": "2026-07-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-sonnet-4",
+      "digest": "6e18d81182cca33aee02a6e8d9375cbec39ad44b5f06c0e828467d8c6f43bd37"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-sonnet-4"
+    },
+    "apiID": "claude-sonnet-4",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Sonnet 4",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-05-22",
+      "lastUpdated": "2025-05-22",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75,
+        "tiers": [
+          {
+            "input": 6,
+            "output": 22.5,
+            "cache_read": 0.6,
+            "cache_write": 7.5,
+            "tier": {
+              "type": "context",
+              "size": 200000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 6,
+          "output": 22.5,
+          "cache_read": 0.6,
+          "cache_write": 7.5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-sonnet-4-5",
+      "digest": "a0a47d6bb8cfe9a48b3e61c506a759bddd61c14cd500b4e6c183cb6b0e7786cc"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-sonnet-4-5"
+    },
+    "apiID": "claude-sonnet-4-5",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Sonnet 4.5",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2025-09-29",
+      "lastUpdated": "2025-09-29",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75,
+        "tiers": [
+          {
+            "input": 6,
+            "output": 22.5,
+            "cache_read": 0.6,
+            "cache_write": 7.5,
+            "tier": {
+              "type": "context",
+              "size": 200000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 6,
+          "output": 22.5,
+          "cache_read": 0.6,
+          "cache_write": 7.5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "interleaved": true,
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-sonnet-4-6",
+      "digest": "c86deb775dd43a5e6066fd0cbb40765a85070eb3e36c15a2fa582df6ef30b462"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-sonnet-4-6"
+    },
+    "apiID": "claude-sonnet-4-6",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Sonnet 4.6",
+      "description": "Balanced Claude model for coding, analysis, agent workflows, and cost control",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-02-17",
+      "lastUpdated": "2026-02-17",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "max"
+          ]
+        },
+        {
+          "type": "budget_tokens",
+          "min": 1024
+        }
+      ],
+      "interleaved": true,
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/claude-sonnet-5",
+      "digest": "01de28e69486f0799d617673c5c07f37e2f262d71c3e0cb67424fd88ca800a64"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "claude-sonnet-5"
+    },
+    "apiID": "claude-sonnet-5",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Claude Sonnet 5",
+      "description": "Everyday Claude agent model for coding, planning, browsing, and general work",
+      "family": "claude-sonnet",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/deepseek-v4-flash",
+      "digest": "b62553d6e5bddab89c637a97d854b3809081c52c5415ba32ac2ac9710b4c6176"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "deepseek-v4-flash"
+    },
+    "apiID": "deepseek-v4-flash",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "DeepSeek V4 Flash",
+      "description": "Official DeepSeek V4 Flash release with enhanced agentic capabilities and integrated DSpark speculative decoding",
+      "family": "deepseek-flash",
+      "releaseDate": "2026-07-31",
+      "lastUpdated": "2026-07-31",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 384000
+      },
+      "cost": {
+        "input": 0.14,
+        "output": 0.28,
+        "cache_read": 0.028
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/deepseek-v4-flash-free",
+      "digest": "8cef17649a54b69a63826e540a80ea3b975feedb3a87df97fc55b9251e843373"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "deepseek-v4-flash-free"
+    },
+    "apiID": "deepseek-v4-flash-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "DeepSeek V4 Flash Free",
+      "description": "Official DeepSeek V4 Flash release with enhanced agentic capabilities and integrated DSpark speculative decoding",
+      "family": "deepseek-flash",
+      "releaseDate": "2026-07-31",
+      "lastUpdated": "2026-07-31",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/deepseek-v4-pro",
+      "digest": "985e4f3a7744db49dc1c9ddff509695ff791d6fcf38182c51bc91645d6b01fb7"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "deepseek-v4-pro"
+    },
+    "apiID": "deepseek-v4-pro",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "DeepSeek V4 Pro",
+      "description": "Open MoE flagship with million-token context for coding and long agent runs",
+      "family": "deepseek-thinking",
+      "releaseDate": "2026-04-24",
+      "lastUpdated": "2026-04-24",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 384000
+      },
+      "cost": {
+        "input": 1.74,
+        "output": 3.84,
+        "cache_read": 0.145
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3-flash",
+      "digest": "9d1de3484da5d971d6e6114e2e081f09f084d3edc47a30dc153a8c8dfe27561a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3-flash"
+    },
+    "apiID": "gemini-3-flash",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3 Flash",
+      "description": "Fast Gemini model balancing multimodal reasoning, tool use, and cost",
+      "family": "gemini-flash",
+      "releaseDate": "2025-12-17",
+      "lastUpdated": "2025-12-17",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.5,
+        "output": 3,
+        "cache_read": 0.05
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3-pro",
+      "digest": "5064be9346eaca77c5babbaccfdde8746d0c01ce7221f59f27b48fc3383121bd"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3-pro"
+    },
+    "apiID": "gemini-3-pro",
+    "format": "google",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Gemini 3 Pro",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "gemini-pro",
+      "releaseDate": "2025-11-18",
+      "lastUpdated": "2025-11-18",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 2,
+        "output": 12,
+        "cache_read": 0.2,
+        "tiers": [
+          {
+            "input": 4,
+            "output": 18,
+            "cache_read": 0.4,
+            "tier": {
+              "type": "context",
+              "size": 200000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4,
+          "output": 18,
+          "cache_read": 0.4
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3.1-pro",
+      "digest": "62ceecb0f85e319e41571ed1dabf70a9cdad9b60b4e6d8afcaa447bc7df591e0"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3.1-pro"
+    },
+    "apiID": "gemini-3.1-pro",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3.1 Pro Preview",
+      "description": "Advanced Gemini model for complex reasoning, coding, and multimodal analysis",
+      "family": "gemini-pro",
+      "releaseDate": "2026-02-19",
+      "lastUpdated": "2026-02-19",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 2,
+        "output": 12,
+        "cache_read": 0.2,
+        "tiers": [
+          {
+            "input": 4,
+            "output": 18,
+            "cache_read": 0.4,
+            "tier": {
+              "type": "context",
+              "size": 200000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4,
+          "output": 18,
+          "cache_read": 0.4
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3.5-flash",
+      "digest": "c1692db00034390ab343bb59f511cb68c34dd68b9d5bb7be5bc49f72821fda33"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3.5-flash"
+    },
+    "apiID": "gemini-3.5-flash",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3.5 Flash",
+      "description": "Fast Gemini model balancing multimodal reasoning, tool use, and cost",
+      "family": "gemini-flash",
+      "releaseDate": "2026-05-19",
+      "lastUpdated": "2026-05-19",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 1.5,
+        "output": 9,
+        "cache_read": 0.15,
+        "input_audio": 1.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3.5-flash-lite",
+      "digest": "84c622de3c38ea03532ccf145f60703e3c5369986692697f16b0898c2dcb3238"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3.5-flash-lite"
+    },
+    "apiID": "gemini-3.5-flash-lite",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3.5 Flash Lite",
+      "description": "Fast Gemini model balancing multimodal reasoning, tool use, and cost",
+      "family": "gemini-flash-lite",
+      "releaseDate": "2026-07-21",
+      "lastUpdated": "2026-07-21",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 2.5,
+        "cache_read": 0.03
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3.6-flash",
+      "digest": "970f0f01bd0451370fe9fe264c9fdb3d06cce861eaba9138ca947a5e890e4913"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3.6-flash"
+    },
+    "apiID": "gemini-3.6-flash",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3.6 Flash",
+      "description": "Fast Gemini model balancing multimodal reasoning, tool use, and cost",
+      "family": "gemini-flash",
+      "releaseDate": "2026-07-21",
+      "lastUpdated": "2026-07-21",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 1.5,
+        "output": 7.5,
+        "cache_read": 0.15,
+        "input_audio": 1.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3.7-flash",
+      "digest": "a4ebf58d2d1b1ee47ed7799c8adef3d147856f4581d12b9ba249844fe61306c0"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3.7-flash"
+    },
+    "apiID": "gemini-3.7-flash",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3.7 Flash",
+      "description": "High-efficiency Gemini model for agentic workflows, coding, and multimodal reasoning",
+      "family": "gemini-flash",
+      "releaseDate": "2026-08-13",
+      "lastUpdated": "2026-08-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 1.5,
+        "output": 7.5,
+        "cache_read": 0.15,
+        "input_audio": 1.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gemini-3.8-flash",
+      "digest": "36a1b34f6f2f60ede59c3c560008ffb9313bebd4bee0051f0976463b74d402f7"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gemini-3.8-flash"
+    },
+    "apiID": "gemini-3.8-flash",
+    "format": "google",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Gemini 3.8 Flash",
+      "description": "Google's most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows",
+      "family": "gemini-flash",
+      "releaseDate": "2026-09-02",
+      "lastUpdated": "2026-09-02",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "cost": {
+        "input": 1.5,
+        "output": 7.5,
+        "cache_read": 0.15,
+        "input_audio": 1.5
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/google"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-4.6",
+      "digest": "f3630a9f8b738accbe6c2816214d62e14af5227bc7e73823c51721886e334bd7"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-4.6"
+    },
+    "apiID": "glm-4.6",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "GLM-4.6",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "glm",
+      "releaseDate": "2025-09-30",
+      "lastUpdated": "2025-09-30",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 2.2,
+        "cache_read": 0.1
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-4.7",
+      "digest": "cb52b371bbf045249da001521c6b4f224268867a940b93f4af459d6406c09e03"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-4.7"
+    },
+    "apiID": "glm-4.7",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "GLM-4.7",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "glm",
+      "releaseDate": "2025-12-22",
+      "lastUpdated": "2025-12-22",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 2.2,
+        "cache_read": 0.1
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-4.7-free",
+      "digest": "37e3c372ad32c6238ce6b90fcb826210e52dd6431cc9916bbaca8c948e0442b7"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-4.7-free"
+    },
+    "apiID": "glm-4.7-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "GLM-4.7 Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "glm-free",
+      "releaseDate": "2025-12-22",
+      "lastUpdated": "2025-12-22",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-5",
+      "digest": "687e05b14a98cca435cb8f601a8606db725d79ed53086769610c8db32f27ae28"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-5"
+    },
+    "apiID": "glm-5",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM-5",
+      "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+      "family": "glm",
+      "releaseDate": "2026-02-11",
+      "lastUpdated": "2026-02-11",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1,
+        "output": 3.2,
+        "cache_read": 0.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-5-free",
+      "digest": "249a8be55c64c021545ca84eb9ad3e5e93e6c267f543494043880d1ebc39cdae"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-5-free"
+    },
+    "apiID": "glm-5-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "GLM-5 Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "glm-free",
+      "releaseDate": "2026-02-11",
+      "lastUpdated": "2026-02-11",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-5.1",
+      "digest": "3196e46075c17590d0f03c8a80529e5bc1e72df5c1f304d55d9fe10f03b0ff4b"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-5.1"
+    },
+    "apiID": "glm-5.1",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM-5.1",
+      "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+      "family": "glm",
+      "releaseDate": "2026-04-07",
+      "lastUpdated": "2026-04-07",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1.4,
+        "output": 4.4,
+        "cache_read": 0.26
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/glm-5.2",
+      "digest": "b22b0a886a71f9b24e8ca1263a61a9d63e969e06dadd9a62be70df1c79dbd808"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "glm-5.2"
+    },
+    "apiID": "glm-5.2",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GLM-5.2",
+      "description": "Open flagship GLM for long-horizon coding agents and million-token context work",
+      "family": "glm",
+      "releaseDate": "2026-06-13",
+      "lastUpdated": "2026-06-13",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1.4,
+        "output": 4.4,
+        "cache_read": 0.26
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5",
+      "digest": "8885266f7491c74c1a28f601cc5752355e6ef59900942b1b3256e884e93fa26c"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5"
+    },
+    "apiID": "gpt-5",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5",
+      "description": "GPT model for general reasoning, writing, coding, and tool-assisted tasks",
+      "family": "gpt",
+      "releaseDate": "2025-08-07",
+      "lastUpdated": "2025-08-07",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.07,
+        "output": 8.5,
+        "cache_read": 0.107
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5-codex",
+      "digest": "8ae2ee3fdb04d4b3ecc731f0f90915ac681be05f8815f096c1525ed8d1e4458a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5-codex"
+    },
+    "apiID": "gpt-5-codex",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5 Codex",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex",
+      "releaseDate": "2025-09-15",
+      "lastUpdated": "2025-09-15",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.07,
+        "output": 8.5,
+        "cache_read": 0.107
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5-nano",
+      "digest": "3f4cca64f211fda8c6b62fb10eecc34f1c62ed0888a4f18cc13ba41d8e2a1560"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5-nano"
+    },
+    "apiID": "gpt-5-nano",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5 Nano",
+      "description": "Compact GPT model for low-latency assistance and high-volume workloads",
+      "family": "gpt-nano",
+      "releaseDate": "2025-08-07",
+      "lastUpdated": "2025-08-07",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.05,
+        "output": 0.4,
+        "cache_read": 0.005
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.1",
+      "digest": "bb71a7c8c3726e05a8e7134e5a8405c9adada6af51e302f58a5808acfdeabf4f"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.1"
+    },
+    "apiID": "gpt-5.1",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.1",
+      "description": "GPT model for general reasoning, writing, coding, and tool-assisted tasks",
+      "family": "gpt",
+      "releaseDate": "2025-11-13",
+      "lastUpdated": "2025-11-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.07,
+        "output": 8.5,
+        "cache_read": 0.107
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.1-codex",
+      "digest": "cafb64c775366402bba7667e9b99effcb27adf69dfc9c6b2ee2f3cae95d76638"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.1-codex"
+    },
+    "apiID": "gpt-5.1-codex",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.1 Codex",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex",
+      "releaseDate": "2025-11-13",
+      "lastUpdated": "2025-11-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.07,
+        "output": 8.5,
+        "cache_read": 0.107
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.1-codex-max",
+      "digest": "49c6843805ea1c36a012b190486769337df0817153a649ed4885b0ddd9f0a172"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.1-codex-max"
+    },
+    "apiID": "gpt-5.1-codex-max",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.1 Codex Max",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex",
+      "releaseDate": "2025-11-13",
+      "lastUpdated": "2025-11-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.25,
+        "output": 10,
+        "cache_read": 0.125
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.1-codex-mini",
+      "digest": "6f923301a180eef2357a489811fa93d4843ee84cb056655cc176c650107122a6"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.1-codex-mini"
+    },
+    "apiID": "gpt-5.1-codex-mini",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.1 Codex Mini",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex",
+      "releaseDate": "2025-11-13",
+      "lastUpdated": "2025-11-13",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.25,
+        "output": 2,
+        "cache_read": 0.025
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.2",
+      "digest": "bf1cbc336e940c5f311f7a0240502d68d2fa0ff5fd99107940811b8ebe95444a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.2"
+    },
+    "apiID": "gpt-5.2",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.2",
+      "description": "GPT model for general reasoning, writing, coding, and tool-assisted tasks",
+      "family": "gpt",
+      "releaseDate": "2025-12-11",
+      "lastUpdated": "2025-12-11",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.75,
+        "output": 14,
+        "cache_read": 0.175
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.2-codex",
+      "digest": "7051dd4b8684e34059158a0c554cce18bd32a5803873094cf7c9b608db147e01"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.2-codex"
+    },
+    "apiID": "gpt-5.2-codex",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.2 Codex",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex",
+      "releaseDate": "2026-01-14",
+      "lastUpdated": "2026-01-14",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.75,
+        "output": 14,
+        "cache_read": 0.175
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.3-codex",
+      "digest": "16df2abc10d777c5d8f862a4ee14191a8073049a6ceb860fb9276ef72166a59d"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.3-codex"
+    },
+    "apiID": "gpt-5.3-codex",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.3 Codex",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex",
+      "releaseDate": "2026-02-24",
+      "lastUpdated": "2026-02-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.75,
+        "output": 14,
+        "cache_read": 0.175
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.3-codex-spark",
+      "digest": "20b2faba7cafc6e3cb3bd6af46f6ab4b8b5f253c5c7dc8796e6ad678cdbd1ec0"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.3-codex-spark"
+    },
+    "apiID": "gpt-5.3-codex-spark",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.3 Codex Spark",
+      "description": "Coding-optimized GPT model for repository edits, reviews, and agentic software work",
+      "family": "gpt-codex-spark",
+      "releaseDate": "2026-02-12",
+      "lastUpdated": "2026-02-12",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 128000,
+        "input": 128000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 1.75,
+        "output": 14,
+        "cache_read": 0.175
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.4",
+      "digest": "a97434b867284b005780cf36489b694006be6cb6ed90123b29eac1aa3ce264f6"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.4"
+    },
+    "apiID": "gpt-5.4",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.4",
+      "description": "Agent-ready GPT for coding and computer-use workflows at a lower cost",
+      "family": "gpt",
+      "releaseDate": "2026-03-05",
+      "lastUpdated": "2026-03-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2.5,
+        "output": 15,
+        "cache_read": 0.25,
+        "tiers": [
+          {
+            "input": 5,
+            "output": 22.5,
+            "cache_read": 0.5,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 5,
+          "output": 22.5,
+          "cache_read": 0.5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.4-mini",
+      "digest": "53a733e477cfbc1b8507ee4b28ac5b80de1329342eb3006ee4cb1c8fcd8693e7"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.4-mini"
+    },
+    "apiID": "gpt-5.4-mini",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.4 Mini",
+      "description": "Compact GPT model for low-latency assistance and high-volume workloads",
+      "family": "gpt-mini",
+      "releaseDate": "2026-03-17",
+      "lastUpdated": "2026-03-17",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.75,
+        "output": 4.5,
+        "cache_read": 0.075
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.4-nano",
+      "digest": "9766cd62bb60d635d62395c52aa92425517ff1ba8632de6b99c451641ce81a2b"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.4-nano"
+    },
+    "apiID": "gpt-5.4-nano",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.4 Nano",
+      "description": "Compact GPT model for low-latency assistance and high-volume workloads",
+      "family": "gpt-nano",
+      "releaseDate": "2026-03-17",
+      "lastUpdated": "2026-03-17",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 400000,
+        "input": 272000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.2,
+        "output": 1.25,
+        "cache_read": 0.02
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.4-pro",
+      "digest": "a80da07a1730bbda55b35f838f1fa4e31456117f79045627fddf20fb5a9c2f1c"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.4-pro"
+    },
+    "apiID": "gpt-5.4-pro",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.4 Pro",
+      "description": "Frontier GPT model for professional reasoning, coding, and multimodal work",
+      "family": "gpt-pro",
+      "releaseDate": "2026-03-05",
+      "lastUpdated": "2026-03-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 30,
+        "output": 180,
+        "cache_read": 30
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.5",
+      "digest": "34f84f1fc249a98788ad34dd8dcb79b26cf55b6a6ccdcdd0501f819eff75d8dd"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.5"
+    },
+    "apiID": "gpt-5.5",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.5",
+      "description": "Default frontier GPT for coding, computer use, research, and knowledge work",
+      "family": "gpt",
+      "releaseDate": "2026-04-23",
+      "lastUpdated": "2026-04-23",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 5,
+        "output": 30,
+        "cache_read": 0.5,
+        "tiers": [
+          {
+            "input": 10,
+            "output": 45,
+            "cache_read": 1,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 10,
+          "output": 45,
+          "cache_read": 1
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.5-pro",
+      "digest": "5a4c4a618c9f19d0762a504bbca5f114ed46ce6f6d65346dc921585e240c7ab4"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.5-pro"
+    },
+    "apiID": "gpt-5.5-pro",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.5 Pro",
+      "description": "Frontier GPT model for professional reasoning, coding, and multimodal work",
+      "family": "gpt-pro",
+      "releaseDate": "2026-04-24",
+      "lastUpdated": "2026-04-24",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 30,
+        "output": 180,
+        "cache_read": 30
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.6-luna",
+      "digest": "cbf61cb9c4f9ecd6ccee04fb766035b1378b801816926d7d8b8676806e2a2d5e"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.6-luna"
+    },
+    "apiID": "gpt-5.6-luna",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.6 Luna",
+      "description": "Cost-efficient GPT-5.6 model for fast, high-volume workloads",
+      "family": "gpt-luna",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.2,
+        "output": 1.2,
+        "cache_read": 0.02,
+        "cache_write": 0.25,
+        "tiers": [
+          {
+            "input": 0.4,
+            "output": 1.8,
+            "cache_read": 0.04,
+            "cache_write": 0.5,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 0.4,
+          "output": 1.8,
+          "cache_read": 0.04,
+          "cache_write": 0.5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.6-sol",
+      "digest": "364376b33edd2f1f771117358ff2bfc599d22431c249453b08fba04affd48c43"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.6-sol"
+    },
+    "apiID": "gpt-5.6-sol",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.6 Sol (50% Off)",
+      "description": "Frontier GPT-5.6 model for complex professional work, coding, and agentic workflows",
+      "family": "gpt-sol",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2.5,
+        "tiers": [
+          {
+            "input": 4,
+            "output": 15,
+            "cache_read": 0.4,
+            "cache_write": 5,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4,
+          "output": 15,
+          "cache_read": 0.4,
+          "cache_write": 5
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/gpt-5.6-terra",
+      "digest": "f6a4123ece8361baf41628230e436ad2413eba555eafb1163aff421d0787598d"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "gpt-5.6-terra"
+    },
+    "apiID": "gpt-5.6-terra",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "GPT-5.6 Terra",
+      "description": "Balanced GPT-5.6 model for capable, cost-efficient everyday work",
+      "family": "gpt-terra",
+      "releaseDate": "2026-07-09",
+      "lastUpdated": "2026-07-09",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1050000,
+        "input": 922000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 2.5,
+        "output": 15,
+        "cache_read": 0.25,
+        "cache_write": 3.125,
+        "tiers": [
+          {
+            "input": 5,
+            "output": 22.5,
+            "cache_read": 0.5,
+            "cache_write": 6.25,
+            "tier": {
+              "type": "context",
+              "size": 272000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 5,
+          "output": 22.5,
+          "cache_read": 0.5,
+          "cache_write": 6.25
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/grok-4.5",
+      "digest": "4ad5e8e6d8ed272b935f7b9d4795fae5bdea85b5c04f255be8bdab3aa6ddfc5b"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "grok-4.5"
+    },
+    "apiID": "grok-4.5",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Grok 4.5",
+      "description": "xAI's Grok model for chat, coding, agentic tools, and lower hallucination risk",
+      "family": "grok",
+      "releaseDate": "2026-07-08",
+      "lastUpdated": "2026-07-08",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 500000,
+        "output": 500000
+      },
+      "cost": {
+        "input": 2,
+        "output": 6,
+        "cache_read": 0.3,
+        "tiers": [
+          {
+            "input": 4,
+            "output": 12,
+            "cache_read": 0.6,
+            "tier": {
+              "type": "context",
+              "size": 200000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4,
+          "output": 12,
+          "cache_read": 0.6
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/grok-4.6",
+      "digest": "5705ca76efd8818b6ac96e2046fd7b4f1f337fe7424bfd147f1b6a5e34b91016"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "grok-4.6"
+    },
+    "apiID": "grok-4.6",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Grok 4.6",
+      "description": "xAI's frontier model for long-running agents, coding, knowledge work, and visual projects",
+      "family": "grok",
+      "releaseDate": "2026-08-12",
+      "lastUpdated": "2026-08-12",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 500000,
+        "output": 500000
+      },
+      "cost": {
+        "input": 2,
+        "output": 6,
+        "cache_read": 0.5,
+        "tiers": [
+          {
+            "input": 4,
+            "output": 12,
+            "cache_read": 1,
+            "tier": {
+              "type": "context",
+              "size": 200000
+            }
+          }
+        ],
+        "context_over_200k": {
+          "input": 4,
+          "output": 12,
+          "cache_read": 1
+        }
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/grok-build-0.1",
+      "digest": "0cf2d1fbe1eb8f39cf9d3686af3c3c7b42579cd96ad0f2b7a68fc3e18990755b"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "grok-build-0.1"
+    },
+    "apiID": "grok-build-0.1",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Grok Build 0.1",
+      "description": "Fast Grok coding model tuned for agentic engineering and iterative edits",
+      "family": "grok-build",
+      "releaseDate": "2026-04-16",
+      "lastUpdated": "2026-04-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 256000
+      },
+      "cost": {
+        "input": 1,
+        "output": 2,
+        "cache_read": 0.2
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/grok-code",
+      "digest": "c1210c591a6a43552b6cf469eb468fd0096bc488d1a2f386f1162655857f7dea"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "grok-code"
+    },
+    "apiID": "grok-code",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Grok Code Fast 1",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "grok",
+      "releaseDate": "2025-08-20",
+      "lastUpdated": "2025-08-20",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 256000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0,
+        "cache_write": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/hy3-free",
+      "digest": "701f150d4213f563adfd725eed9ce53e7a436565daececbea6d0f9ba67cc4a16"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "hy3-free"
+    },
+    "apiID": "hy3-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Hy3 Free",
+      "description": "Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+      "family": "hy3-free",
+      "releaseDate": "2026-07-06",
+      "lastUpdated": "2026-07-06",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 190000,
+        "input": 192000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/hy3-preview-free",
+      "digest": "71b871c318960b6eccf70dfaaa8d034862c8f20d1c1c01d5db783070498a28fc"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "hy3-preview-free"
+    },
+    "apiID": "hy3-preview-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Hy3 preview Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "hy3-free",
+      "releaseDate": "2026-04-20",
+      "lastUpdated": "2026-04-20",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k2",
+      "digest": "427704f402dd27caf35505b7a0abfa8f6e14c67f5388e5e3eeb2245727b89bfc"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k2"
+    },
+    "apiID": "kimi-k2",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Kimi K2",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "kimi-k2",
+      "releaseDate": "2025-09-05",
+      "lastUpdated": "2025-09-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 262144
+      },
+      "cost": {
+        "input": 0.4,
+        "output": 2.5,
+        "cache_read": 0.4
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k2-thinking",
+      "digest": "4d4d354dfd18d441b4049198424e66202d57220fba50920946cfd4950e1b5531"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k2-thinking"
+    },
+    "apiID": "kimi-k2-thinking",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Kimi K2 Thinking",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "kimi-thinking",
+      "releaseDate": "2025-09-05",
+      "lastUpdated": "2025-09-05",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 262144
+      },
+      "cost": {
+        "input": 0.4,
+        "output": 2.5,
+        "cache_read": 0.4
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k2.5",
+      "digest": "cd790261e013d11afb740565c1dcf35f19a21aadd5cfe8802af582303775d681"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k2.5"
+    },
+    "apiID": "kimi-k2.5",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K2.5",
+      "description": "Kimi multimodal agent model for visual understanding, coding, and planning",
+      "family": "kimi-k2",
+      "releaseDate": "2026-01-27",
+      "lastUpdated": "2026-01-27",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.6,
+        "output": 3,
+        "cache_read": 0.08
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k2.5-free",
+      "digest": "b01a8bc0ea348eb54f59b92774efeaf3a39511d737932de9923448cd07dec683"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k2.5-free"
+    },
+    "apiID": "kimi-k2.5-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Kimi K2.5 Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "kimi-free",
+      "releaseDate": "2026-01-27",
+      "lastUpdated": "2026-01-27",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 262144
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k2.6",
+      "digest": "4ae0c3b8294302fa2882d8e6e1d6404ead1ce6b5e370896036537663ea5777b1"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k2.6"
+    },
+    "apiID": "kimi-k2.6",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K2.6",
+      "description": "Kimi multimodal agent model for visual understanding, coding, and planning",
+      "family": "kimi-k2",
+      "releaseDate": "2026-04-21",
+      "lastUpdated": "2026-04-21",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.95,
+        "output": 4,
+        "cache_read": 0.16
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k2.7-code",
+      "digest": "1cae2a0ccbf8ec821c1919caa2e7834c892bb89ef22dba4bce80a57c59adf592"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k2.7-code"
+    },
+    "apiID": "kimi-k2.7-code",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K2.7 Code",
+      "description": "Coding-focused Kimi model, stronger on long-horizon repo work with less overthinking",
+      "family": "kimi-k2",
+      "releaseDate": "2026-06-12",
+      "lastUpdated": "2026-06-12",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 262144
+      },
+      "cost": {
+        "input": 0.95,
+        "output": 4,
+        "cache_read": 0.19
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/kimi-k3",
+      "digest": "d0e215dafb3a09f5d7e7425e6d9a3ea2a5f243cc121f424bcdf8159dd6d0cb71"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "kimi-k3"
+    },
+    "apiID": "kimi-k3",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Kimi K3",
+      "description": "Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work",
+      "family": "kimi-k3",
+      "releaseDate": "2026-07-16",
+      "lastUpdated": "2026-07-16",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": false,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 131072
+      },
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/laguna-s-2.1-free",
+      "digest": "72525ff5e1c0587c0835bdf615d30c0f20d1af4adf44fd8914a85de45be7ab07"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "laguna-s-2.1-free"
+    },
+    "apiID": "laguna-s-2.1-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Laguna S 2.1 Free",
+      "description": "Agentic coding model from Poolside in the XS size class for local deployment",
+      "family": "laguna",
+      "releaseDate": "2026-07-21",
+      "lastUpdated": "2026-07-21",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/ling-2.6-flash-free",
+      "digest": "ce631fa5ef5f5c98560134282811958f9cbad7c8a7154f9957cbdf931e490c5e"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "ling-2.6-flash-free"
+    },
+    "apiID": "ling-2.6-flash-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Ling 2.6 Flash Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "ling-flash-free",
+      "releaseDate": "2026-04-21",
+      "lastUpdated": "2026-04-21",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262100,
+        "output": 32800
+      },
+      "cost": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/ling-3.0-flash-fin-free",
+      "digest": "cef5565a3e0367cff0204fc56107133f95c5bfea91132503adea0583d700dc6e"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "ling-3.0-flash-fin-free"
+    },
+    "apiID": "ling-3.0-flash-fin-free",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Ling 3.0 Flash Fin Free",
+      "description": "Finance-enhanced model for financial research, multi-step investment workflows, and long-horizon planning and execution",
+      "family": "ling",
+      "releaseDate": "2026-08-27",
+      "lastUpdated": "2026-08-27",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 32768
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/ling-3.0-flash-free",
+      "digest": "e494fcf0562d9758d62c563376ddcdc99a6101d1802774fb032880b0fb0f3bf5"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "ling-3.0-flash-free"
+    },
+    "apiID": "ling-3.0-flash-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Ling-3.0-flash Free",
+      "description": "Efficient model for low-latency assistance, extraction, and routine automation",
+      "family": "ling",
+      "releaseDate": "2026-07-23",
+      "lastUpdated": "2026-07-23",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 32768
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/ling-3.0-tiny-free",
+      "digest": "2b7561d2dc31dac23b0462b3c388eab5cac8cc350a2f157c9e54da0729fe2292"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "ling-3.0-tiny-free"
+    },
+    "apiID": "ling-3.0-tiny-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Ling-3.0-tiny Free",
+      "description": "Compact MoE model for responsive agents, instruction following, and multi-turn conversations",
+      "family": "ling",
+      "releaseDate": "2026-08-06",
+      "lastUpdated": "2026-08-06",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": false,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 32768
+      },
+      "cost": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": []
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/longcat-2.0-free",
+      "digest": "8d9584d8d48bc2703ebedc2e88824ed08b339bf1015156fbc1d779169f8a4f3b"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "longcat-2.0-free"
+    },
+    "apiID": "longcat-2.0-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "LongCat-2.0 Free",
+      "description": "Meituan LongCat-2.0, a reasoning model with tool calling and a 1M-token context window",
+      "family": "longcat",
+      "releaseDate": "2026-06-30",
+      "lastUpdated": "2026-06-30",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/mimo-v2-flash-free",
+      "digest": "d44145cad7b34abdcba97498eac7b3bf854833e03789712d3a4bef55973503db"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "mimo-v2-flash-free"
+    },
+    "apiID": "mimo-v2-flash-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiMo V2 Flash Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "mimo-flash-free",
+      "releaseDate": "2025-12-16",
+      "lastUpdated": "2025-12-16",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/mimo-v2-omni-free",
+      "digest": "bd3c13057f75e187b66beecc3530ef2f72abd9ad64fed597f0dce97036543a7d"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "mimo-v2-omni-free"
+    },
+    "apiID": "mimo-v2-omni-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiMo V2 Omni Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "mimo-omni-free",
+      "releaseDate": "2026-03-18",
+      "lastUpdated": "2026-03-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "audio",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 64000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/mimo-v2-pro-free",
+      "digest": "452a62a901ab0f58a28c1e53bd70d41bdbddc5c4496fd8c88a71835f4ef039b9"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "mimo-v2-pro-free"
+    },
+    "apiID": "mimo-v2-pro-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiMo V2 Pro Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "mimo-pro-free",
+      "releaseDate": "2026-03-18",
+      "lastUpdated": "2026-03-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 64000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/mimo-v2.5-free",
+      "digest": "539bfad048e192ef653fe79490eccdf3c2b582f614753dd5fb876e0edd1b9247"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "mimo-v2.5-free"
+    },
+    "apiID": "mimo-v2.5-free",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "MiMo V2.5 Free",
+      "description": "MiMo omni model for text, image, video, audio, and agents",
+      "family": "mimo-v2.5-free",
+      "releaseDate": "2026-04-24",
+      "lastUpdated": "2026-04-24",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "audio",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m2.1",
+      "digest": "9375e940f9d180a74ff61fdad983aaed2eefa21b79d7187e5cf7783fc8c0a1d6"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m2.1"
+    },
+    "apiID": "minimax-m2.1",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiniMax-M2.1",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "minimax",
+      "releaseDate": "2025-12-23",
+      "lastUpdated": "2025-12-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2,
+        "cache_read": 0.1
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m2.1-free",
+      "digest": "a50a13bc48c359b4f3b76066f988491d6473a82521f62e3f03bfac637d45610a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m2.1-free"
+    },
+    "apiID": "minimax-m2.1-free",
+    "format": "anthropic",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiniMax-M2.1 Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "minimax-free",
+      "releaseDate": "2025-12-23",
+      "lastUpdated": "2025-12-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m2.5",
+      "digest": "c22f718490b362bfdce7ed60113222ad13d62dfe82fd29f4d4ba2efd60df51d3"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m2.5"
+    },
+    "apiID": "minimax-m2.5",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "MiniMax-M2.5",
+      "description": "MiniMax model for chat, coding, office work, and agentic tasks",
+      "family": "minimax",
+      "releaseDate": "2026-02-12",
+      "lastUpdated": "2026-02-12",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2,
+        "cache_read": 0.06
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m2.5-free",
+      "digest": "3388d665fb6cce38c91db169e858d2a30b1eb3714e16e22e1f4510c9f5f64d61"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m2.5-free"
+    },
+    "apiID": "minimax-m2.5-free",
+    "format": "anthropic",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiniMax-M2.5 Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "minimax-free",
+      "releaseDate": "2026-02-12",
+      "lastUpdated": "2026-02-12",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m2.7",
+      "digest": "7b391b04017d98a4602793ca37beda5f610d6661e91a9664c337dfd3a0eccdd9"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m2.7"
+    },
+    "apiID": "minimax-m2.7",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "MiniMax-M2.7",
+      "description": "MiniMax model for chat, coding, office work, and agentic tasks",
+      "family": "minimax",
+      "releaseDate": "2026-03-18",
+      "lastUpdated": "2026-03-18",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2,
+        "cache_read": 0.06
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m3",
+      "digest": "b3ca343fe1be683d28fca88ed8959e76572980632055dcf42f655e40b7e5bb2a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m3"
+    },
+    "apiID": "minimax-m3",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "MiniMax-M3",
+      "description": "MiniMax multimodal model for long-context coding, perception, and agent planning",
+      "family": "minimax",
+      "releaseDate": "2026-06-01",
+      "lastUpdated": "2026-06-01",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 512000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0.3,
+        "output": 1.2,
+        "cache_read": 0.06
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/minimax-m3-free",
+      "digest": "ec448e10f7276bfd24ffe7e45fd2024446b9020eaeb9643b78687f1ae1b5e1b3"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "minimax-m3-free"
+    },
+    "apiID": "minimax-m3-free",
+    "format": "anthropic",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "MiniMax-M3 Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "minimax-m3-free",
+      "releaseDate": "2026-05-31",
+      "lastUpdated": "2026-05-31",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 200000,
+        "output": 32000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/muse-spark-1.2",
+      "digest": "7079cdb6c7ec449186b4a9d9e538b564f7df00ec4e8ea25a6cdafc943515ccd9"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "muse-spark-1.2"
+    },
+    "apiID": "muse-spark-1.2",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Muse Spark 1.2",
+      "description": "Muse Spark 1.2 is a coding-focused update to Muse Spark 1.1 with improvements in code generation, complex debugging, codebase understanding, and end-to-end developer workflows.",
+      "family": "muse",
+      "releaseDate": "2026-08-05",
+      "lastUpdated": "2026-08-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 131072
+      },
+      "cost": {
+        "input": 1.25,
+        "output": 4.25,
+        "cache_read": 0.15
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/muse-spark-1.2-contributor-free",
+      "digest": "1449bc79691c7e9e6783d210690a1eb6609989e8c93bd0dcdecfde57741b6644"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "muse-spark-1.2-contributor-free"
+    },
+    "apiID": "muse-spark-1.2-contributor-free",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Muse Spark 1.2 Free",
+      "description": "Muse Spark 1.2 is a coding-focused update to Muse Spark 1.1 with improvements in code generation, complex debugging, codebase understanding, and end-to-end developer workflows.",
+      "family": "muse-free",
+      "releaseDate": "2026-08-05",
+      "lastUpdated": "2026-08-05",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/muse-spark-1.3-contributor-free",
+      "digest": "ab8b9b5d85a2ba33dda934575d2b789ac6638d2ff37af5d2dfd960ad9e975723"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "muse-spark-1.3-contributor-free"
+    },
+    "apiID": "muse-spark-1.3-contributor-free",
+    "format": "openai",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Muse Spark 1.3 Free",
+      "description": "Muse Spark 1.3 is a multimodal reasoning model from Meta for coding and agentic workflows.",
+      "family": "muse-free",
+      "releaseDate": "2026-09-02",
+      "lastUpdated": "2026-09-02",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video",
+          "pdf",
+          "audio"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1048576,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "minimal",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/openai"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/nemotron-3-super-free",
+      "digest": "6379b04be46ce71644a0d888ef2948b098944753b34f8258e06b1e36e1a3845a"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "nemotron-3-super-free"
+    },
+    "apiID": "nemotron-3-super-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Nemotron 3 Super Free",
+      "description": "Nemotron middle tier for collaborative agents and high-volume reasoning workloads",
+      "family": "nemotron-free",
+      "releaseDate": "2026-03-11",
+      "lastUpdated": "2026-03-11",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 204800,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/nemotron-3-ultra-free",
+      "digest": "7cf1b7e16c5f0f3f02a9d66f24f0aec1cfb5921f4a45078356a455ce70cfe499"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "nemotron-3-ultra-free"
+    },
+    "apiID": "nemotron-3-ultra-free",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Nemotron 3 Ultra Free",
+      "description": "Largest Nemotron 3 model for maximum open-weight reasoning and agent accuracy",
+      "family": "nemotron-free",
+      "releaseDate": "2026-06-04",
+      "lastUpdated": "2026-06-04",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 128000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/nemotron-3.5-lightning-free",
+      "digest": "b6c29e156e261d4ec49e1f4f59f7c5a79eb6bfb11d34f51ffce704f287f094f3"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "nemotron-3.5-lightning-free"
+    },
+    "apiID": "nemotron-3.5-lightning-free",
+    "format": "oa-compat",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Nemotron 3.5 Lightning Free",
+      "description": "Fast NVIDIA Nemotron MoE for reliable agentic tasks across enterprise workloads",
+      "family": "nemotron-free",
+      "releaseDate": "2026-08-11",
+      "lastUpdated": "2026-08-11",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 262144
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/north-mini-code-free",
+      "digest": "cef730fa669749d40835eea4c6101e7c83ed11e18a0c671352a82a964a34aa0f"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "north-mini-code-free"
+    },
+    "apiID": "north-mini-code-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "North Mini Code Free",
+      "description": "Cohere coding model for practical software engineering and agentic edits",
+      "family": "north-free",
+      "releaseDate": "2026-06-09",
+      "lastUpdated": "2026-06-09",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 256000,
+        "output": 64000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "none",
+            "high"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/qwen3-coder",
+      "digest": "e1a84b838ff385eccf265fb866fd766b2ba2f610604412ac273fafeb839d5132"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "qwen3-coder"
+    },
+    "apiID": "qwen3-coder",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Qwen3 Coder",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "qwen",
+      "releaseDate": "2025-07-23",
+      "lastUpdated": "2025-07-23",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.45,
+        "output": 1.8
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/qwen3.5-plus",
+      "digest": "77526478336b16eaf060001a5c125272af1c2b9948c16d2d5f1feea3354df0eb"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "qwen3.5-plus"
+    },
+    "apiID": "qwen3.5-plus",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Qwen3.5 Plus",
+      "description": "Multimodal reasoning model for visual analysis, planning, and tool use",
+      "family": "qwen3.5",
+      "releaseDate": "2026-02-16",
+      "lastUpdated": "2026-02-16",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.2,
+        "output": 1.2,
+        "cache_read": 0.02,
+        "cache_write": 0.25
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "budget_tokens",
+          "max": 81920
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/qwen3.6-plus",
+      "digest": "deea5c204daa9382e7bcbb36ae84f699885505d3ed8bbdf9bce467108c6f66f8"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "qwen3.6-plus"
+    },
+    "apiID": "qwen3.6-plus",
+    "format": "anthropic",
+    "lifecycle": "active",
+    "metadata": {
+      "name": "Qwen3.6 Plus",
+      "description": "Multimodal reasoning model for visual analysis, planning, and tool use",
+      "family": "qwen3.6",
+      "releaseDate": "2026-04-02",
+      "lastUpdated": "2026-04-02",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0.5,
+        "output": 3,
+        "cache_read": 0.05,
+        "cache_write": 0.625
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "budget_tokens",
+          "max": 81920
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/qwen3.6-plus-free",
+      "digest": "915f705051ada2bed8066414f27bbe4e0efdfee8f95fa5162d4237d047b97d2d"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "qwen3.6-plus-free"
+    },
+    "apiID": "qwen3.6-plus-free",
+    "format": "anthropic",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Qwen3.6 Plus Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "qwen-free",
+      "releaseDate": "2026-04-02",
+      "lastUpdated": "2026-04-02",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262144,
+        "output": 65536
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "toggle"
+        },
+        {
+          "type": "budget_tokens",
+          "max": 81920
+        }
+      ],
+      "sourceProviderOptions": {
+        "npm": "@ai-sdk/anthropic"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/ring-2.6-1t-free",
+      "digest": "19258909e348031eea5e1bc420e12563ed2707b8e00447839cd474b5acb86908"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "ring-2.6-1t-free"
+    },
+    "apiID": "ring-2.6-1t-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Ring 2.6 1T Free",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "ring-1t-free",
+      "releaseDate": "2026-05-08",
+      "lastUpdated": "2026-05-08",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": true,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 262000,
+        "output": 66000
+      },
+      "cost": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/trinity-large-preview-free",
+      "digest": "973c0a8558ba36a58bc9208fb46de28bf2ffa4c8cbf7d42df24e2aebc9af7c9c"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "trinity-large-preview-free"
+    },
+    "apiID": "trinity-large-preview-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Trinity Large Preview",
+      "description": "Legacy model retained for compatibility with older integrations",
+      "family": "trinity",
+      "releaseDate": "2026-01-27",
+      "lastUpdated": "2026-01-28",
+      "openWeights": true,
+      "capabilities": {
+        "attachment": false,
+        "reasoning": false,
+        "tools": true,
+        "temperature": true,
+        "input": [
+          "text"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 131072,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "unsupported": {}
+  },
+  {
+    "source": {
+      "provider": "opencode",
+      "path": "providers/opencode/models/x-preview-f-free",
+      "digest": "9d039aff5885f4be44034daae9d5e7441e84476551d316ea5e979840fdfb3d8d"
+    },
+    "local": {
+      "provider": "opencode",
+      "id": "x-preview-f-free"
+    },
+    "apiID": "x-preview-f-free",
+    "format": "oa-compat",
+    "lifecycle": "deprecated",
+    "metadata": {
+      "name": "Ox Alpha Free (Unlimited)",
+      "description": "Stealth reasoning model for coding, agentic tasks, and tool use",
+      "releaseDate": "2026-08-21",
+      "lastUpdated": "2026-08-21",
+      "openWeights": false,
+      "capabilities": {
+        "attachment": true,
+        "reasoning": true,
+        "tools": true,
+        "structuredOutput": true,
+        "temperature": true,
+        "input": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0
+      }
+    },
+    "unsupported": {
+      "reasoningOptions": [
+        {
+          "type": "effort",
+          "values": [
+            "low",
+            "high",
+            "max"
+          ]
+        }
+      ],
+      "interleaved": {
+        "field": "reasoning_content"
+      }
+    }
+  }
+] as const satisfies ReadonlyArray<GeneratedModel>

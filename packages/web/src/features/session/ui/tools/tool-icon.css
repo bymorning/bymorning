@@ -1,0 +1,11 @@
+[data-slot="tool-icon"] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-icon-muted);
+}
+
+[data-slot="basic-tool-tool-trigger-content"] > [data-slot="tool-icon"] {
+  margin-inline-end: 8px;
+}

@@ -1,0 +1,101 @@
+[data-component="execute-tool-trigger"] {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+  overflow: hidden;
+}
+
+[data-component="execute-tool-trigger"] [data-slot="basic-tool-tool-subtitle"] {
+  direction: ltr;
+  text-overflow: ellipsis;
+}
+
+[data-component="execute-tool-trigger"] [data-slot="execute-tool-failed"] {
+  flex: none;
+  color: var(--color-danger-fg);
+}
+
+[data-component="execute-tool-trigger"] [data-slot="execute-tool-ended"] {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
+[data-component="execute-tool"]
+  [data-component="tool-collapsible"][data-open="true"]
+  [data-component="execute-tool-trigger"][data-label="code"]
+  [data-slot="basic-tool-tool-subtitle"] {
+  display: none;
+}
+
+[data-component="execute-output"] {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+  overflow: hidden;
+  border: 0.5px solid var(--color-border-base);
+  border-radius: 6px;
+  background: var(--color-bg-base);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+[data-component="execute-output"] [data-slot="execute-copy"] {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+[data-component="execute-output"]:hover [data-slot="execute-copy"],
+[data-component="execute-output"]:focus-within [data-slot="execute-copy"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-component="execute-output"] [data-slot="execute-scroll"] {
+  width: 100%;
+  max-height: 240px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+[data-component="execute-output"] [data-slot="execute-scroll"]::-webkit-scrollbar {
+  display: none;
+}
+
+[data-component="execute-output"] [data-slot="execute-pre"] {
+  margin: 0;
+  padding: 0;
+}
+
+[data-component="execute-output"] [data-slot="execute-pre"] code {
+  font: 13px/20px var(--font-mono);
+  font-weight: 440;
+  letter-spacing: -0.04px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+[data-component="execute-output"] :is([data-slot="execute-code"], [data-slot="execute-result"]) {
+  display: block;
+  padding: 12px;
+}
+
+[data-component="execute-output"] [data-slot="execute-code"] {
+  color: var(--color-text-base);
+}
+
+[data-component="execute-output"] [data-slot="execute-result"] {
+  border-block-start: 0.5px solid var(--color-border-base);
+  color: var(--color-text-muted);
+  background: var(--color-bg-layer-1);
+}
+
+[data-component="execute-output"] [data-slot="execute-result"][data-error] {
+  color: var(--color-danger-fg);
+}

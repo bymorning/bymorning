@@ -1,0 +1,126 @@
+# EMULATOR BOUNDARY (installers/azure/test/kind-e2e.sh). Everything here stands in for a service
+# outside the cluster: PostgreSQL Flexible Server, Blob Storage (real Azurite), and the Entra,
+# Key Vault, AWS STS and Bedrock endpoints (emulators.mjs). None of it is part of the installer.
+# @PLACEHOLDERS@ are filled by the script. Secrets tls (emulator-tls, postgres-tls) and the
+# script ConfigMap are created by the script.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: azure-e2e-boundary
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: postgres, namespace: azure-e2e-boundary }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: postgres } }
+  template:
+    metadata: { labels: { app: postgres } }
+    spec:
+      securityContext: { fsGroup: 70 }
+      containers:
+        - name: postgres
+          image: @POSTGRES_IMAGE@
+          args: [postgres, -c, ssl=on, -c, ssl_cert_file=/tls/tls.crt, -c, ssl_key_file=/tls/tls.key, -c, ssl_min_protocol_version=TLSv1.2, -c, log_connections=on]
+          env:
+            - { name: POSTGRES_USER, value: bymorning }
+            - { name: POSTGRES_PASSWORD, value: "@DB_PASSWORD@" }
+            - { name: POSTGRES_DB, value: bymorning }
+          ports: [{ containerPort: 5432 }]
+          readinessProbe: { exec: { command: [pg_isready, -U, bymorning, -d, bymorning] }, periodSeconds: 2 }
+          volumeMounts: [{ name: tls, mountPath: /tls, readOnly: true }]
+      volumes:
+        - name: tls
+          secret: { secretName: postgres-tls, defaultMode: 0440 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: postgres, namespace: azure-e2e-boundary }
+spec:
+  selector: { app: postgres }
+  ports: [{ name: pg, port: 5432 }]
+---
+# Azurite with OAuth (bearer) authentication over HTTPS. The Gateway reaches it as
+# <account>.blob.core.usgovcloudapi.net through a CoreDNS rewrite.
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: azurite, namespace: azure-e2e-boundary }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: azurite } }
+  template:
+    metadata: { labels: { app: azurite } }
+    spec:
+      containers:
+        - name: azurite
+          image: @AZURITE_IMAGE@
+          # --skipApiVersionCheck: the Azure SDK in the image is newer than this Azurite's API list.
+          command: [azurite-blob]
+          args: [--blobHost, 0.0.0.0, --blobPort, "10000", --location, /data, --oauth, basic, --cert, /tls/tls.crt, --key, /tls/tls.key, --skipApiVersionCheck, --loose]
+          env:
+            - { name: AZURITE_ACCOUNTS, value: "@ACCOUNT@:@ACCOUNT_KEY@" }
+          ports: [{ containerPort: 10000 }]
+          readinessProbe: { tcpSocket: { port: 10000 }, periodSeconds: 2 }
+          volumeMounts:
+            - { name: tls, mountPath: /tls, readOnly: true }
+            - { name: data, mountPath: /data }
+      volumes:
+        - name: tls
+          secret: { secretName: emulator-tls, defaultMode: 0444 }
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata: { name: azurite, namespace: azure-e2e-boundary }
+spec:
+  selector: { app: azurite }
+  ports: [{ name: blob, port: 443, targetPort: 10000 }, { name: direct, port: 10000 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: emulators, namespace: azure-e2e-boundary }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: emulators } }
+  template:
+    metadata: { labels: { app: emulators } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 65532, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: emulators
+          image: @GATEWAY_IMAGE@
+          command: [node, /script/emulators.mjs]
+          env:
+            - { name: TENANT_ID, value: "@TENANT@" }
+            - { name: GATEWAY_CLIENT_ID, value: "@CLIENT_ID@" }
+            - { name: GATEWAY_SUBJECT, value: "system:serviceaccount:bymorning:bymorning-gateway" }
+            - { name: FEDERATED_AUDIENCE, value: "api://AzureADTokenExchange" }
+            - { name: VAULT_NAME, value: "@VAULT@" }
+            - { name: KEY_NAME, value: "@KEY@" }
+            - { name: STORAGE_ACCOUNT, value: "@ACCOUNT@" }
+            - { name: AWS_ROLE_ARN, value: "@ROLE_ARN@" }
+            - { name: AWS_REGION, value: "@AWS_REGION@" }
+            - { name: IDP_CLIENT_ID, value: "@IDP_CLIENT_ID@" }
+            - { name: IDP_CLIENT_SECRET, value: "@IDP_CLIENT_SECRET@" }
+            - { name: STATIC_AWS_ACCESS_KEY_ID, value: "@STATIC_AWS_KEY@" }
+            - { name: TLS_CERT_FILE, value: /tls/tls.crt }
+            - { name: TLS_KEY_FILE, value: /tls/tls.key }
+          ports: [{ containerPort: 8443 }, { containerPort: 8080 }]
+          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } }
+          readinessProbe: { httpGet: { path: /control/events, port: 8080 }, periodSeconds: 2 }
+          volumeMounts:
+            - { name: script, mountPath: /script, readOnly: true }
+            - { name: tls, mountPath: /tls, readOnly: true }
+      volumes:
+        - name: script
+          configMap: { name: emulator-script }
+        - name: tls
+          secret: { secretName: emulator-tls, defaultMode: 0444 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: emulators, namespace: azure-e2e-boundary }
+spec:
+  selector: { app: emulators }
+  ports: [{ name: https, port: 443, targetPort: 8443 }, { name: control, port: 8080 }]

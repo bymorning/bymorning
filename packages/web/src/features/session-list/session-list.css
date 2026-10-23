@@ -1,0 +1,38 @@
+[data-component="session-list"] [data-slot="session-list-content"] {
+  padding-bottom: 64px;
+}
+
+[data-component="session-list"] [data-slot="session-list-group"] + [data-slot="session-list-group"] {
+  margin-top: 24px;
+}
+
+[data-component="session-list"] [data-slot="session-list-group-items"] {
+  margin: 0;
+  padding: 16px 0 0;
+  list-style: none;
+}
+
+[data-component="session-list"] [data-slot="session-list-group-header"] {
+  position: sticky;
+  top: 48px;
+  z-index: 10;
+  display: flex;
+  height: 28px;
+  align-items: center;
+  padding: 0 8px;
+  background: var(--color-bg-base);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+[data-component="session-list"] [data-slot="session-list-group-header"][data-elevated] {
+  z-index: 11;
+}
+
+[data-component="session-list"] [data-slot="session-list-loading"] {
+  margin: 0;
+  padding-top: 12px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}

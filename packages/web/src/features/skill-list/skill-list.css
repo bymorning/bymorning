@@ -1,0 +1,33 @@
+[data-component="skill-list"] [data-slot="skill-list-loading"],
+[data-component="skill-list"] [data-slot="skill-list-error"] {
+  margin: 0;
+  padding: 12px 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+[data-component="skill-list"] [data-slot="skill-list-error"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--color-danger-fg);
+}
+
+/* Long names and descriptions stay inside the row: the name ellipsizes, the description clamps. */
+[data-component="skill-list"] [data-slot="catalog-copy"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+[data-component="skill-list"] [data-slot="catalog-copy"] > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-component="skill-list"] [data-slot="catalog-copy"] > span {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}

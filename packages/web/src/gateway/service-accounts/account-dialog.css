@@ -1,0 +1,8 @@
+[data-slot="service-account-fields"],
+[data-slot="api-key-fields"],
+[data-slot="secret-key-fields"] {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 0;
+}

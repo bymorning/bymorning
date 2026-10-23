@@ -1,0 +1,221 @@
+[data-component="text-part"] {
+  width: 100%;
+  margin-top: 24px;
+}
+
+[data-component="text-part"] [data-slot="text-part-body"] {
+  margin-top: 0;
+}
+
+[data-component="text-part"] [data-slot="text-part-meta"] {
+  color: var(--color-text-faint);
+  font-size: 12px;
+  line-height: 16px;
+  user-select: none;
+}
+
+[data-component="text-part"]:is(:hover, :focus-within) [data-slot="text-part-copy-wrapper"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-component="reasoning-part"] {
+  width: 100%;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+[data-component="reasoning-part"] [data-component="markdown"] {
+  margin-top: 16px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-style: normal;
+}
+
+[data-component="reasoning-part"] [data-component="markdown"] :is(strong, b) {
+  color: var(--color-text-muted);
+}
+
+[data-component="reasoning-part"] [data-component="markdown"] p:has(strong) {
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+[data-component="reasoning-part"] [data-component="markdown"] p:has(strong):first-child {
+  margin-top: 0;
+}
+
+[data-component="message-timeline"] [data-component="raw-text"] {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-base);
+  font: 400 13px/1.6 var(--font-mono);
+  white-space: pre-wrap;
+}
+
+[data-component="reasoning-part"] [data-component="raw-text"] {
+  margin-top: 16px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+[data-component="message-part"][data-type="tool"] {
+  min-width: 0;
+}
+
+[data-component="tool-loaded-item"] {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-base);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-component="tool-loaded-item"] [data-slot="tool-loaded-label"] {
+  flex-shrink: 0;
+  font-weight: 530;
+}
+
+[data-component="tool-loaded-item"] [data-slot="tool-loaded-value"] {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 440;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="tool-loaded-item"] [data-slot="tool-loaded-kind"] {
+  flex-shrink: 0;
+  margin-inline-start: -2px;
+  color: var(--color-text-muted);
+  font-weight: 440;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] {
+  overflow-wrap: break-word;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 14px;
+  font-weight: 440;
+  line-height: 160%;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] h1 {
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] h2 {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] h3,
+[data-component="message-timeline"] [data-component="markdown"] :is(h4, h5, h6) {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] :is(h3, strong, b) {
+  font-weight: 530;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] :is(h4, h5, h6) {
+  color: var(--color-text-muted);
+  font-weight: 530;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] li {
+  margin-bottom: 8px;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] :is(ul, ol) {
+  padding-inline-start: 32px;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] ol {
+  padding-inline-start: 36px;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] li > :first-child {
+  margin-top: 0;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] li > p:first-child {
+  display: inline;
+  margin: 0;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] li > :is(ul, ol) {
+  margin-block: 4px;
+  padding-inline-start: 16px;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] li > ol {
+  padding-inline-start: 28px;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] blockquote {
+  padding-inline-start: 8px;
+  border-inline-start-width: 0.5px;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] hr {
+  height: 0;
+  margin: 32px 0;
+  background: none;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] :not(pre) > code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-text-base) 8%, transparent);
+  color: var(--color-text-base);
+  font-weight: 530;
+}
+
+[data-component="message-timeline"] [data-component="markdown-code"] {
+  margin: 12px 0 24px;
+}
+
+[data-component="message-timeline"] [data-component="markdown-code"] pre {
+  border-width: 0.5px;
+  border-radius: 6px;
+  --code-bg: var(--session-code-bg);
+}
+
+[data-component="message-timeline"] [data-component="markdown"] table {
+  width: 100%;
+  margin: 16px 0;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] :is(th, td) {
+  padding: 12px;
+  border: 0;
+  border-bottom: 0.5px solid var(--color-border-muted);
+  vertical-align: top;
+}
+
+[data-component="message-timeline"] [data-component="markdown"] th {
+  border-bottom-color: var(--color-border-base);
+  color: var(--color-text-base);
+  font-weight: 530;
+}
+
+[data-component="message-timeline"] [data-component="reasoning-part"] [data-component="markdown"] {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}

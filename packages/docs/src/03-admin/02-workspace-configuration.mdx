@@ -1,0 +1,358 @@
+---
+title: Workspace configuration
+description: Configure Agent, Permission, plugin, Provider, Model, Tool output, and MCP behavior for a Workspace.
+---
+
+Workspace configuration is one persisted JSON document shared by every member of a Workspace. Read the resolved document before replacing its writable fields.
+
+```ts title="workspace-config.ts"
+const workspace = "wrk_your-workspace-id"
+const url = new URL("/api/config", window.location.origin)
+url.searchParams.set("workspace", workspace)
+
+const currentResponse = await fetch(url)
+if (!currentResponse.ok) throw new Error(`Configuration read failed: ${currentResponse.status}`)
+const current = await currentResponse.json()
+const { default_model, model_policy, ...writable } = current
+
+const response = await fetch(url, {
+  method: "PUT",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    ...writable,
+    default_agent: "default",
+  })
+})
+
+if (!response.ok) throw new Error(`Configuration update failed: ${response.status}`)
+console.log(await response.json())
+```
+
+<Callout type="warning">
+  `PUT /api/config` replaces the complete writable configuration. It is not a merge patch. Read the current value, change it, remove `default_model` and `model_policy`, then send every writable field you intend to keep.
+</Callout>
+
+The writable top-level fields are `default_agent`, `compaction`, `permissions`, `plugins`, `tool_output`, `mcp`, `websearch`, `code_interpreter`, `gateway`, `providers`, and `routing`. The server owns `default_model` and `model_policy`. Spend Limits are not Workspace configuration; set them with `PUT /api/budget/limit`.
+
+## Surfaces
+
+Workspace configuration controls runtime behavior for one Workspace. It is distinct from these other settings:
+
+| Surface | Scope | Examples |
+| --- | --- | --- |
+| Workspace configuration | Persisted Workspace runtime | Permissions, plugins, compaction, outbound MCP, Provider admission, Model routing |
+| Browser-local appearance | One browser profile | Theme and color scheme stored in browser storage |
+| Server environment | One deployment or server process | Origins, authentication, database, and infrastructure settings |
+
+Changing Workspace configuration does not change browser appearance or server environment variables. The configuration is exposed internally as one virtual document so plugin-backed domains can observe it. That document is not a file you can edit, and it has no filesystem path.
+
+## Activation
+
+Top-level Workspace fields and Plugin options are different configuration surfaces.
+
+| Configuration | Owner | Runtime behavior |
+| --- | --- | --- |
+| `default_agent`, `websearch`, `mcp`, and other top-level fields | ByMorning | Internal Config Plugins apply supported values to the owning runtime capability. |
+| `plugins[].options` | The selected Plugin | The Plugin declares its form and reads normalized values from `context.options`. |
+
+Do not move application settings into `plugins[].options`. Keep Plugin-specific settings with that Plugin.
+
+- ByMorning currently applies `default_agent`, `websearch`, and `mcp` through lifecycle-scoped internal Plugins.
+- A configuration commit refreshes their captured value and reloads the affected capability.
+- Agent and WebSearch reloads use the runtime state's debounce, so their new values may not be visible in the same instant as the configuration response.
+- Internal Config Plugins activate after ordinary startup Plugin contributions.
+- Persisted Agent and WebSearch selections therefore override ordinary startup defaults.
+- A transform registered later can take precedence until the next reload.
+
+<Callout type="warning">
+  Do not disable IDs under `bymorning.config.*`. ByMorning does not yet mark every dependent capability unavailable when a required internal Config Plugin is disabled or fails. The capability may instead fall back to an ordinary default.
+</Callout>
+
+## API
+
+Use the authenticated control-plane API. Browser requests use the signed-in cookie. Add `?workspace=<Workspace ID>` to select an exact Workspace membership. If you omit it, the server selects your oldest usable Workspace membership; it does not infer the Workspace from a separate Workspace cookie.
+
+- Same-origin browser `fetch` sends the authentication cookie.
+- Non-browser callers must send their authenticated cookie themselves.
+- Unsafe requests such as `PUT` and `POST` must also send the deployment's exact application origin in the `Origin` header.
+
+| Method | Path | Result |
+| --- | --- | --- |
+| `GET` | `/api/config` | Return the active, fully decoded configuration. |
+| `PUT` | `/api/config` | Validate, persist, activate, and return a complete replacement of writable fields. Reload plugins afterward. |
+| `POST` | `/api/config/refresh` | Reload persisted configuration into active memory and return it. If the active value changed, reload plugins. No request body. |
+
+- All three endpoints accept the optional `workspace` query parameter.
+- `PUT` applies schema defaults to omitted fields before replacement.
+- Omitting `permissions` stores `[]`, omitting `plugins` removes configured plugin entries, and omitting `default_agent` clears it.
+- Omitting `providers` or `routing` leaves those fields absent: every active Provider is admitted, activation overrides return to installation defaults, and no request is routed.
+- `providers.allow: []` admits no Provider. `routing: []` routes nothing.
+
+The generated Promise client exposes the same operations when your ByMorning distribution provides `@bymorning/client`:
+
+```ts
+import { ByMorning } from "@bymorning/client"
+
+const client = ByMorning.make({ baseUrl: window.location.origin })
+const workspace = (await client.workspace.list())[0]
+if (!workspace) throw new Error("No Workspace membership")
+
+const current = await client["api.config"].get({ workspace: workspace.id })
+const { default_model, model_policy, ...writable } = current
+
+await client["api.config"].update({
+  workspace: workspace.id,
+  ...writable,
+  default_agent: "default"
+})
+
+await client["api.config"].refresh({ workspace: workspace.id })
+```
+
+The repository currently marks `@bymorning/client` as a private workspace package. Do not assume it is available from a public package registry. Use the HTTP API when your distribution does not expose it.
+
+## Provider activation
+
+Set a Provider to `auto`, `enabled`, or `disabled`. Automatic activation requires a complete supported environment credential, a permitted saved Connection, or explicit no-auth configuration.
+
+```jsonc title="Workspace configuration"
+{
+  "providers": {
+    "activation": {
+      "amazon-bedrock": "enabled"
+    }
+  }
+}
+```
+
+Explicitly enable Amazon Bedrock when you want ByMorning to use the deployment's AWS credential chain. Credentials remain outside Workspace configuration and resolve only when a Model is invoked; a default region or deployment role does not activate Bedrock automatically.
+
+Use `providers.allow` separately to restrict active Providers. Adding a Provider to the allowlist does not activate it, and disabling a Provider preserves its Connections and Model settings.
+
+Only Workspace administrators can change `providers.activation`, either through `PUT /api/config` or the targeted `PUT /api/providers/activation` operation. The targeted request accepts an optional `workspace` query, requires the authenticated cookie and exact application `Origin`, accepts `{ "provider": "amazon-bedrock", "status": "enabled" }`, and returns the updated Provider. It preserves every other configuration field; invalid Providers return `400`, members return `403`, and storage failures return `503`.
+
+## Defaults
+
+Session defaults select an Agent and control automatic context compaction.
+
+```jsonc title="Workspace configuration"
+{
+  "default_agent": "default",
+  "compaction": {
+    "auto": true,
+    "buffer": 20000,
+    "keep": { "tokens": 15000 }
+  }
+}
+```
+
+| Field | Default | Constraint and behavior |
+| --- | --- | --- |
+| `default_agent` | Unset | Agent ID used as the Workspace default when available. |
+| `compaction.auto` | `true` | Start compaction automatically near the selected Model's token ceiling. |
+| `compaction.buffer` | `20000` | Non-negative integer reserved below the Model input and context limits. |
+| `compaction.keep.tokens` | `15000` | Non-negative integer of recent context retained beside the summary. |
+
+The API accepts a sparse `compaction` object and fills its nested defaults. A `GET` response always contains the resolved `compaction` object.
+
+## Permissions
+
+Set `permissions` to ordered `action`, `resource`, and `effect` rules. Effects are `allow`, `ask`, or `deny`.
+
+```jsonc title="Workspace configuration"
+{
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "ask" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "linear_*", "resource": "*", "effect": "ask" }
+  ]
+}
+```
+
+The last matching rule wins, so put broad defaults before exceptions.
+
+- Workspace rules follow Agent rules for root Sessions and can override them.
+- A rule with `user: "usr_…"` applies only to that member after Workspace rules.
+- An empty array leaves unmatched operations allowed.
+- Session and Tool Gateway approvals are once-only; legacy saved grants are separate from this document and ignored during evaluation.
+
+See the [Permission model](/developer-reference/permission-model) for wildcard matching, Agent precedence, child Session behavior, and MCP enforcement.
+
+## Plugins
+
+The `plugins` array is an ordered sequence of additions, re-enables, and removals.
+
+```jsonc title="Workspace configuration"
+{
+  "plugins": [
+    "/srv/bymorning/plugins/audit.ts",
+    { "package": "@example/strict-plugin", "options": { "strict": true } },
+    "-project.legacy",
+    "bymorning.example"
+  ]
+}
+```
+
+| Entry | Behavior |
+| --- | --- |
+| String path or package | Re-enable an already known matching plugin ID, or load the target if it does not resolve as a selector. |
+| `{ package, options }` | Apply the same target resolution. If ByMorning loads it as a source, pass `options` to its plugin context. |
+| `-<selector>` | Disable definitions matching an exact ID, `*`, or `prefix.*`. |
+
+Operations run in array order. ByMorning checks every addition target against plugin IDs already known at that point before it tries source loading.
+
+- `*`, a target ending in `.*`, and a target starting with `bymorning.` are always selectors and are never loaded as packages.
+- A removal can disable built-ins and external definitions known at that point.
+- A later matching addition can re-enable a known definition.
+- Project plugin entrypoints are discovered separately and join the resulting inventory.
+- Target your own Plugin IDs when using removal selectors. Broad selectors such as `-*`, `*`, or `-bymorning.*` can also affect internal built-ins. In particular, do not remove `bymorning.config.*` definitions.
+
+Source resolution follows the virtual document's actual context:
+
+- Absolute paths and `file://` URLs refer to files on the server host.
+- Because the virtual Workspace document has no path, `./` and `../` targets resolve from the server process working directory, not from a Project, browser, or API caller directory.
+- Other targets resolve from the running installation first. If resolution fails, ByMorning runs `bun add --ignore-scripts` in its plugin cache and resolves the installed package.
+- ByMorning watches configured absolute files and reloads them after changes. Installing a missing package requires Bun, a writable plugin cache, and package-registry access on the server.
+
+Prefer absolute server paths or resolvable package names in deployments. See [Plugins](/developer-reference/plugins) for plugin definitions, options, lifecycle, and Project entrypoints.
+
+## Output
+
+`tool_output` limits the text returned to a Model while preserving oversized output for paged retrieval when storage succeeds.
+
+```jsonc title="Workspace configuration"
+{
+  "tool_output": {
+    "max_lines": 2000,
+    "max_bytes": 51200
+  }
+}
+```
+
+| Field | Runtime default | Minimum |
+| --- | --- | --- |
+| `max_lines` | `2000` | `2` |
+| `max_bytes` | `51200` | `4` |
+
+Both values must be positive integers and meet their minima. ByMorning joins text content, applies both limits, and leaves file content intact.
+
+- If text exceeds either limit, it returns a bounded preview and stores the full UTF-8 text under the owning Session when possible.
+- When storage succeeds, the result includes an opaque `outputID`.
+- If storage fails, the truncation marker says the full content is unavailable.
+
+The `tool_output` Tool reads stored text in pages. Each page preview remains bounded by both Workspace limits and never crosses a UTF-8 character boundary. When more content remains, ByMorning appends continuation guidance outside the preview budget. Retrieval requires Permission for the opaque ID. IDs do not work across Sessions. See [Retrieve truncated Tool output](/developer-reference/permission-model#output).
+
+## MCP
+
+Each key under `mcp.servers` names one remote Streamable HTTP server and its Tool namespace.
+
+```jsonc title="Workspace configuration"
+{
+  "mcp": {
+    "servers": {
+      "linear": {
+        "type": "remote",
+        "url": "https://mcp.linear.app/mcp",
+        "oauth": { "client_id": "public-client-id", "scope": "read write" },
+        "codemode": true,
+        "timeout": {
+          "startup": 30000,
+          "catalog": 30000,
+          "execution": 43200000
+        }
+      },
+      "internal": {
+        "type": "remote",
+        "url": "https://mcp.example.com/mcp",
+        "oauth": false,
+        "headers": { "x-tenant": "example" },
+        "disabled": true
+      }
+    }
+  }
+}
+```
+
+| Field | Default | Constraint and behavior |
+| --- | --- | --- |
+| `type` | Required | Must be `remote`. |
+| `url` | Required | String containing an absolute `http:` or `https:` Streamable HTTP endpoint. The update schema accepts any string, but connection fails for an invalid URL or unsupported protocol. |
+| `headers` | None | String-to-string headers added to transport requests. `${NAME}` asks each member for their own value and `${member.email}` uses the member's verified email; both require `oauth: false`. See [Member values](/agent/outbound-mcp#member-values). |
+| `oauth` | Enabled | Omit for default OAuth discovery. Use `{ client_id?, scope? }` to customize it, or `false` for another authentication policy. |
+| `codemode` | `true` | Set `false` to disable Code Mode for imported Tools. |
+| `enabled` | Enabled | `false` disables the saved server. |
+| `disabled` | `false` | `true` disables the saved server. It wins even if `enabled` is `true`. |
+| `timeout.startup` | `30000` | Positive integer milliseconds to connect and initialize. |
+| `timeout.catalog` | `30000` | Positive integer milliseconds for each `tools/list` request. |
+| `timeout.execution` | `43200000` | Positive integer milliseconds for each Tool call. |
+
+These MCP defaults apply at runtime. Omitted MCP fields remain omitted in `GET /api/config` responses.
+
+- OAuth-enabled servers create their authentication identity from the server name and URL. `oauth: false` suppresses that flow.
+- `GET /api/config` returns shared header values to Workspace administrators only; every other caller reads them as `[redacted]`, and returning a redacted document unchanged does not change them. Header text that refers to member values (`${NAME}`, `${member.email}`) stays visible. Treat headers as configuration, not as a secret store. Member values are not part of configuration: each member saves them encrypted through **Connect integration**.
+- Updating configuration reloads the outbound server inventory. Refreshing does so when the persisted value differs from the active value.
+
+Use the MCP management UI for connect, disconnect, retry, authentication, and removal workflows. See [Outbound MCP](/agent/outbound-mcp) and [Integrations](/configure/integrations) for server fields, Tool naming, and collisions.
+
+## Providers
+
+`providers.allow` is Workspace admission by Provider name. Omit it to admit every active Provider. Set `allow` to `[]` to admit none.
+
+```jsonc title="Workspace configuration"
+{
+  "providers": {
+    "allow": ["openai", "anthropic"]
+  }
+}
+```
+
+Session and Gateway inference refuse a Provider that is not on the allowlist. This restriction is distinct from Provider Activation, Model enablement, Limiter admission by Model identity, and Permission. Do not put a Provider allowlist in `plugins[].options`.
+
+## Routing
+
+`routing` chooses which Catalog Model a request uses. Each rule has `match` conditions and a `to` target: one Model, or Tiers a judge Model chooses between. Model references use `provider` and `id`, not `model`.
+
+```jsonc title="Workspace configuration"
+{
+  "routing": [
+    {
+      "match": { "model": { "provider": "openai", "id": "gpt-5" } },
+      "to": { "provider": "anthropic", "id": "claude-sonnet-5" }
+    },
+    {
+      "match": { "model": { "provider": "auto", "id": "general" } },
+      "to": {
+        "tiers": [
+          { "name": "fast", "model": { "provider": "anthropic", "id": "claude-haiku-5" }, "description": "Short questions" },
+          { "name": "deep", "model": { "provider": "anthropic", "id": "claude-opus-5" }, "description": "Multi-step work" }
+        ],
+        "default": "fast",
+        "judge": { "model": { "provider": "anthropic", "id": "claude-haiku-5" } }
+      }
+    }
+  ]
+}
+```
+
+- Omit `routing`, or set it to `[]`, to route nothing.
+- The last matching rule decides. A rule needs at least one condition.
+- Conditions: `model`, `purpose`, `text`, `context`, `images`, `agent`, and `tool`. A `tool` condition applies to Session conversation turns from the next participant message.
+- A Session routes once per participant message; LLM Gateway routes once per participant ask.
+- Rules written as `{ "from", "when", "to" }` still load and are saved in the `match` form.
+- Only Workspace administrators change `routing`. Saving refuses unknown Models, a missing default Tier, and invalid patterns.
+- The Model still owns destination, including endpoint, upstream name, and authentication.
+
+See [Routing](/configure/policies#routing) for conditions, Auto names, Tiers, and the judge.
+
+Do not put routing rules in `plugins[].options`. Spend Limits remain Budget; set them with `PUT /api/budget/limit`.
+
+## Models
+
+`default_model` and `model_policy` are server-owned fields.
+
+- `GET` and successful update responses include them, but the generic `PUT /api/config` request schema excludes them.
+- The core update operation also preserves their current values rather than accepting submitted replacements.
+- Change Model availability and the default Model through the dedicated Model workflows, not through generic Workspace configuration.
+
+See [Models and Providers](/gateway/models-and-providers) and [Plugins](/configure/plugins).

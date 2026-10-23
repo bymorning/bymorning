@@ -1,0 +1,96 @@
+[data-slot="timeline-bottom-footer"] {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+[data-component="background-hint"] {
+  display: flex;
+  width: calc(100% - 32px);
+  max-width: 960px;
+  margin-inline: auto;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+[data-component="background-tasks"] {
+  position: relative;
+  max-width: min(360px, 70vw);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="background-tasks"] summary {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  list-style: none;
+  white-space: nowrap;
+}
+
+[data-component="background-tasks"] summary:hover,
+[data-component="background-tasks"] summary:focus-visible {
+  outline: none;
+  background: var(--color-overlay-hover);
+}
+
+[data-component="background-tasks"] ul {
+  position: absolute;
+  z-index: 40;
+  right: 0;
+  display: grid;
+  width: min(340px, calc(100vw - 24px));
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 10px;
+  border: 1px solid var(--color-border-base);
+  border-radius: 8px;
+  background: var(--color-bg-layer-1);
+  box-shadow: var(--shadow-floating);
+  list-style: none;
+}
+
+[data-component="background-tasks"] li {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 5px;
+}
+
+[data-component="background-tasks"] li::before {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--background-task-color);
+  content: "";
+}
+
+[data-slot="background-task-kind"] {
+  flex: none;
+  color: var(--background-task-color);
+  font-weight: 530;
+}
+
+[data-slot="background-task-description"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="background-tasks"] a {
+  margin-inline-start: auto;
+  color: var(--color-text-base);
+}
+
+@media (min-width: 768px) {
+  [data-component="background-hint"] {
+    width: calc(100% - 40px);
+  }
+}

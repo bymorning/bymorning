@@ -1,0 +1,28 @@
+{
+  "name": "@bymorning/plugin-microsoft-365",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    "./sharepoint": "./src/sharepoint.ts",
+    "./onedrive": "./src/onedrive.ts",
+    "./mail": "./src/mail.ts",
+    "./calendar": "./src/calendar.ts",
+    "./teams": "./src/teams.ts",
+    "./excel": "./src/excel.ts",
+    "./document": "./src/document.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bymorning/plugin": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

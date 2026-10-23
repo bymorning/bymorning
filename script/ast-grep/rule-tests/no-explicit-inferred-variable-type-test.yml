@@ -1,0 +1,14 @@
+id: no-explicit-inferred-variable-type
+valid:
+  - const name = "value"
+  - let count = 0
+  - const values = new Array<string>()
+  - "const values: Array<string> = []"
+  - "const values: Record<string, Value> = {}"
+  - "let result: Result"
+  - "const parse = (input: string): Result => ({ input })"
+invalid:
+  - 'const name: string = "value"'
+  - "let count: number = 0"
+  - 'const list: Interface["list"] = makeList()'
+  - "const { name }: User = user"

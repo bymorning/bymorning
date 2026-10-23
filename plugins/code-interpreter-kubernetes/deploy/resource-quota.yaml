@@ -1,0 +1,31 @@
+# Optional. Caps concurrent sandbox pods and their total footprint; choose the numbers for your node pool.
+# Pods set explicit requests and limits, so the quota admits them. With the plugin defaults
+# (1 CPU, 512Mi memory, 256Mi ephemeral storage per pod) this admits 10 concurrent executions.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: sandbox
+  namespace: bymorning-sandbox
+spec:
+  hard:
+    pods: "10"
+    requests.cpu: "10"
+    limits.cpu: "10"
+    requests.memory: 5Gi
+    limits.memory: 5Gi
+    requests.ephemeral-storage: 3Gi
+    limits.ephemeral-storage: 3Gi
+---
+# Optional. A ceiling per container, in case someone raises the plugin limits by mistake.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: sandbox
+  namespace: bymorning-sandbox
+spec:
+  limits:
+    - type: Container
+      max:
+        cpu: "2"
+        memory: 2Gi
+        ephemeral-storage: 1Gi

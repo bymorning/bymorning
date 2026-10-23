@@ -1,0 +1,8 @@
+id: no-core-server-import
+valid:
+  - import { Session } from "@bymorning/core/session"
+  - import { helper } from "./helper.js"
+invalid:
+  - import { WorkspaceMap } from "@bymorning/server/workspace-map"
+  - import Server from "@bymorning/server"
+  - import { WorkspaceMap } from "../../server/src/workspace-map.js"

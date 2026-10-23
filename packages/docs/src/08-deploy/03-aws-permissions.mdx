@@ -1,0 +1,211 @@
+---
+title: AWS permissions
+description: The deployer policy and the IAM roles SST creates for each ByMorning workload.
+---
+
+Deploying ByMorning uses one deployer identity and five application roles. Attach the deployer policy to the deployer identity only.
+
+- **One deployer identity**, assumed by the person or CI job running `sst deploy`. It creates and updates everything in the stage and never runs application code.
+- **Five application roles**, created by SST as part of the stage. Each is assumed by one workload — the Gateway task, the migration Lambda, the NAT instances, the Code Interpreter — and grants only what that workload does at runtime.
+
+The application roles get their permissions from `infra/server.ts`.
+
+## Deployer policy
+
+<Callout type="warning">
+  This is a broad, service-level baseline for a dedicated deployment role. It has not been validated by deploying into a
+  fresh account under this exact policy, and it is not a least-privilege policy. It grants full control of the listed
+  services and can attach policies to the application roles, so treat the deployer identity as privileged.
+</Callout>
+
+The policy covers the SST bootstrap (S3, ECR, SSM, KMS), every AWS service the stage uses, name-scoped management of the application roles, service-constrained `iam:PassRole`, and first-use creation of the required service-linked roles.
+
+```json title="sst-deployer-policy.json"
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ManageStackServicesAndSstBootstrap",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "elasticloadbalancing:*",
+        "ecs:*",
+        "application-autoscaling:*",
+        "rds:*",
+        "s3:*",
+        "ecr:*",
+        "lambda:*",
+        "logs:*",
+        "cloudwatch:*",
+        "cloudfront:*",
+        "cloudfront-keyvaluestore:*",
+        "servicediscovery:*",
+        "route53:*",
+        "bedrock-agentcore:*",
+        "secretsmanager:*",
+        "ssm:*",
+        "kms:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "InspectIamConfiguration",
+      "Effect": "Allow",
+      "Action": ["iam:Get*", "iam:List*"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ManageApplicationRolesAndProfiles",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:UpdateRole",
+        "iam:UpdateAssumeRolePolicy",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:TagInstanceProfile",
+        "iam:UntagInstanceProfile"
+      ],
+      "Resource": [
+        "arn:aws:iam::*:role/bymorning-*",
+        "arn:aws:iam::*:role/CodeInterpreterExecutionRole-*",
+        "arn:aws:iam::*:instance-profile/Vpc*"
+      ]
+    },
+    {
+      "Sid": "PassGatewayRoles",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::*:role/bymorning-*-GatewayTaskRole-*",
+        "arn:aws:iam::*:role/bymorning-*-GatewayExecutionRole-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "PassMigrationRole",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::*:role/bymorning-*-DatabaseMigratorRole-*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "lambda.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "PassNatAndBastionRoles",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::*:role/bymorning-*-VpcNatInstanceRole-*",
+        "arn:aws:iam::*:role/bymorning-*-VpcBastionRole-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ec2.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "PassInterpreterRole",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::*:role/CodeInterpreterExecutionRole-*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "bedrock-agentcore.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "CreateServiceLinkedRolesOnFirstUse",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "arn:aws:iam::*:role/aws-service-role/*",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": [
+            "ecs.amazonaws.com",
+            "elasticloadbalancing.amazonaws.com",
+            "rds.amazonaws.com",
+            "ecs.application-autoscaling.amazonaws.com",
+            "network.bedrock-agentcore.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+It applies to every deploy, update, and removal, not only the first bootstrap. Role name patterns follow the `bymorning` app name and the component names in `infra/server.ts`. Renaming the app or components requires updating the patterns.
+
+The `*` in ARN account fields avoids hardcoding an account ID; replace it with the target account ID if you prefer. This page is the policy's only copy.
+
+### Setup
+
+1. Create an IAM role such as `ByMorningDeployer`, or an IAM Identity Center permission set, and attach the policy above as a customer-managed policy.
+2. Configure who may assume it: your Identity Center users for interactive deploys, or the CI provider's OIDC federation for automated deploys. That trust configuration is separate from the permissions policy.
+3. Point an AWS profile at that role and export `SST_AWS_PROFILE=<profile>` (or use any other standard credential source). SST reads credentials from the profile and passes them to Pulumi.
+
+Organization SCPs, permission boundaries, and resource or KMS key policies still apply on top of this policy. If a deploy fails with `AccessDenied`, check those before widening the policy. `AdministratorAccess` also works and is what an Identity Center administrator role provides by default; it is not an SST requirement, and the policy above is the scoped alternative.
+
+## Application roles
+
+SST creates these roles during the deploy. The deployer must be able to create and pass them; it never assumes them.
+
+| Role                                   | Assumed by                                          | Grants                                                                                                                                                                                                                                                |
+| -------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GatewayExecutionRole`                 | ECS, to start the Gateway task                      | `AmazonECSTaskExecutionRolePolicy` (ECR image pull, CloudWatch log delivery) plus SSM parameter and Secrets Manager reads                                                                                                                             |
+| `GatewayTaskRole`                      | The running Gateway container                       | `s3:*` on the storage bucket; `bedrock:InvokeModel`, `bedrock:InvokeModelWithResponseStream`, `bedrock-mantle:CreateInference` on `*`; start, invoke, get, and stop sessions on the stage's Code Interpreter ARN; `ssmmessages` channels for ECS Exec |
+| `DatabaseMigratorRole`                 | `DatabaseMigratorFunction`                          | `AWSLambdaBasicExecutionRole` and `AWSLambdaVPCAccessExecutionRole`. Database access uses the generated credentials in `DATABASE_URL`, not IAM                                                                                                        |
+| `VpcNatInstanceRole` — production only | Both NAT instances, through `VpcNatInstanceProfile` | `AmazonSSMManagedInstanceCore`, so operators can reach the bastion with Session Manager                                                                                                                                                               |
+| `CodeInterpreterExecutionRole`         | `CodeInterpreterResource`                           | No permission policies. Its trust policy allows `bedrock-agentcore.amazonaws.com` only when `aws:SourceAccount` is this account and `aws:SourceArn` matches `arn:aws:bedrock-agentcore:<region>:<account>:*`                                          |
+
+### Gateway roles
+
+```text
+GatewayService
+└── GatewayTask
+    ├── executionRoleArn → GatewayExecutionRole   ECS uses this before the container runs
+    │                                             pull image, create log stream
+    └── taskRoleArn      → GatewayTaskRole        the application uses this while running
+                                                  S3, Bedrock, Code Interpreter, ECS Exec
+```
+
+The execution role belongs to the ECS agent; the task role is the identity the ByMorning process presents to AWS. Add runtime permissions to the task role through `permissions` and `link` in `infra/server.ts`, never to the execution role.
+
+## Resources
+
+Resources that do not assume a role are governed by the caller's permissions and their own resource policies:
+
+| Resource                                         | Access model                                                                                                                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Storage bucket                                   | Bucket policy plus the caller's IAM; the Gateway reaches it through `GatewayTaskRole`                                                                               |
+| Web assets bucket                                | Bucket policy granting CloudFront read; the deployer uploads objects                                                                                                |
+| ECR repository                                   | The deployer pushes images; `GatewayExecutionRole` pulls them                                                                                                       |
+| Aurora                                           | Master credentials generated by SST and stored in Secrets Manager; network access limited to the VPC security groups. IAM database authentication is not configured |
+| CloudFront distribution, Function, KeyValueStore | Managed by the deployer; no execution role                                                                                                                          |
+| VPC, subnets, routes, security groups, EIPs      | Managed by the deployer; no execution role                                                                                                                          |
+| Secrets Manager secret, SSM parameters           | Caller IAM plus the AWS-managed KMS key                                                                                                                             |
+
+## Bedrock
+
+`GatewayTaskRole` grants the inference actions, but AWS also requires model access to be enabled in the account and region. Enable the models you intend to use in the Bedrock console before the first Session.
+
+Some Providers additionally require an AWS Marketplace subscription. Neither is created by the deploy.

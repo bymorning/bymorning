@@ -1,0 +1,17 @@
+id: no-launch-graph-wiring
+language: TypeScript
+message: Launch files select host adapters through Application; graph construction, binding, hoisting, and compilation belong to Application or WorkspaceMap.
+severity: error
+files:
+  - app/host/src/index.ts
+  - app/host/src/dev.ts
+  - app/host/src/production.ts
+rule:
+  any:
+    - pattern: makeGlobalNode($$$ARGS)
+    - pattern: makeWorkspaceNode($$$ARGS)
+    - pattern: LayerNode.hoist($$$ARGS)
+    - pattern: LayerNode.bind($$$ARGS)
+    - pattern: LayerNode.group($$$ARGS)
+    - pattern: LayerNode.compile($$$ARGS)
+    - pattern: memoMap

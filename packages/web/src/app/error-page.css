@@ -1,0 +1,51 @@
+[data-component="error-page"] {
+  display: grid;
+  width: 100%;
+  min-height: 100%;
+  overflow-y: auto;
+  place-items: center;
+  padding: clamp(24px, 6vw, 64px);
+  color: var(--color-text-base);
+}
+
+[data-component="error-page"] [data-slot="error-page-content"] {
+  display: flex;
+  width: min(100%, 720px);
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+[data-component="error-page"] [data-slot="error-page-summary"] {
+  text-align: center;
+}
+
+[data-component="error-page"] [data-slot="error-page-summary"] h1 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+[data-component="error-page"] [data-slot="error-page-summary"] p {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+}
+
+[data-component="error-page"] [data-slot="error-page-diagnostic"] {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+[data-component="error-page"] [data-slot="error-page-label"] {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  [data-component="error-page"] {
+    padding: 24px 16px;
+  }
+}

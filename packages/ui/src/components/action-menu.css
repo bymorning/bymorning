@@ -1,0 +1,10 @@
+[data-component="menu-content"][data-slot="action-menu-content"] [data-component="menu-item"].danger {
+  --menu-fg: var(--color-danger-fg);
+}
+
+@media (pointer: coarse) {
+  [data-component="icon-button"][data-slot="action-menu-trigger"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

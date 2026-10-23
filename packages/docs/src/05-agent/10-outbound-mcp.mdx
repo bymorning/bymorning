@@ -1,0 +1,103 @@
+---
+title: Outbound MCP
+description: Connect a remote MCP server and manage its Tools.
+hidden: true
+---
+
+Outbound MCP connects ByMorning to a remote server and registers its Tools in the Workspace. It is separate from inbound MCP, where an external client connects to ByMorning's `/mcp` endpoint.
+
+## Add
+
+1. In the Console, open **Integrations**, select **Add integration**, then choose **MCP server** under **Custom**.
+2. Enter a **Name**. Names must be 1–64 characters, start with a letter or number, and contain only letters, numbers, dots, underscores, or hyphens. The name becomes the Tool namespace, such as `linear_create_issue`.
+3. Enter an absolute HTTP(S) URL, such as `https://mcp.linear.app/mcp`.
+4. Optionally enter **Headers**, one `Name: value` per line. See [Member values](#member-values).
+5. Choose **Member authentication**: **OAuth** when each member signs in to the server, or **Member values or none**.
+6. Select **Add MCP server**. ByMorning saves the server, connects, and loads its Tool catalog.
+
+The dialog does not expose OAuth client ID or scope, Code Mode, disabled state, or custom timeouts. Use Workspace configuration for those options.
+
+## Member values
+
+Use member values when a server authenticates with headers that hold each person's own token. Write `${NAME}` where a member's value belongs, and `${member.email}` for the member's verified email:
+
+```text
+JiraToken: ${JIRA_PERSONAL_TOKEN}
+Authorization: Bearer ${CONFLUENCE_PERSONAL_TOKEN}
+UserEmail: ${member.email}
+X-Team: platform
+```
+
+Each member then sees the server as **Authentication required** until they save their own `JIRA_PERSONAL_TOKEN` and `CONFLUENCE_PERSONAL_TOKEN`. Their requests carry only their values. `X-Team` has no placeholder, so it is shared by every member.
+
+### Save your values
+
+Any member, not only an administrator, saves their own values:
+
+1. Open the command palette (`Ctrl+K`, or `⌘K` on macOS) and choose **Connect integration**.
+2. Select the server under **MCP servers** (its name followed by `MCP`).
+3. Enter each value and select **Save values**.
+
+ByMorning reconnects the server with your values and reports whether it accepted them. To change them later, repeat the steps and select **Replace values**; fields marked **Saved** keep their value when left blank. Administrators can also choose **Authenticate** or **Update values** on the server's row in the Console.
+
+### Rules
+
+- Member values require **Member values or none** (`oauth: false`). A server uses OAuth or member values, never both.
+- Values are secret. ByMorning stores them encrypted, never shows them again, and sends them only to this server.
+- If the server refuses a member's values, it shows **Failed** with “Server rejected your values”.
+- ByMorning does not contact the server for a member who has not saved every value, and never uses another member's values.
+- Members enter values only through ByMorning's own form, never in a conversation. An agent asked to connect the server tells the member where to save them.
+- Administrators see on the server's page which members have saved values and when, never the values. **Values saved** means the member supplied them, not that the server accepts them.
+- Changing the server's URL or removing it discards every member's saved values. Removing a member discards theirs.
+- Members read shared header values redacted; only administrators see them. Text beside a `${NAME}` placeholder (such as `Bearer `) stays visible, so keep secrets out of it.
+- Write `$${` for a literal `${`.
+
+By default, ByMorning waits 30 seconds to connect and initialize, 30 seconds for each `tools/list` request, and 12 hours for a Tool call. Workspace configuration can override `timeout.startup`, `timeout.catalog`, and `timeout.execution` in milliseconds.
+
+## Status
+
+The server appears in the **Connected** list on the **Integrations** page.
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| **Connected** | The connection is open and the catalog loaded. | **Disconnect** |
+| **Connecting** | ByMorning is establishing the connection. | **Disconnect** |
+| **Authentication required** | The endpoint returned an OAuth challenge, or you have not saved your member values. | **Authenticate** |
+| **Failed** | Connection or catalog discovery failed, or the server rejected your member values. | **Retry** or **Update values** |
+| **Disabled** | The server is saved but disconnected. | **Connect** |
+
+Open the server's action menu:
+
+- **Authenticate** opens the OAuth surface, or the member values form. Complete it, then ByMorning reconnects.
+- **Update values** replaces your saved member values.
+- **Retry** attempts the failed connection again.
+- **Test connection** checks the endpoint and reports **Connection test passed.** on success.
+- **Disconnect** closes the connection and marks the server **Disabled**. Remote Tools leave the catalog until you **Connect**.
+- **Remove** asks “Remove &lt;server name&gt;?” then deletes the saved server. This is different from **Disconnect**.
+
+## Code Mode
+
+When a configured server is **Disabled** or **Authentication required**, Code Mode exposes `tools.toolkit.mcp.connect`. Call it before using that server's Tools:
+
+```ts
+await tools.toolkit.mcp.connect({ server: "linear" })
+```
+
+`toolkit.mcp.connect` presents the OAuth URL through the caller's URL elicitation, waits for the callback and catalog readiness, then returns connected status. `toolkit.integration.list` shows every registered Integration, whether each OAuth method's client is configured by a Workspace administrator, and whether the current member is connected. `toolkit.integration.connect` instead returns an authorization URL and attempt immediately; check that attempt with `toolkit.integration.status`.
+
+ByMorning does not automatically resend a Tool call after a post-send `401` or `403`. Authorize again with `toolkit.mcp.connect`, then decide whether it is safe to issue the action again.
+
+## Permissions
+
+Use Workspace Permission rules to set **Allow**, **Ask**, or **Deny** for each imported Tool action. `codemode: false` exposes an imported Tool directly; other imported Tools use the shared Code Mode `execute` catalog.
+
+ByMorning checks the canonical `<server>_<tool>` action immediately before every remote call. **Ask** opens the Session approval flow when a Session invokes the Tool. **Deny** blocks the call. The same setting fails closed for [inbound MCP](/agent/inbound-mcp).
+
+## Behavior
+
+- ByMorning uses Streamable HTTP for outbound servers.
+- The server name is normalized into each imported Tool's namespace. Unsupported characters, including dots, become underscores.
+- Two server names that normalize to the same namespace contribute no Tools. Duplicate canonical Tool names are omitted.
+- A remote connection that closes unexpectedly becomes **Failed**. A `401` during catalog discovery or a Tool call becomes **Authentication required** when OAuth is enabled. For a member-values server, a `401` or `403` becomes **Failed** with “Server rejected your values”.
+- Code Mode is enabled by default unless Workspace configuration sets `codemode: false`.
+- Removing or disconnecting a server does not turn ByMorning into an inbound MCP client. To expose Workspace Tools, copy the `/mcp` endpoint as described in [Inbound MCP](/agent/inbound-mcp).

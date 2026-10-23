@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+# Amazon Bedrock with a Bedrock API key instead of federation. Create Secret
+# bymorning-bedrock with AWS_BEARER_TOKEN_BEDROCK (scripts/create-secret.sh
+# --bedrock-api-key-file). AWS documents long-term keys as suited to exploration and
+# short-term keys to production; you own rotation. AWS_REGION is customer-supplied.
+# Do not combine with the bedrock-web-identity component.
+# The overlay MUST generate ConfigMap bymorning-aws with literal AWS_REGION=<region>
+# (scripts/overlay.sh does, from --aws-region). For a us-gov-* region it also adds
+# AWS_USE_FIPS_ENDPOINT=true: the image no longer bakes the FIPS flag.
+
+patches:
+  - target:
+      kind: Deployment
+      name: bymorning
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom/-
+        value:
+          configMapRef:
+            name: bymorning-aws
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom/-
+        value:
+          secretRef:
+            name: bymorning-bedrock

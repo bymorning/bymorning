@@ -1,0 +1,59 @@
+---
+title: Models and Providers
+description: Connect built-in Providers and control which Models your Workspace can use.
+---
+
+As a Workspace administrator, open **AI Gateway → Models** to manage the installed Provider directory and the Models available to your Workspace. The bundled directory includes Bymorning, OpenAI, Anthropic, Google, OpenCode Zen, Fireworks, and Amazon Bedrock; Plugins and installation sources can add more.
+
+## Connect
+
+1. Select **Providers**, then **Add provider**. Search the directory if needed.
+2. Select the Provider you want to configure.
+3. Enter an API key or AWS credentials when the Provider supports them. Provider Connections created here are shared with the Workspace and labeled automatically.
+4. Select **Connect**. ByMorning refreshes the Provider and Model catalogs.
+
+## Credentials
+
+| Provider | Stored credential | Environment connection |
+| --- | --- | --- |
+| Bymorning | API key | `BYMORNING_API_KEY` |
+| OpenAI | API key | `OPENAI_API_KEY` |
+| Anthropic | API key | `ANTHROPIC_API_KEY` |
+| Fireworks | API key | `FIREWORKS_API_KEY` |
+| Amazon Bedrock | Bedrock API key and AWS region | `AWS_BEARER_TOKEN_BEDROCK` with `AWS_REGION` |
+| Amazon Bedrock | AWS access key ID, secret access key, optional session token, and AWS region | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_REGION`; optional `AWS_SESSION_TOKEN` |
+
+For Amazon Bedrock, enter a commercial or GovCloud AWS region. ByMorning supports catalogued language Models through Converse and Mantle; AWS determines account access and regional availability. Set activation to **Enabled** to use the deployment's AWS credential chain when no saved or complete environment Connection exists. See [Bedrock](/configure/models#bedrock).
+
+## Connections
+
+The Providers tab lists active, connected, and explicitly configured Providers with separate activation and Connection states. Use the shared **Enabled** switch for activation, or open a Provider's action menu and select **Manage connections** to:
+
+- **Add connection**
+- **Make primary** for a stored connection
+- **Rename** a stored connection
+- **Remove connection**
+
+Environment connections are discovered from the process environment. They are shown as environment connections rather than editable stored credentials.
+
+## Models
+
+The Models tab lists Catalog Models from active Providers. Filter by Provider or return to **All providers**. **Add provider** opens the selected Provider's connection methods directly.
+
+Each row shows:
+
+- Model name and Provider-native ID
+- input and output price per million tokens
+- cache-read and cache-write price per million tokens
+- output token limit
+- whether the Model is enabled
+
+A dash means the catalog has no value. A dagger marks a base price when tiered pricing may apply. Deprecated Models carry a **Deprecated** label.
+
+A Model can report an inactive or disabled Provider, unavailable Connection, unsupported execution transport, or unsupported Bedrock region. Bedrock does not use a local per-Model or per-region approval list.
+
+## Enable
+
+Use the switch on a Model row to enable or disable that Model for the Workspace. If no Models are available, add or activate a Provider.
+
+The Models page does not expose a default-Model control. Choose a Model when you start a Session.

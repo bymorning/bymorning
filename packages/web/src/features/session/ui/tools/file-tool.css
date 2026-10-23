@@ -1,0 +1,67 @@
+[data-component="file-tool"] [data-slot="file-tool-header"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 0 8px;
+}
+
+[data-component="file-tool"] :is([data-component="write-trigger"], [data-component="edit-trigger"]) {
+  min-width: 0;
+}
+
+[data-component="file-tool"] [data-slot="message-part-title-area"] {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
+[data-component="file-tool"] [data-slot="message-part-title"] {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
+[data-component="file-tool"] [data-slot="message-part-title-text"] {
+  flex: none;
+  color: var(--color-text-base);
+  font-size: 14px;
+  font-weight: 530;
+  line-height: 20px;
+}
+
+[data-component="file-tool"] [data-slot="message-part-title-filename"] {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="file-tool"] [data-slot="message-part-path"] {
+  overflow: hidden;
+  color: var(--color-text-faint);
+  font-size: 12px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="file-tool"] [data-slot="file-tool-icon"] {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+[data-component="file-tool"] [data-slot="file-tool-path"] {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 12px/1.5 var(--font-mono);
+}

@@ -1,0 +1,140 @@
+---
+title: Instruction sources
+description: Assemble durable model context and add an instruction source.
+---
+
+ByMorning assembles changing runtime guidance as durable instruction sources. Each source owns a stable key, a canonical JSON value, and renderers for its initial value, changes, and removal.
+
+```ts title="plugin/instructions.ts"
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "example.instructions",
+  async setup(context) {
+    await context.instruction.transform((editor) => {
+      editor.add({
+        path: "example://workspace-guidance",
+        content: "Prefer concise answers.",
+      })
+    })
+  },
+})
+```
+
+## Context
+
+Each model request receives context in this order:
+
+1. ByMorning resolves the available Tools.
+2. It reads the instruction sources and synchronizes their values with the Session's durable instruction state.
+3. It sends Agent instructions and the durable instruction baseline as separate system parts.
+4. It includes earlier instruction changes as chronological `system` messages in the transcript.
+5. It runs `session.context` hooks over the assembled system parts, messages, and Tools.
+
+The initial baseline stores the source values observed when the Session starts. A later change does not silently rewrite that baseline. ByMorning instead adds a `system` message that explains what changed, what supersedes an earlier value, or what no longer applies.
+
+Nested Project instructions follow a different lifecycle. Reading or globbing a Project path can discover nested `AGENTS.md` files. ByMorning admits their contents as a synthetic steer message at that point in the transcript.
+
+## Order
+
+`packages/core/src/session/context.ts` is the production composition point. It lists source domains explicitly in semantic order. `InstructionDiscovery` is the dedicated plugin seam behind `core/instructions`; it is not a registry for unrelated sources.
+
+| Order | Key | Contribution |
+| --- | --- | --- |
+| 1 | `core/environment` | Session, Workspace, optional Project, and Project storage context. |
+| 2 | `core/date` | The current date. |
+| 3 | `core/codemode` | The currently resolved Code Mode Tool catalog. |
+| 4 | `core/instructions` | The Project-root `AGENTS.md`. |
+| 5 | `core/skill-instructions` | Permission-filtered Skill IDs, names, and descriptions. Full Skill bodies stay lazy and load through the `skill` Tool. |
+| 6 | `core/reference-guidance` | Advertised Project references and their logical paths. |
+| 7 | `core/mcp-guidance` | Guidance supplied by eligible connected MCP servers. |
+| 8 | `api/<key>` | Session-specific entries managed through the HTTP API, sorted by entry key. |
+
+Keys must be unique across the composed list. Composition rejects duplicate keys instead of choosing a winner.
+
+Agent instructions are not an entry in this table. They are a separate system part that precedes the whole baseline, so no instruction source can replace or reorder them. To change an Agent's own prompt, save the Agent; see [Session behavior](/configure/session-behavior).
+
+## AGENTS.md
+
+The Project-root `AGENTS.md` is ambient context. The built-in `bymorning.config.instruction` plugin reads it through `ProjectDirectory` and contributes it to `InstructionDiscovery` with the Project ID. A successful `ProjectDirectory.write` publishes `Project.FileChanged`. The plugin debounces those events for 100 ms, reads the file again, and reloads discovery. Project creation, updates, and deletion also refresh the contributed files.
+
+Plugins can contribute additional instruction files through `context.instruction.transform`. Omit `projectID` for a Workspace-wide file. Set `projectID` to limit a file to one Project.
+
+```ts
+await context.instruction.transform((editor) => {
+  editor.add({
+    path: "example://project-guidance",
+    content: "Prefer concise answers.",
+    projectID: "prj_123",
+  })
+})
+```
+
+For a Project Session, ByMorning renders all Workspace-wide files first and then that Project's files. It preserves registration order within each group. A Session without a Project receives only Workspace-wide files.
+
+Transforms follow the plugin lifecycle. Unloading or reloading the plugin removes its files and rebuilds discovery. Plugins can also call `context.instruction.list(projectID)` and `context.instruction.reload()`.
+
+The built-in `read` and `glob` Tools discover `AGENTS.md` files above the Project paths they access, from the nearest directory outward. An in-flight claim prevents concurrent discovery from injecting the same path twice. Synthetic message metadata records the ledger as `{ instruction: { paths } }`, so later reads do not inject an already-recorded file again.
+
+ByMorning treats nested `AGENTS.md` files as trusted Project metadata. The original `read` or `glob` operation still follows its normal permission policy, but loading a discovered instruction file does not create a separate per-file permission request.
+
+## References
+
+Use `reference:<name>/path` with the built-in `read`, `glob`, and `grep` Tools. Each access uses the distinct permission resource `reference:<name>`. ByMorning resolves the configured directory through real paths and rejects traversal or symlink resolution outside that directory.
+
+```text
+reference:handbook/onboarding.md
+```
+
+The durable reference guidance advertises only references that are not hidden and have a description. It sorts them by name. Hidden references and references without descriptions do not appear in the model's advertised catalog.
+
+## MCP
+
+MCP guidance appears only when all applicable conditions hold:
+
+- The MCP server is connected and supplies non-empty instructions.
+- At least one Tool registered by that server is permitted for the current request.
+- If the server uses Code Mode, Code Mode is enabled for the request. Servers configured outside Code Mode do not require this condition.
+
+ByMorning sorts eligible servers by name. Code Mode guidance tells the model how to address the server through `execute`; guidance for a server outside Code Mode does not.
+
+## API
+
+Use API entries for host-managed JSON context that belongs to one Session:
+
+```text
+PUT /api/session/:id/instructions/entries/:key
+DELETE /api/session/:id/instructions/entries/:key
+```
+
+`PUT` accepts a JSON `value` whose encoded size is at most 8 KiB. A changed value produces a chronological update that explicitly supersedes the old value. `DELETE` writes a tombstone rather than dropping the record. On the next synchronization, that tombstone produces an explicit removal message telling the model to disregard the prior context. Entries use `api/<key>` internally and sort by key.
+
+You can inspect active entries with `GET /api/session/:id/instructions/entries`.
+
+## Code Mode
+
+The Code Mode catalog is part of durable instruction state, not an ad hoc prompt suffix. ByMorning resolves Tools before loading sources, then records the catalog summary under `core/codemode`.
+
+Catalog changes become chronological updates. Small additions and removals use compact deltas when possible. Changed entries, completeness changes, or a delta that is not shorter use a full replacement that explicitly supersedes the earlier catalog. Removing Code Mode emits guidance not to use previously listed Code Mode Tools.
+
+## Compaction
+
+Compaction re-anchors the baseline at the current source values. After a completed compaction boundary, the next request renders those current values as its initial durable baseline. The model therefore does not need the older sequence of source-update messages that compaction removed.
+
+## Sources
+
+Add a core source only for runtime-owned context that needs a durable baseline and durable updates. Use an API entry for host-managed Session context. Use a synthetic message for context discovered at a specific transcript point. Use a `session.context` hook only for a final per-request transformation; hook output is not durable instruction state.
+
+1. Add a module beside the domain that owns the source.
+2. Choose a stable, unique `core/<name>` key. Reserve `api/<key>` for API entries.
+3. Define a Schema codec that encodes the typed value as canonical JSON. Construct the source with `Instruction.make`.
+4. Implement `read`. Return a typed value after a successful observation. Return `Instruction.removed` for a confirmed-empty catalog or confirmed absence. Return `Instruction.unavailable` for a transient failure.
+5. Implement non-empty `initial` and `changed` renderers. Add `removed` whenever the value can disappear. Prefer compact add/remove deltas with `Instruction.diffByKey`. Use a full “supersedes” replacement when an item changes or when the delta is not shorter. Sort collections deterministically.
+6. Keep large bodies lazy. Advertise metadata and load the body through a Tool when practical.
+7. Unit-test the source with the patterns in `packages/core/test/instruction.test.ts`. Use a plain-object fake for dependencies instead of a mock framework.
+8. Add the source explicitly to `packages/core/src/session/context.ts` at the correct position.
+9. Extend the ordering test in `packages/core/test/session/session-postgres.test.ts`.
+
+An unavailable source blocks creation of the initial baseline. After initialization, unavailability retains the last value. A removed source clears the current value and can render an explicit warning that prior guidance no longer applies.
+
+Do not append dynamic guidance in `runner.ts` or Agent instructions. Do not add a generic global registry, render an empty string, or bypass `Instruction.make`.

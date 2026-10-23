@@ -1,0 +1,32 @@
+[data-starter] [data-component="file-browser"] {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-border-muted);
+  border-radius: 9px;
+  background: var(--color-bg-base);
+}
+
+[data-starter] [data-component="file-browser"] textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+}
+
+[data-starter] [data-component="file-browser"] label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.45rem 0;
+}
+
+[data-starter] [data-component="file-browser"] nav {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.2rem;
+  max-height: 16rem;
+  overflow: auto;
+}
+
+[data-starter] [data-component="file-browser"] [data-selected] {
+  background: var(--color-overlay-hover);
+}

@@ -1,0 +1,41 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Gateway for Azure. Overlays set the namespace values, image, hostname and
+# environment (see ../overlays/example and ../scripts/overlay.sh).
+namespace: bymorning
+
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+
+configMapGenerator:
+  # Non-secret environment (ConfigMap name gets a content hash; references follow).
+  - name: bymorning-env
+    literals:
+      - APP_ORIGIN=https://bymorning.example.com
+      # The image is the same for every cloud; these two bind it to Blob Storage
+      # and Key Vault. The image refuses to start without them. Fixed for the
+      # life of an installation.
+      - STORAGE_PROVIDER=azure-blob
+      - CIPHER_BACKEND=keyvault
+      - AZURE_CLOUD=AzureUSGovernment
+      - STORAGE_ACCOUNT_URL=https://REPLACE.blob.core.usgovcloudapi.net
+      - STORAGE_CONTAINER=bymorning
+      - KEY_VAULT_KEY=https://REPLACE.vault.usgovcloudapi.net/keys/bymorning-cipher
+      - BYMORNING_CONFIG=/config/bymorning.jsonc
+      # Comma-separated ingress controller pod/node addresses whose X-Forwarded-For
+      # is trusted for authentication rate limiting.
+      - TRUSTED_PROXIES=10.244.0.0/16
+  # Installation configuration document (plugins and defaults).
+  - name: bymorning-config
+    files:
+      - bymorning.jsonc
+
+# The Deployment names its image `bymorning`; every overlay sets the real reference with an
+# `images:` entry named `bymorning` (scripts/overlay.sh). Do not rename it here: Kustomize
+# matches an overlay's `images:` name against the already-transformed name, so a rename in the
+# base makes the overlay's image silently not apply and the pods pull a placeholder.

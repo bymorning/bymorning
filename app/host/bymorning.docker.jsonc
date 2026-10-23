@@ -1,0 +1,13 @@
+{
+  // Installation config declares plugins enabled by default and their non-secret options.
+  "plugins": [
+    "@bymorning/plugin-google",
+    "@bymorning/plugin-atlassian",
+    "@bymorning/plugin-share",
+    {
+      "package": "@bymorning/plugin-code-interpreter-docker",
+      "options": { "image": "bymorning-code-interpreter:local" },
+    },
+  ],
+  "code_interpreter": { "implementation": "docker" },
+}

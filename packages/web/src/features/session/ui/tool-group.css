@@ -1,0 +1,149 @@
+[data-component="context-tool-group-trigger"],
+[data-slot="context-tool-group-title"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-component="context-tool-group-trigger"] {
+  width: 100%;
+  min-height: 24px;
+  justify-content: flex-start;
+  cursor: default;
+}
+
+[data-component="context-tool-group-list"] {
+  display: flex;
+  padding: 4px 0 0 12px;
+  flex-direction: column;
+  gap: 13px;
+}
+
+[data-slot="context-tool-group-item"] {
+  min-width: 0;
+  padding: 0;
+  opacity: 0.8;
+}
+
+[data-slot="context-tool-group-item"] [data-slot="basic-tool-tool-info-structured"] {
+  gap: 6px;
+}
+
+[data-slot="context-tool-group-item"] [data-slot="basic-tool-tool-title"],
+[data-slot="context-tool-group-item"] :is([data-slot="basic-tool-tool-subtitle"], [data-slot="basic-tool-tool-arg"]),
+[data-slot="context-tool-group-matches"] {
+  font-size: 13px;
+  font-weight: 440;
+  line-height: 20px;
+  letter-spacing: -0.04px;
+}
+
+[data-slot="context-tool-group-item"] [data-slot="basic-tool-tool-subtitle"] {
+  color: var(--color-text-faint);
+}
+
+[data-slot="context-tool-group-dot"] {
+  display: inline-flex;
+  width: 6px;
+  height: 6px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-slot="context-tool-group-dot"]::before {
+  width: 2.25px;
+  height: 2.25px;
+  border-radius: 50%;
+  background: var(--color-icon-muted);
+  content: "";
+}
+
+[data-slot="context-tool-group-matches"] {
+  flex: none;
+  color: var(--color-text-faint);
+}
+
+[data-component="apply-patch-tool"] [data-component="accordion"] {
+  margin-top: 8px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-component="apply-patch-tool"] [data-component="accordion-item"] {
+  background: transparent;
+  box-shadow: inset 0 -0.5px 0 var(--color-border-muted);
+}
+
+[data-component="apply-patch-tool"] [data-component="accordion-trigger"] {
+  min-height: 32px;
+  padding-inline: 0;
+}
+
+[data-slot="apply-patch-trigger-content"] {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+[data-slot="apply-patch-file-info"],
+[data-slot="apply-patch-file-name-container"],
+[data-slot="apply-patch-trigger-actions"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+[data-slot="apply-patch-file-info"] {
+  flex-grow: 1;
+  gap: 20px;
+}
+
+[data-slot="apply-patch-file-name-container"] {
+  flex-grow: 1;
+  overflow: hidden;
+  direction: ltr;
+  font-size: 13px;
+  line-height: 20px;
+  unicode-bidi: isolate;
+}
+
+[data-slot="apply-patch-directory"] {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  direction: rtl;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-slot="apply-patch-filename"] {
+  min-width: 0;
+  flex: none;
+  overflow: hidden;
+  color: var(--color-text-base);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-slot="apply-patch-trigger-actions"] {
+  flex: none;
+  gap: 16px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+[data-component="apply-patch-file-diff"] {
+  width: 100%;
+  max-height: 240px;
+  margin: 0;
+  overflow: auto;
+  color: var(--color-text-muted);
+  white-space: pre;
+  font: 12px/18px var(--font-mono);
+}

@@ -1,0 +1,87 @@
+[data-component="shell-tool-trigger"] {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+  overflow: hidden;
+}
+
+[data-component="shell-tool-trigger"] [data-slot="basic-tool-tool-subtitle"] {
+  direction: ltr;
+  text-overflow: ellipsis;
+}
+
+[data-component="shell-tool"]
+  [data-component="tool-collapsible"][data-open="true"]
+  [data-component="shell-tool-trigger"]
+  [data-slot="basic-tool-tool-subtitle"] {
+  display: none;
+}
+
+[data-component="shell-output"] {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+  overflow: hidden;
+  border: 0.5px solid var(--color-border-base);
+  border-radius: 6px;
+  background: var(--color-bg-base);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+[data-component="shell-output"] [data-slot="shell-copy"] {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+[data-component="shell-output"]:hover [data-slot="shell-copy"],
+[data-component="shell-output"]:focus-within [data-slot="shell-copy"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-component="shell-output"] [data-slot="shell-scroll"] {
+  width: 100%;
+  max-height: 240px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+[data-component="shell-output"] [data-slot="shell-scroll"]::-webkit-scrollbar {
+  display: none;
+}
+
+[data-component="shell-output"] [data-slot="shell-pre"] {
+  margin: 0;
+  padding: 0;
+}
+
+[data-component="shell-output"] [data-slot="shell-pre"] code {
+  font: 13px/20px var(--font-mono);
+  font-weight: 440;
+  letter-spacing: -0.04px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+[data-component="shell-output"] :is([data-slot="shell-command"], [data-slot="shell-result"]) {
+  display: block;
+  padding: 12px;
+}
+
+[data-component="shell-output"] [data-slot="shell-command"] {
+  color: var(--color-text-base);
+}
+
+[data-component="shell-output"] [data-slot="shell-result"] {
+  border-block-start: 0.5px solid var(--color-border-base);
+  color: var(--color-text-muted);
+  background: var(--color-bg-layer-1);
+}

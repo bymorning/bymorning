@@ -1,0 +1,24 @@
+[data-component="session-context-usage"] {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--color-icon-muted);
+}
+
+/* A static gauge: a full, visible track keeps a low percentage from reading as a spinner arc. */
+[data-component="session-context-usage"] [data-slot="progress-circle-background"] {
+  stroke: var(--color-border-strong);
+}
+
+[data-component="session-context-usage"] [data-slot="progress-circle-progress"] {
+  stroke: var(--color-icon-base);
+  animation: none;
+}
+
+[data-component="session-context-usage"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+}

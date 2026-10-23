@@ -1,0 +1,36 @@
+[data-component="home-sessions"] {
+  position: relative;
+  min-width: 0;
+  padding: 20px;
+}
+[data-component="home-sessions"] > [data-slot="home-sessions-header"] {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: block;
+  padding-bottom: 12px;
+  background: var(--color-bg-layer-1);
+}
+[data-component="home-sessions"] [data-component="session-list"] [data-slot="session-list-group-header"] {
+  background: var(--color-bg-layer-1);
+}
+[data-component="home-sessions-empty"] {
+  display: flex;
+  min-height: 240px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 52px 24px;
+  text-align: center;
+}
+[data-component="home-sessions-empty"] p {
+  margin: 0 0 4px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  [data-component="home-sessions"] {
+    padding: 16px;
+  }
+}

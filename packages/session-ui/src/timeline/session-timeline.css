@@ -1,0 +1,16 @@
+[data-session-ui] [data-component="session-timeline"] {
+  overflow: auto;
+  min-width: 0;
+  scroll-behavior: auto;
+}
+[data-session-ui] [data-slot="timeline-rows"] {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 16px;
+  list-style: none;
+}
+[data-session-ui] [data-slot="timeline-history"],
+[data-session-ui] [data-slot="timeline-error"] {
+  margin: 12px auto;
+}

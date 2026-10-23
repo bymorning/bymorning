@@ -1,0 +1,8 @@
+[data-starter] [data-component="session-tabs"] {
+  display: flex;
+  gap: 0.4rem;
+}
+
+[data-starter] [data-component="session-tabs"] [aria-selected="true"] {
+  background: var(--color-overlay-hover);
+}

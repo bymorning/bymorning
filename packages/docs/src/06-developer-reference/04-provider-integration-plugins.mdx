@@ -1,0 +1,389 @@
+---
+title: Provider integration plugins
+description: Build OAuth or API-key integrations with connected Tools, generic UI discovery, and MCP Permissions.
+---
+
+A provider integration plugin contributes two independent registrations: an Integration declares authentication methods and connection ownership, and one or more Tools use the active connection. Register both in the same plugin lifecycle.
+
+```ts
+import { Plugin } from "@bymorning/plugin"
+
+export default Plugin.define({
+  id: "project.example-cloud",
+  async setup(context) {
+    await context.integration.transform((editor) => {
+      editor.update("example-cloud", (integration) => {
+        integration.name = "Example Cloud"
+        integration.connectionPolicy = "member-only"
+      })
+      editor.method.update({
+        integrationID: "example-cloud",
+        method: { type: "key", label: "Example Cloud API key" },
+      })
+    })
+  },
+})
+```
+
+The bundled Google Gmail plugin is the production example. It registers the `google-gmail` Integration, a shared Workspace OAuth client, member-owned account connections, token exchange and refresh, and six namespaced Tools. An external Project or package plugin uses the same public Integration and Tool APIs.
+
+## Shape
+
+Use one Integration for one external service when its Tools share credentials and a connection lifecycle. Register one `key` or `oauth` method, then put every Tool under one namespace.
+
+Create multiple Integrations only when the services have independent credentials or lifecycles. Each Integration gets a distinct ID, method, per-owner active selection, and Tool namespace. Save multiple accounts or API keys as connections under the same Integration.
+
+| Requirement                                     | Registration shape                                                    |
+| ----------------------------------------------- | --------------------------------------------------------------------- |
+| One service, one API key, many operations       | One Integration, one `key` method, many Tools                         |
+| One service, one OAuth account, many operations | One Integration, one `oauth` method, many Tools                       |
+| Independent services                | Multiple Integration IDs, each with its own method and Tool namespace |
+
+`editor.update(id, callback)` is the public create-or-update operation. There is no separate `add` method. `editor.method.update(...)` creates or replaces a method. A `key` method has no method ID, so register one key method per Integration.
+
+```ts
+editor.update("example-cloud", (integration) => {
+  integration.name = "Example Cloud"
+})
+editor.method.update({
+  integrationID: "example-cloud",
+  method: { type: "key", label: "Example Cloud API key" },
+})
+```
+
+## Provider
+
+Register a confidential browser client before you connect an OAuth Integration.
+
+1. Create a web client.
+
+   Choose the provider's **Web application**, **Confidential client**, or equivalent client type. Do not choose a native, desktop, or single-page client when the provider expects a client secret during server-side token exchange.
+
+2. Register the callback URI.
+
+   Add exactly `${APP_ORIGIN}/auth/integration/callback` to the provider's authorized redirect URIs. `APP_ORIGIN` is the public ByMorning origin. Do not add a provider-specific callback route.
+
+3. Select scopes and offline access.
+
+   Request only the scopes used by your Tools. Enable the provider's offline-access option and refresh-token grant. Some providers require `offline_access`; Google uses `access_type=offline` and may require `prompt=consent` to return a refresh token.
+
+4. Complete provider review.
+
+   Configure the consent screen, test users, application domain, privacy policy, and publishing status. Providers may require verification for sensitive or restricted scopes. Google can require additional review for Gmail scopes.
+
+The Gmail plugin requests `openid`, `email`, Gmail read-only, and Gmail compose scopes. It uses a Google OAuth **Web application**, PKCE with `S256`, offline access, and an explicit consent prompt.
+
+## OAuth
+
+Declare `client_id` and `client_secret` in `method.client`. ByMorning stores one answer per Workspace, Integration ID, and method ID. Client setup shares credential storage with account connections but never becomes an executable connection. The `secret: true` field masks the secret in the form; discovery returns only the fields and `configured` state.
+
+Set `connectionPolicy = "member-only"` when every teammate must connect their own account. The host owns member selection and persistence; `authorize`, `refresh`, and Tool credential lookup keep their existing signatures.
+
+This Promise plugin shape is the default public contract. Replace the provider URLs, scopes, token response, profile schema, and Tool with the provider's documented contract. The Effect form below uses the same Integration and Tool contracts.
+
+```ts title="plugin/example-oauth.ts"
+import { Buffer } from "node:buffer"
+import { Credential, Integration, Plugin, Tool } from "@bymorning/plugin/effect"
+import { Effect, Schema } from "effect"
+
+const integrationID = "example-cloud"
+const methodID = "oauth"
+const scopes = ["openid", "profile", "offline_access"]
+
+const TokenResponse = Schema.Struct({
+  access_token: Schema.String,
+  expires_in: Schema.Finite,
+  refresh_token: Schema.optionalKey(Schema.String),
+})
+const Profile = Schema.Struct({ id: Schema.String, display_name: Schema.String })
+
+class ProviderError extends Schema.TaggedError<ProviderError>()("ExampleCloud.ProviderError", {
+  message: Schema.String,
+}) {}
+
+export default Plugin.define({
+  id: "project.example-cloud",
+  effect: (context) =>
+    Effect.all(
+      [
+        context.integration.transform((editor) => {
+          editor.update(integrationID, (integration) => {
+            integration.name = "Example Cloud"
+            integration.connectionPolicy = "member-only"
+          })
+          editor.method.update({
+            integrationID,
+            method: {
+              id: methodID,
+              type: "oauth",
+              label: "Example Cloud OAuth web app",
+              client: [
+                { key: "client_id", type: "string", title: "OAuth client ID", required: true },
+                {
+                  key: "client_secret",
+                  type: "string",
+                  title: "OAuth client secret",
+                  required: true,
+                  secret: true,
+                },
+              ],
+            },
+            authorize: (_answer, clientAnswer) =>
+              Effect.gen(function* () {
+                const clientID = yield* requireString(clientAnswer, "client_id")
+                const clientSecret = yield* requireString(clientAnswer, "client_secret")
+                const verifier = randomBase64Url(64)
+                const callback = yield* context.integration.oauth.callback.register()
+                const authorization = new URL("https://accounts.example.com/oauth2/authorize")
+                authorization.search = new URLSearchParams({
+                  client_id: clientID,
+                  redirect_uri: callback.callbackURI,
+                  response_type: "code",
+                  scope: scopes.join(" "),
+                  state: callback.state,
+                  code_challenge: yield* sha256Base64Url(verifier),
+                  code_challenge_method: "S256",
+                }).toString()
+
+                return {
+                  mode: "auto" as const,
+                  url: authorization.href,
+                  instructions: "Complete authorization in your browser, then return to ByMorning.",
+                  expiresAt: callback.expiresAt,
+                  callback: callback.wait.pipe(
+                    Effect.flatMap((response) =>
+                      "error" in response
+                        ? Effect.fail(new ProviderError({ message: "Provider authorization failed" }))
+                        : Effect.succeed(response.code),
+                    ),
+                    Effect.flatMap((code) =>
+                      requestToken({
+                        client_id: clientID,
+                        client_secret: clientSecret,
+                        code,
+                        code_verifier: verifier,
+                        grant_type: "authorization_code",
+                        redirect_uri: callback.callbackURI,
+                      }),
+                    ),
+                    Effect.flatMap((token) =>
+                      token.refresh_token === undefined
+                        ? Effect.fail(new ProviderError({ message: "Provider did not return a refresh token" }))
+                        : Effect.succeed(
+                            Credential.OAuth.make({
+                              type: "oauth",
+                              methodID: Integration.MethodID.make(methodID),
+                              access: token.access_token,
+                              refresh: token.refresh_token,
+                              expires: Date.now() + Math.max(0, token.expires_in) * 1_000,
+                            }),
+                          ),
+                    ),
+                  ),
+                }
+              }),
+            refresh: (credential, clientAnswer) =>
+              Effect.gen(function* () {
+                const token = yield* requestToken({
+                  client_id: yield* requireString(clientAnswer, "client_id"),
+                  client_secret: yield* requireString(clientAnswer, "client_secret"),
+                  refresh_token: credential.refresh,
+                  grant_type: "refresh_token",
+                })
+                return Credential.OAuth.make({
+                  ...credential,
+                  access: token.access_token,
+                  refresh: token.refresh_token ?? credential.refresh,
+                  expires: Date.now() + Math.max(0, token.expires_in) * 1_000,
+                })
+              }),
+          })
+        }),
+        context.tool.transform((editor) => {
+          editor.add({
+            name: "profile",
+            description: "Read the active Example Cloud profile.",
+            input: Schema.Struct({}),
+            output: Profile,
+            options: { namespace: "example", permission: "example_profile" },
+            execute: (_input, execution) =>
+              Effect.gen(function* () {
+                yield* execution.permission({
+                  action: "example_profile",
+                  resources: ["profile"],
+                  save: ["profile"],
+                })
+                const connection = yield* context.integration.connection.active(integrationID)
+                if (!connection) return yield* Effect.fail(new ProviderError({ message: "Connect Example Cloud" }))
+                const credential = yield* context.integration.connection.resolve(connection)
+                if (credential?.type !== "oauth") {
+                  return yield* Effect.fail(new ProviderError({ message: "Reconnect Example Cloud" }))
+                }
+                return {
+                  output: yield* requestJson("https://api.example.com/v1/profile", {
+                    headers: { Authorization: `Bearer ${credential.access}` },
+                  }).pipe(Effect.flatMap(Schema.decodeUnknownEffect(Profile))),
+                }
+              }).pipe(Effect.mapError(() => new Tool.Error({ message: "Example Cloud request failed" }))),
+          })
+        }),
+      ],
+      { discard: true },
+    ).pipe(Effect.orDie),
+})
+
+function requestToken(parameters: Readonly<Record<string, string>>) {
+  return requestJson("https://accounts.example.com/oauth2/token", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(parameters),
+  }).pipe(
+    Effect.flatMap(Schema.decodeUnknownEffect(TokenResponse)),
+    Effect.mapError(() => new ProviderError({ message: "Provider token request failed" })),
+  )
+}
+
+function requestJson(url: string, init?: RequestInit) {
+  return Effect.tryPromise({
+    try: async () => {
+      const response = await fetch(url, init)
+      if (!response.ok) throw new Error(`Provider returned ${response.status}`)
+      return response.json()
+    },
+    catch: () => new ProviderError({ message: "Provider request failed" }),
+  })
+}
+
+function requireString(values: Readonly<Record<string, unknown>>, key: string) {
+  const value = values[key]
+  return typeof value === "string" && value.trim() !== ""
+    ? Effect.succeed(value.trim())
+    : Effect.fail(new ProviderError({ message: "OAuth client configuration is incomplete" }))
+}
+
+function randomBase64Url(bytes: number) {
+  return Buffer.from(crypto.getRandomValues(new Uint8Array(bytes))).toString("base64url")
+}
+
+function sha256Base64Url(value: string) {
+  return Effect.promise(() => crypto.subtle.digest("SHA-256", new TextEncoder().encode(value))).pipe(
+    Effect.map((digest) => Buffer.from(digest).toString("base64url")),
+  )
+}
+```
+
+`authorize(answer, clientAnswer)` receives the connection form answer first and the current Workspace client answer second. This example has no connection form, so it ignores `answer`. `refresh(credential, clientAnswer)` receives the stored OAuth credential and reloads the current client answer whenever refresh is required.
+
+`context.integration.oauth.callback.register()` returns host-generated `state`, the fixed callback URI, an expiry, and a scoped one-use `wait`. Put its state and callback URI into the authorization request. Keep the PKCE verifier in the callback closure and send it only to the token endpoint. Return a `Credential.OAuth` with the same `methodID`, access token, refresh token, and absolute expiry in milliseconds.
+
+The public plugin context has no HTTP client. External plugins can use the runtime's native `fetch`, as above, or bring their own HTTP dependency and wrap failures in Effect. The Gmail package owns an Effect `HttpClient` for its OAuth token and profile requests. Its Gmail Tools use `context.tool.openapi`, so the host owns their transport policy, current Integration credential lookup, and Permission assertion. Project and package plugins do not receive a host HTTP client.
+
+## Keys
+
+Register one Integration and one `key` method to support multiple saved keys. With no explicit policy, the host selects the executing member's active key, then the Workspace default, then a declared environment connection.
+
+Every Tool resolves the active connection at execution time. Changing a selection affects the next call for that owner without reloading the plugin; a failed selected key never switches to a different identity.
+
+```ts title="plugin/acme.ts"
+import { Plugin, Tool } from "@bymorning/plugin/effect"
+import { Effect, Schema } from "effect"
+
+const integrationID = "acme"
+const Status = Schema.Struct({ status: Schema.String })
+
+export default Plugin.define({
+  id: "project.acme",
+  effect: (context) =>
+    Effect.all(
+      [
+        context.integration.transform((editor) => {
+          editor.update(integrationID, (integration) => {
+            integration.name = "Acme"
+          })
+          editor.method.update({
+            integrationID,
+            method: { type: "key", label: "Acme API key" },
+          })
+        }),
+        context.tool.transform((editor) => {
+          editor.add({
+            name: "status",
+            description: "Read Acme service status.",
+            input: Schema.Struct({}),
+            output: Status,
+            options: { namespace: "acme", permission: "acme_status" },
+            execute: (_input, execution) =>
+              Effect.gen(function* () {
+                yield* execution.permission({
+                  action: "acme_status",
+                  resources: ["status"],
+                  save: ["status"],
+                })
+                const connection = yield* context.integration.connection.active(integrationID)
+                if (!connection) return yield* new Tool.Error({ message: "Connect Acme before using this Tool" })
+                const credential = yield* context.integration.connection.resolve(connection)
+                if (credential?.type !== "key") return yield* new Tool.Error({ message: "Reconnect Acme" })
+
+                return yield* Effect.tryPromise({
+                  try: async () => {
+                    const response = await fetch("https://api.acme.example/v1/status", {
+                      headers: { Authorization: `Bearer ${credential.key}` },
+                    })
+                    if (!response.ok) throw new Error(`Acme returned ${response.status}`)
+                    return { output: Schema.decodeUnknownSync(Status)(await response.json()) }
+                  },
+                  catch: () => new Tool.Error({ message: "Acme request failed" }),
+                })
+              }),
+          })
+        }),
+      ],
+      { discard: true },
+    ).pipe(Effect.orDie),
+})
+```
+
+Add more Tools inside the same Tool transform to share the `acme` connection. For independent services, repeat both registrations with distinct Integration IDs and namespaces such as `billing` and `support`. Each Tool must resolve the matching Integration ID. Do not create multiple Integrations merely to group operations from one credential.
+
+The UI can save several key connections under one Integration, owned by a member or the Workspace. Selecting **Use** changes that owner's active connection; a personal key takes precedence over the shared default. `connection.resolve(connection)` returns the key only inside the trusted plugin host; Integration discovery never returns it.
+
+## Visibility
+
+ByMorning discovers both registrations generically. You do not write UI code.
+
+- `/w/:workspaceID/integrations` lists the Integration name, methods, connection state, and saved connection labels.
+- An OAuth client form shows **Configure OAuth client** before setup. After setup it shows **Replace Workspace OAuth client configuration** and **Remove Workspace OAuth client configuration**. Saved values cannot be viewed or prefilled.
+- **Connect** starts the selected key or OAuth method. Where permitted, choose **Workspace — shared with teammates** or **Personal — only you**; member-only Integrations connect personally. You can rename, remove, or select your own connections and accessible shared connections with **Use**.
+- Tool registration is independent of connection availability. Fail clearly at execution time when no active connection exists.
+- Sessions and inbound MCP use the same prepared Tool presentation: `options.codemode: false` Tools appear directly; other Tools use the shared `execute` Code Mode catalog. Namespaces organize callable names; `options.permission` sets the Permission action.
+- **MCP Gateway** lists remote servers under **Integrations** and installed packages under **Package plugins**. Use their action menus for connection management, not Tool catalog inspection.
+
+Tool registration does not grant Permission. An unmatched action defaults to `allow`. A Session approval is once-only; administrators establish persistent Workspace or User rules. Inbound MCP cannot open an approval, so both `ask` and `deny` fail closed and wholly denied Tools are omitted. See the [Permission model](/developer-reference/permission-model) and [Inbound MCP](/agent/inbound-mcp).
+
+Trusted host Tools must call `execution.permission(...)` immediately before the provider operation. `options.permission` controls catalog evaluation, but it does not perform the host callback's assertion for you.
+
+## Credentials
+
+Treat client configuration, provider tokens, and API keys as separate secrets.
+
+- Never put a client secret, access token, refresh token, or API key in an authorization URL, callback state, credential metadata, Tool metadata, logs, errors, or returned content.
+- Send client secrets and refresh tokens only in token request bodies. Send access tokens and API keys only to the provider's declared hosts.
+- Keep credential metadata to non-secret account identifiers needed for labels or display. Gmail stores only the Google subject and email there.
+- Replacing OAuth client configuration does not rewrite or delete existing credentials. A later refresh loads the current client configuration. Removing client configuration also leaves credentials in place, but a credential that needs refresh cannot refresh until you configure a compatible client again.
+- `secret: true` controls form handling and redaction, not storage encryption. The current server stores Workspace OAuth client answers as plaintext application-level JSONB. Protect database access, backups, and transport accordingly.
+- Never return provider response bodies in errors. Map provider failures to stable messages and safe status codes.
+
+## Tests
+
+Model tests on the bundled Gmail coverage without calling the live provider.
+
+1. Run the plugin in an Effect `Scope` and capture its Integration method and Tool registrations through the real plugin context boundary where practical.
+2. Inject a deterministic request function or HTTP adapter into a plugin factory. Assert token endpoint methods, form fields, PKCE values, callback URI, scopes, and authorization headers without snapshotting secret values.
+3. Exercise `authorize` with a registered callback response. Assert the authorization URL contains host state, the callback URI, and `code_challenge_method=S256`, but not the client secret.
+4. Assert token exchange maps into `Credential.OAuth`, requires a refresh token when offline access is mandatory, and stores only safe metadata.
+5. Exercise `refresh` with replacement client answers. Assert it uses the current values, preserves a refresh token when the provider omits a new one, and does not retain client configuration in credential metadata.
+6. Execute each Tool with no connection, the wrong credential type, and a valid credential. Assert the Permission action runs before the provider request.
+7. Assert errors, Tool catalogs, metadata, and recorded request summaries contain no client secret, access token, refresh token, API key, or authorization header.
+8. Test multiple Tools under one Integration and, when needed, multiple Integration IDs. Assert each Tool resolves only its intended active connection and namespace.
+
+Use fake provider responses at the HTTP boundary rather than test-only plugin fixture paths. Run package tests from the package that owns the plugin, never from the repository root. See [Plugins](/developer-reference/plugins) for loading and lifecycle details and [Integration authentication](/developer-reference/integration-authentication) for the client and HTTP management APIs.

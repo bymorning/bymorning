@@ -1,0 +1,325 @@
+@scope ([data-session-ui]) {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: geometricPrecision;
+  }
+
+  [data-component="button"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: var(--button-radius);
+    font-style: normal;
+    font-weight: 530;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--color-text-base);
+    text-shadow: none;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04px;
+    user-select: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  [data-component="button"]:focus {
+    outline: none;
+  }
+
+  [data-component="button"]:is(:focus-visible, [data-state="focus"]):not(:disabled):not([data-state="disabled"]):not(
+      [data-variant="loading"]
+    ) {
+    outline: 2px solid var(--button-focus-ring);
+    outline-offset: 2.5px;
+  }
+
+  [data-component="button"][data-size="normal"] {
+    height: 28px;
+    padding: 0 11px;
+  }
+
+  [data-component="button"][data-size="small"] {
+    height: 24px;
+    padding: 0 9px;
+    border-radius: var(--button-radius-small);
+  }
+
+  [data-component="button"][data-size="large"] {
+    height: 32px;
+    padding: 0 15px;
+  }
+
+  [data-component="button"][data-icon][data-size="small"] {
+    padding-left: 9px;
+  }
+
+  [data-component="button"][data-icon][data-size="normal"] {
+    padding-left: 11px;
+  }
+
+  [data-component="button"][data-icon][data-size="large"] {
+    padding-left: 15px;
+  }
+
+  [data-component="button"] [data-slot="icon-svg"] {
+    color: currentColor;
+  }
+
+  /* Neutral */
+  [data-component="button"][data-variant="neutral"] {
+    background-color: var(--color-bg-button-neutral);
+    color: var(--color-text-base);
+    box-shadow: var(--shadow-button-neutral);
+  }
+
+  [data-component="button"][data-variant="neutral"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-image:
+      linear-gradient(90deg, var(--color-overlay-hover) 0%, var(--color-overlay-hover) 100%),
+      linear-gradient(90deg, var(--color-bg-button-neutral) 0%, var(--color-bg-button-neutral) 100%);
+  }
+
+  [data-component="button"][data-variant="neutral"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-image:
+      linear-gradient(90deg, var(--color-overlay-pressed) 0%, var(--color-overlay-pressed) 100%),
+      linear-gradient(90deg, var(--color-bg-button-neutral) 0%, var(--color-bg-button-neutral) 100%);
+  }
+
+  [data-component="button"][data-variant="neutral"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Danger */
+  [data-component="button"][data-variant="danger"] {
+    background-color: var(--color-bg-button-neutral);
+    color: var(--color-danger-fg);
+    box-shadow: var(--shadow-button-neutral);
+  }
+
+  [data-component="button"][data-variant="danger"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-image:
+      linear-gradient(90deg, var(--color-overlay-hover) 0%, var(--color-overlay-hover) 100%),
+      linear-gradient(90deg, var(--color-bg-button-neutral) 0%, var(--color-bg-button-neutral) 100%);
+  }
+
+  [data-component="button"][data-variant="danger"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-image:
+      linear-gradient(90deg, var(--color-overlay-pressed) 0%, var(--color-overlay-pressed) 100%),
+      linear-gradient(90deg, var(--color-bg-button-neutral) 0%, var(--color-bg-button-neutral) 100%);
+  }
+
+  [data-component="button"][data-variant="danger"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-component="button"][data-variant="warning"] {
+    background-color: var(--color-bg-button-neutral);
+    color: var(--color-warning-fg);
+    box-shadow: var(--shadow-button-neutral);
+  }
+
+  [data-component="button"][data-variant="warning"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-image:
+      linear-gradient(90deg, var(--color-overlay-hover) 0%, var(--color-overlay-hover) 100%),
+      linear-gradient(90deg, var(--color-bg-button-neutral) 0%, var(--color-bg-button-neutral) 100%);
+  }
+
+  [data-component="button"][data-variant="warning"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-image:
+      linear-gradient(90deg, var(--color-overlay-pressed) 0%, var(--color-overlay-pressed) 100%),
+      linear-gradient(90deg, var(--color-bg-button-neutral) 0%, var(--color-bg-button-neutral) 100%);
+  }
+
+  [data-component="button"][data-variant="warning"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Outline */
+  [data-component="button"][data-variant="outline"] {
+    background-color: transparent;
+    color: var(--color-text-base);
+    box-shadow: inset 0 0 0 1px var(--color-border-muted);
+  }
+
+  [data-component="button"][data-variant="outline"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--color-overlay-hover);
+  }
+
+  [data-component="button"][data-variant="outline"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--color-overlay-pressed);
+  }
+
+  [data-component="button"][data-variant="outline"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Primary */
+  [data-component="button"][data-variant="primary"] {
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--button-primary-base-background-color);
+    background-image: var(--button-primary-base-background-image);
+    color: var(--button-primary-base-foreground);
+    text-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--button-primary-shadow);
+  }
+
+  [data-component="button"][data-variant="primary"]::before,
+  [data-component="button"][data-variant="primary"]::after {
+    position: absolute;
+    left: -10%;
+    z-index: -1;
+    width: 110%;
+    height: 100%;
+    background-image: var(--button-primary-hover-edge-background-image);
+    content: "";
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+  }
+
+  [data-component="button"][data-variant="primary"]::before {
+    top: 100%;
+  }
+
+  [data-component="button"][data-variant="primary"]::after {
+    top: -100%;
+  }
+
+  [data-component="button"][data-variant="primary"]:is(:hover, [data-state="hover"]):not(:active):not(
+      [data-state="pressed"]
+    ):not(:disabled):not([data-state="disabled"])::before,
+  [data-component="button"][data-variant="primary"]:is(:hover, [data-state="hover"]):not(:active):not(
+      [data-state="pressed"]
+    ):not(:disabled):not([data-state="disabled"])::after {
+    opacity: var(--button-primary-hover-edge-opacity);
+  }
+
+  [data-component="button"][data-variant="primary"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--button-primary-hover-background-color);
+    background-image: var(--button-primary-hover-background-image);
+    color: var(--button-primary-hover-foreground);
+  }
+
+  [data-component="button"][data-variant="primary"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--button-primary-pressed-background-color);
+    background-image: var(--button-primary-pressed-background-image);
+    color: var(--button-primary-pressed-foreground);
+  }
+
+  [data-component="button"][data-variant="primary"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-component="button"][data-variant="primary"]::before,
+    [data-component="button"][data-variant="primary"]::after {
+      transition: none;
+    }
+  }
+
+  /* Loading */
+  [data-component="button"][data-variant="loading"] {
+    background: var(--color-bg-layer-2);
+    color: var(--color-text-base);
+    box-shadow: inset 0 0 0 0.5px var(--color-border-muted);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* Ghost */
+  [data-component="button"][data-variant="ghost"] {
+    background-color: transparent;
+    color: var(--color-text-base);
+  }
+
+  [data-component="button"][data-variant="ghost"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ):not([data-expanded]) {
+    background-color: var(--color-overlay-hover);
+  }
+
+  [data-component="button"][data-variant="ghost"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--color-overlay-pressed);
+  }
+
+  [data-component="button"][data-variant="ghost"]:where([data-expanded]):not(:disabled):not([data-state="disabled"]) {
+    background-color: var(--color-overlay-pressed);
+  }
+
+  [data-component="button"][data-variant="ghost"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Ghost muted */
+  [data-component="button"][data-variant="ghost-muted"] {
+    background-color: transparent;
+    color: var(--color-text-muted);
+  }
+
+  [data-component="button"][data-variant="ghost-muted"] [data-slot="icon-svg"] {
+    color: var(--color-icon-muted);
+  }
+
+  [data-component="button"][data-variant="ghost-muted"]:is(:hover, [data-state="hover"]):not(:disabled):not(
+      [data-state="disabled"]
+    ):not([data-expanded]) {
+    background-color: var(--color-overlay-hover);
+  }
+
+  [data-component="button"][data-variant="ghost-muted"]:is(:active, [data-state="pressed"]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--color-overlay-pressed);
+  }
+
+  [data-component="button"][data-variant="ghost-muted"]:where([data-expanded]):not(:disabled):not(
+      [data-state="disabled"]
+    ) {
+    background-color: var(--color-overlay-pressed);
+    color: var(--color-text-base);
+  }
+
+  [data-component="button"][data-variant="ghost-muted"]:where([data-expanded]):not(:disabled):not(
+      [data-state="disabled"]
+    )
+    [data-slot="icon-svg"] {
+    color: var(--color-icon-base);
+  }
+
+  [data-component="button"][data-variant="ghost-muted"]:is(:disabled, [data-state="disabled"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

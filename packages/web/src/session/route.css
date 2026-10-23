@@ -1,0 +1,15 @@
+[data-component="session-not-found"],
+[data-component="session-load-error"] {
+  display: grid;
+  width: min(360px, calc(100% - 32px));
+  margin: auto;
+  place-items: center;
+  gap: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+[data-slot="session-load-error-title"] {
+  color: var(--color-text-base);
+  font-weight: 500;
+}

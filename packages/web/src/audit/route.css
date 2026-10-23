@@ -1,0 +1,104 @@
+[data-component="audit-region"] {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+[data-component="audit-region"] [data-slot="audit-filters"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 8px;
+  align-items: end;
+}
+
+/* Wide enough for every filter and Apply to share one row; narrower widths keep the auto-fit wrap above. */
+@container (min-width: 760px) {
+  [data-component="audit-region"] [data-slot="audit-filters"] {
+    grid-template-columns: repeat(3, minmax(100px, 1fr)) repeat(2, minmax(176px, 1.4fr)) auto;
+  }
+}
+
+[data-component="audit-region"] [data-slot="audit-filters"] label {
+  display: grid;
+  gap: 2px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+[data-component="audit-region"] [data-slot="audit-filters"] input,
+[data-component="audit-region"] [data-slot="audit-filters"] select {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-layer-1);
+  color: inherit;
+  font-size: 13px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Narrow pages scroll the table inside its card instead of overflowing it. */
+[data-component="audit-region"] [data-slot="audit-table-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+[data-component="audit-region"] [data-slot="audit-table-scroll"]::-webkit-scrollbar {
+  height: 8px;
+}
+
+[data-component="audit-region"] [data-slot="audit-table-scroll"]::-webkit-scrollbar-track {
+  background: var(--color-bg-layer-2);
+}
+
+[data-component="audit-region"] [data-slot="audit-table-scroll"]::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--color-text-faint);
+}
+
+[data-component="audit-region"] [data-slot="audit-table-scroll"]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-component="audit-region"] [data-slot="audit-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+[data-component="audit-region"] [data-slot="audit-table"] th {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-muted);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
+[data-component="audit-region"] [data-slot="audit-table"] td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-muted);
+  vertical-align: top;
+}
+
+[data-component="audit-region"] [data-slot="audit-table"] tr[data-outcome="failure"] td {
+  color: var(--color-danger-fg);
+}
+
+[data-component="audit-region"] [data-slot="audit-status"] {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+[data-component="audit-region"] [data-slot="audit-more"] {
+  display: flex;
+  justify-content: center;
+}
+
+[data-component="audit-region"] :is([data-slot="audit-time"], [data-slot="audit-action"]) {
+  white-space: nowrap;
+}

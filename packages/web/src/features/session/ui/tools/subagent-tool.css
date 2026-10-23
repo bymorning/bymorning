@@ -1,0 +1,76 @@
+[data-component="subagent-tool"] {
+  display: flex;
+  width: fit-content;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 9px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+[data-component="subagent-tool"][href] {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+[data-component="subagent-tool"][data-compact] {
+  width: fit-content;
+  min-height: 24px;
+  gap: 6px;
+  padding: 2px 6px;
+  border: 0;
+  font-size: 13px;
+  font-weight: 530;
+}
+
+[data-component="subagent-tool"] [data-slot="subagent-tool-status"] {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  place-items: center;
+  color: currentColor;
+}
+
+[data-component="subagent-tool"] [data-slot="subagent-tool-content"] {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="subagent-tool"] [data-slot="subagent-tool-agent"] {
+  flex: none;
+  font-weight: 530;
+}
+
+[data-component="subagent-tool"] :is([data-slot="subagent-tool-description"], [data-slot="subagent-tool-background"]) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="subagent-tool"] [data-slot="subagent-tool-background"] {
+  flex: none;
+  opacity: 0.72;
+}
+
+[data-component="subagent-tool"] [data-slot="subagent-tool-terminal"] {
+  flex: none;
+  color: var(--color-danger-fg);
+}
+
+[data-component="subagent-tool"] [data-slot="subagent-tool-arrow"] {
+  flex: none;
+  color: currentColor;
+}

@@ -1,0 +1,419 @@
+[data-component="mcp-server-settings"],
+[data-component="mcp-catalog-detail"] {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 20px;
+}
+
+[data-component="mcp-server-settings"] :is(h2, p),
+[data-component="mcp-catalog-detail"] p {
+  margin: 0;
+}
+[data-component="mcp-server-settings"] h2 {
+  font-size: 16px;
+  line-height: 24px;
+}
+[data-component="mcp-server-settings"] p,
+[data-component="mcp-catalog-detail"] p {
+  color: var(--color-text-muted);
+  line-height: 20px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalogs"],
+[data-component="mcp-server-settings"] [data-slot="mcp-websearch"],
+[data-component="mcp-server-settings"] [data-slot="mcp-servers"] {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-section-heading"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-request-status"] {
+  display: inline-flex;
+  width: fit-content;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-2xl);
+  color: var(--color-text-muted);
+  background: var(--color-bg-layer-2);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-request-status"][data-status="completed"] {
+  border-color: var(--color-success-border);
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-request-status"][data-status="error"] {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-list"],
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-list"] {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius);
+  background: var(--color-bg-base);
+  list-style: none;
+  overflow: hidden;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-list"] li + li,
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-list"] li + li {
+  border-top: 1px solid var(--color-border-muted);
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-list"] a {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 14px;
+  border-radius: var(--radius);
+  color: var(--color-text-base);
+  text-decoration: none;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-list"] a:hover {
+  background: var(--color-overlay-hover);
+}
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-list"] a:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-copy"] {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-copy"] > span,
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-meta"] {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-server-meta"] {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-catalog-meta"] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-component="mcp-server-settings"] [data-slot="mcp-divider"] {
+  height: 1px;
+  background: var(--color-border-muted);
+}
+
+[data-component="workspace-page"]:has(
+  [data-component="mcp-server-settings"],
+  [data-component="mcp-catalog-detail"],
+  [data-slot="mcp-back-link"]
+) {
+  [data-slot="workspace-page-card"] {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  [data-slot="workspace-page-heading"] {
+    align-items: center;
+  }
+  [data-slot="workspace-page-title"] {
+    gap: 6px;
+  }
+  [data-slot="workspace-page-description"] {
+    color: var(--color-text-muted);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 22px;
+  }
+}
+
+[data-slot="workspace-page-identity"]:has(> [data-slot="mcp-back-link"]) {
+  align-items: center;
+  gap: 12px;
+}
+
+[data-slot="workspace-page-identity"]:has(> [data-slot="mcp-back-link"]) [data-slot="workspace-page-description"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-slot="mcp-back-link"] {
+  flex: none;
+}
+
+[data-component="mcp-breadcrumb"] {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-component="mcp-breadcrumb"] a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+[data-component="mcp-breadcrumb"] a:hover {
+  color: var(--color-text-base);
+}
+
+[data-component="mcp-breadcrumb"] a:focus-visible {
+  border-radius: var(--radius-sm);
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-component="mcp-breadcrumb"] > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-catalog-toolbar"] {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+[data-slot="mcp-detail-actions"] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-permission"] {
+  flex: none;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-permission-id"] {
+  flex: 0 1 280px;
+  min-width: 0;
+  width: 280px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-permission-id"] [data-component="text-input"] {
+  width: 100%;
+}
+
+[data-component="mcp-catalog-detail"]
+  [data-slot="mcp-permission-id"]
+  [data-component="text-input"].mcp-permission-id-input
+  [data-slot="text-input-input"] {
+  font-family: var(--font-mono);
+  font-weight: 440;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-bulk-actions"] {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-list"] li {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding: 13px 14px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-copy"] {
+  display: grid;
+  flex: 1 1 240px;
+  min-width: 0;
+  gap: 2px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-copy"] strong {
+  font-size: 14px;
+  line-height: 20px;
+}
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-copy"] p,
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-description-empty"] {
+  display: block;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-tool-description-empty"] {
+  color: var(--color-text-faint);
+}
+[data-component="mcp-server-settings"] [data-slot="mcp-announcement"],
+[data-component="mcp-catalog-detail"] [data-slot="mcp-announcement"] {
+  color: var(--color-success-fg);
+  font-size: 13px;
+}
+[data-component="mcp-server-settings"] [data-slot="mcp-announcement"]:empty,
+[data-component="mcp-catalog-detail"] [data-slot="mcp-announcement"]:empty {
+  display: none;
+}
+[data-component="mcp-server-settings"] [data-slot="mcp-error"],
+[data-component="mcp-catalog-detail"] [data-slot="mcp-error"] {
+  color: var(--color-danger-fg);
+}
+[data-component="mcp-server-settings"] [data-slot="mcp-refresh-status"],
+[data-component="mcp-catalog-detail"] [data-slot="mcp-refresh-status"] {
+  font-size: 13px;
+}
+[data-component="mcp-catalog-detail"] [data-slot="mcp-status"] {
+  padding: 20px 0;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  [data-component="mcp-server-settings"] [data-slot="mcp-catalog-list"] a,
+  [data-component="mcp-catalog-detail"] [data-slot="mcp-tool-list"] li {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  [data-component="mcp-server-settings"] [data-slot="mcp-catalog-meta"] {
+    align-self: flex-end;
+  }
+  [data-component="mcp-catalog-detail"] [data-slot="mcp-catalog-toolbar"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-slot="mcp-detail-actions"] {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  [data-component="mcp-catalog-detail"] [data-slot="mcp-tool-copy"] {
+    flex-basis: auto;
+    width: 100%;
+  }
+  [data-component="mcp-catalog-detail"] [data-slot="mcp-permission-id"] {
+    flex-basis: auto;
+    width: 100%;
+  }
+  [data-component="mcp-catalog-detail"] [data-slot="mcp-bulk-actions"] {
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+  }
+  [data-component="mcp-catalog-detail"] [data-slot="mcp-bulk-action"] {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: stretch;
+  }
+}
+
+/* Connected list: status colors on the MCP server status tag and room for the row tags. */
+[data-component="mcp-server-settings"] [data-slot="mcp-section-heading"] > div > p {
+  margin-top: 4px;
+}
+[data-component="mcp-server-settings"] [data-slot="connected-tags"] {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+[data-component="mcp-server-settings"] [data-slot="connected-status"][data-status="connected"] {
+  border-color: var(--color-success-border);
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+[data-component="mcp-server-settings"] [data-slot="connected-status"][data-status="failed"],
+[data-component="mcp-server-settings"] [data-slot="connected-status"][data-status="needs_auth"] {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-members"] {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-members-heading"] {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-members"] h2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-member-list"] {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius);
+  background: var(--color-bg-base);
+  list-style: none;
+  overflow: hidden;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-member"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 10px 14px;
+  min-width: 0;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-member"] + [data-slot="mcp-member"] {
+  border-top: 1px solid var(--color-border-muted);
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-member-email"] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-component="mcp-catalog-detail"] [data-slot="mcp-member-status"] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}

@@ -1,0 +1,58 @@
+# EMULATOR BOUNDARY overlay (installers/azure/test/kind-e2e.sh). It stacks on the overlay that
+# scripts/overlay.sh generated from test Terraform outputs and changes ONLY what AKS or Azure
+# would otherwise provide outside the manifests:
+#   * the Azure Workload Identity webhook: on AKS it injects AZURE_CLIENT_ID, AZURE_TENANT_ID,
+#     AZURE_FEDERATED_TOKEN_FILE, AZURE_AUTHORITY_HOST and the projected token volume for pods
+#     labelled azure.workload.identity/use=true. kind has no webhook, so the same fields are
+#     written here, with the audience the installer's federated credential uses.
+#   * trust in the throwaway CA that signs the emulators (NODE_EXTRA_CA_CERTS).
+#   * the execution image digest in the installation configuration (the operator edit the
+#     installer README asks for).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bymorning
+resources:
+  - ../kind-e2e
+configMapGenerator:
+  - name: bymorning-config
+    behavior: replace
+    files:
+      - bymorning.jsonc
+  - name: e2e-ca
+    files:
+      - ca.pem
+patches:
+  - target:
+      kind: Deployment
+      name: bymorning
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+          - { name: AZURE_CLIENT_ID, value: "@CLIENT_ID@" }
+          - { name: AZURE_TENANT_ID, value: "@TENANT@" }
+          - { name: AZURE_FEDERATED_TOKEN_FILE, value: /var/run/secrets/azure/tokens/azure-identity-token }
+          - { name: AZURE_AUTHORITY_HOST, value: "https://login.microsoftonline.us/" }
+          - { name: NODE_EXTRA_CA_CERTS, value: /e2e/ca.pem }
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value: { name: azure-identity-token, mountPath: /var/run/secrets/azure/tokens, readOnly: true }
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value: { name: e2e-ca, mountPath: /e2e, readOnly: true }
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: azure-identity-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  audience: api://AzureADTokenExchange
+                  expirationSeconds: 3600
+                  path: azure-identity-token
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: e2e-ca
+          configMap:
+            name: e2e-ca

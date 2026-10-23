@@ -1,0 +1,127 @@
+---
+title: Session behavior
+description: Configure default Agents, context compaction, and Tool output paging.
+---
+
+Session behavior comes from Workspace configuration when a Session starts and while its Tools run. Configure shared defaults through `PUT /api/config`; pass explicit Session choices when one run must differ.
+
+```jsonc title="Workspace configuration"
+{
+  "default_agent": "default"
+}
+```
+
+## Agent
+
+Set `default_agent` to the ID of the preferred Agent for new Sessions that do not provide an Agent.
+
+```jsonc title="Workspace configuration"
+{
+  "default_agent": "default"
+}
+```
+
+ByMorning ships one primary Agent, the built-in `default`. Every Agent created in a Workspace is a subagent, so in a Workspace that has added none of its own primary Agents through a plugin, `default` is the only Agent a participant selects and `default_agent` has nothing else to choose.
+
+Resolution still runs in this order, for installations whose plugins contribute additional primary Agents:
+
+1. the preferred ID — the Workspace `default_agent` when set, otherwise the deployment's `BYMORNING_DEFAULT_AGENT` — when it identifies a visible Agent that can run as a primary Agent;
+2. the built-in `default` Agent; then
+3. the first visible primary-capable Agent in catalog order.
+
+An invalid or non-selectable Workspace `default_agent` does not fall through to `BYMORNING_DEFAULT_AGENT`. It falls through to `default` and then catalog order.
+
+- An Agent with mode `subagent` or `hidden: true` cannot become the effective primary default.
+- An explicit Agent in a Session creation request takes precedence.
+- Changing the Workspace default affects later resolution; it does not rewrite the Agent stored on existing Sessions.
+
+Project and package plugins can contribute Agents. Configuration updates wait for plugin activation, so newly contributed Agent IDs are available after a successful update response. See [Agents and Skills](/developer-reference/agents-and-skills) and [Plugins](/configure/plugins).
+
+### Change a built-in Agent's instructions
+
+`default_agent` selects which Agent runs; it never changes what an Agent says. To change the system instructions of a built-in Agent, save a Workspace record over it. Because `default` is the Agent every member uses, editing it is how a Workspace changes the behavior everyone shares.
+
+Open **Workspace → Agents**, select the Agent, and choose **Edit agent**. The saved record replaces the shipped definition for every Session in the Workspace. **Reset to built-in** removes the record and restores the definition ByMorning ships.
+
+Only Workspace administrators can save or reset a built-in Agent. The equivalent API calls are `PUT /api/agent/:id` and `DELETE /api/agent/:id`; see [Agents and Skills](/developer-reference/agents-and-skills).
+
+An Agent's instructions are the first system part of a run, ahead of every instruction source described in [Instruction sources](/developer-reference/instruction-sources). A Workspace instruction file appends guidance to a run; only saving the Agent replaces its prompt.
+
+## Compaction
+
+Compaction summarizes older conversation history and carries recent context forward as a Session approaches the selected Model's token ceiling.
+
+```jsonc title="Workspace configuration"
+{
+  "compaction": {
+    "auto": true,
+    "buffer": 20000,
+    "keep": { "tokens": 15000 }
+  }
+}
+```
+
+| Field | Default | Constraint | Runtime effect |
+| --- | --- | --- | --- |
+| `compaction.auto` | `true` | Boolean | Enables automatic compaction. It does not disable explicit compaction requests when `false`. |
+| `compaction.buffer` | `20000` | Non-negative integer | Reserves capacity below both the Model input limit and context limit. |
+| `compaction.keep.tokens` | `15000` | Non-negative integer | Targets the amount of recent serialized conversation retained beside the summary. |
+
+The API accepts a sparse `compaction` object and fills nested defaults. `GET /api/config` always returns the complete resolved object.
+
+<Callout type="warning">
+  The current server snapshots compaction settings when it constructs the Workspace Session runtime. Updating or refreshing configuration does not rebuild that process-lifetime runtime. Restart the server process before relying on changed compaction values. In contrast, Agent defaults reload with configuration, and Tool output and subagent limits are read when those Tools run.
+</Callout>
+
+Automatic compaction checks the latest completed assistant message's reported usage. It runs when total input, output, reasoning, cache-read, and cache-write tokens reach the lower of:
+
+- the Model input limit minus `buffer`, when the Model declares an input limit; and
+- the Model context limit minus the greater of its bounded output allowance and `buffer`.
+
+- A Model with no positive context limit does not trigger automatic compaction.
+- `keep.tokens` uses an approximate serialization estimate and moves the split toward a user-message boundary, so it is a target rather than an exact tokenizer guarantee.
+- Large buffer or keep values are schema-valid but can force very early compaction or leave too much context for the compaction Model. Tune them against the Models enabled in the Workspace.
+
+Manual compaction uses `POST /api/session/:sessionID/compact` and remains subject to Session admission and Model routing. See the [generated API reference](/api) for its payload and conflict responses.
+
+## Output
+
+`tool_output` limits text returned to a Model. When possible, ByMorning stores oversized joined text under the owning Session and returns a bounded preview with an opaque output ID.
+
+```jsonc title="Workspace configuration"
+{
+  "tool_output": {
+    "max_lines": 2000,
+    "max_bytes": 51200
+  }
+}
+```
+
+| Field | Runtime default | Minimum |
+| --- | --- | --- |
+| `max_lines` | `2000` | `2` |
+| `max_bytes` | `51200` | `4` |
+
+Both fields must be positive integers. Supplying an empty `tool_output` object resolves both defaults. Omitting the whole object uses the same runtime defaults while leaving the optional field absent from the configuration document.
+
+- ByMorning joins textual Tool content with newlines and applies both limits to the preview.
+- File content remains attached, and the truncation marker sits outside the configured preview budget.
+- Successful storage adds an `outputID`; failed storage reports that the full content is unavailable.
+
+The built-in `tool_output` Tool retrieves one page for the current Session:
+
+```json title="Tool input"
+{
+  "outputID": "out_example",
+  "cursor": 51200
+}
+```
+
+`cursor` is an optional non-negative UTF-8 byte offset returned by the previous page.
+
+- Each retrieved page respects both Workspace limits and ends on a UTF-8 character boundary.
+- If bytes remain, ByMorning appends a continuation instruction and returns the next cursor. The continuation text sits outside the configured preview budget.
+- Retrieval performs Permission action `tool_output` against the opaque output ID.
+- An ID is scoped to its owning Session and does not reveal whether unavailable output exists.
+
+See [Retrieve truncated Tool output](/developer-reference/permission-model#output) for Permission rules.

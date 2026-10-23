@@ -1,0 +1,11 @@
+id: no-pass-through-service-layer
+language: TypeScript
+message: Use the owning graph handle instead of creating a pass-through service Layer.
+severity: error
+files:
+  - packages/core/src/**/*.ts
+  - packages/server/src/**/*.ts
+ignores:
+  - packages/server/src/event-hub.ts
+rule:
+  pattern: Layer.effect($SERVICE, $SERVICE)

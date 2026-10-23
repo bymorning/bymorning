@@ -1,0 +1,23 @@
+[data-component="not-found"] {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(24px, 6vw, 64px);
+  color: var(--color-text-base);
+  text-align: center;
+}
+
+[data-component="not-found"] [data-slot="not-found-title"] {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+[data-component="not-found"] [data-slot="not-found-description"] {
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+}

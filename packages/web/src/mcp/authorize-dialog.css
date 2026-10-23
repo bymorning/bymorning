@@ -1,0 +1,19 @@
+[data-component="mcp-authorize-dialog"][data-slot="dialog-container"] {
+  width: min(100%, 420px);
+}
+
+[data-component="mcp-authorize-dialog"] [data-slot="mcp-authorize-error"] {
+  margin: 0;
+  color: var(--color-danger-fg);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+[data-component="mcp-authorize-dialog"] [data-slot="dialog-content"] > [data-slot="mcp-authorize-error"] {
+  margin-top: 24px;
+}
+
+[data-component="mcp-authorize-dialog"] [data-slot="mcp-authorize-code"] {
+  display: grid;
+  gap: 16px;
+}

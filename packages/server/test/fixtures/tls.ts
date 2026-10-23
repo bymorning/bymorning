@@ -1,0 +1,23 @@
+/**
+ * Self-signed ECDSA P-256 certificate for `test.invalid`, valid until 2126.
+ * Test-only material; it authenticates nothing outside this suite.
+ */
+export const key = `-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg9vc618rQIwWvqiNQ
+dfQQAWxPt4afy6cz194nxD4dF6ehRANCAAT2f2KTvu1JJexPCUO3YF8/1Oet0PqL
+a+7zKdsAy6cPhbwQSwp6sQVRVSouszs6bN+YjZL1tSr9U6twiDngFF3q
+-----END PRIVATE KEY-----
+`
+
+export const cert = `-----BEGIN CERTIFICATE-----
+MIIBnjCCAUSgAwIBAgIUUp35ZG0xkKxISlthl0TEkALSASgwCgYIKoZIzj0EAwIw
+FzEVMBMGA1UEAwwMdGVzdC5pbnZhbGlkMCAXDTI2MDkyMjE3MzQ0MloYDzIxMjYw
+ODI5MTczNDQyWjAXMRUwEwYDVQQDDAx0ZXN0LmludmFsaWQwWTATBgcqhkjOPQIB
+BggqhkjOPQMBBwNCAAT2f2KTvu1JJexPCUO3YF8/1Oet0PqLa+7zKdsAy6cPhbwQ
+Swp6sQVRVSouszs6bN+YjZL1tSr9U6twiDngFF3qo2wwajAdBgNVHQ4EFgQU/pRb
+BYYTqk6l7zFwWFSRDf87+BswHwYDVR0jBBgwFoAU/pRbBYYTqk6l7zFwWFSRDf87
++BswDwYDVR0TAQH/BAUwAwEB/zAXBgNVHREEEDAOggx0ZXN0LmludmFsaWQwCgYI
+KoZIzj0EAwIDSAAwRQIhAOfaJf9BFWFzNU3Kj2Z5Ro8TSlSYCevXJSy3Iid/menA
+AiBJZ8b/pZ0xVzNi/0w6fwzihZo8sBMXT/CF7kczZZpnPw==
+-----END CERTIFICATE-----
+`

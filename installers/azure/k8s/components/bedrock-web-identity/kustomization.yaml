@@ -1,0 +1,72 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+# Amazon Bedrock from Azure with no stored AWS secret: the pod's projected
+# service-account token (audience sts.amazonaws.com) is exchanged for AWS
+# credentials by AssumeRoleWithWebIdentity. The AWS SDK credential chain reads
+# AWS_ROLE_ARN and AWS_WEB_IDENTITY_TOKEN_FILE.
+#
+# Customer-supplied, never assumed: partition (aws | aws-us-gov), account, role
+# name, and region. AWS_REGION MUST be the Bedrock region: without it the STS
+# call goes to us-east-1.
+#
+# The overlay MUST generate ConfigMap bymorning-aws (scripts/overlay.sh does, from
+# --aws-role-arn and --aws-region):
+#   configMapGenerator:
+#     - name: bymorning-aws
+#       literals:
+#         - AWS_ROLE_ARN=arn:<partition>:iam::<account>:role/<name>
+#         - AWS_REGION=<region>
+#         - AWS_WEB_IDENTITY_TOKEN_FILE=/var/run/secrets/aws/token
+#         - AWS_ROLE_SESSION_NAME=bymorning-gateway
+#         # Azure IMDS shares 169.254.169.254; keep the AWS SDK off it.
+#         - AWS_EC2_METADATA_DISABLED=true
+#         # Only when the region is us-gov-* (overlay.sh adds it): the image no
+#         # longer bakes the FIPS flag, so Bedrock in GovCloud sets it here.
+#         - AWS_USE_FIPS_ENDPOINT=true
+#
+# The IAM OIDC provider in the AWS account must trust the AKS OIDC issuer URL
+# (terraform output oidc_issuer_url) with audience sts.amazonaws.com, publicly
+# reachable by AWS; the role trust policy must match
+# :sub = system:serviceaccount:bymorning:bymorning-gateway. Enable the Bedrock
+# Provider activation in the app.
+#
+# Bedrock IAM: the Gateway calls Bedrock Runtime ConverseStream
+# (POST /model/<id>/converse-stream), which IAM authorizes as
+# bedrock:InvokeModelWithResponseStream; Converse/ConverseStream are API
+# operations, not IAM actions, and the non-streaming Converse/InvokeModel are
+# never called. Mantle-served models also need bedrock-mantle:CreateInference on
+# arn:<partition>:bedrock-mantle:<region>:<account>:project/default. Newer models
+# are only invokable through a cross-region inference profile
+# (us.anthropic.claude-...): allow the action on BOTH the inference-profile ARN
+# (arn:<partition>:bedrock:<region>:<account>:inference-profile/<profile-id>) AND the
+# foundation-model ARN (arn:<partition>:bedrock:<each-profile-region>::foundation-model/<model-id>);
+# missing the second yields AccessDeniedException. Verified on commercial AKS -> us-east-1
+# with us.anthropic.claude-haiku-4-5 / claude-sonnet-4-6 and us.amazon.nova-micro.
+
+patches:
+  - target:
+      kind: Deployment
+      name: bymorning
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom/-
+        value:
+          configMapRef:
+            name: bymorning-aws
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value:
+          name: aws-token
+          mountPath: /var/run/secrets/aws
+          readOnly: true
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: aws-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  audience: sts.amazonaws.com
+                  expirationSeconds: 3600
+                  path: token

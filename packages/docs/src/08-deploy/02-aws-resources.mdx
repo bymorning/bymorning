@@ -1,0 +1,171 @@
+---
+title: AWS resources
+description: Every AWS resource one ByMorning stage creates, grouped by service with its SST logical name.
+---
+
+One `sst deploy` of the production stage creates 71 AWS resources. This inventory is taken from the recorded SST state of the production stage; the counts and configuration match what `infra/*.ts` declares.
+
+## Networking (25)
+
+| Resource                                                                               | Logical name                                                                                                                                 |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| VPC                                                                                    | `VpcVpc`                                                                                                                                     |
+| Default security group                                                                 | `VpcSecurityGroup`                                                                                                                           |
+| Internet gateway                                                                       | `VpcInternetGateway`                                                                                                                         |
+| Public subnets (2)                                                                     | `VpcPublicSubnet1`, `VpcPublicSubnet2`                                                                                                       |
+| Private subnets (2)                                                                    | `VpcPrivateSubnet1`, `VpcPrivateSubnet2`                                                                                                     |
+| Public route tables (2)                                                                | `VpcPublicRouteTable1`, `VpcPublicRouteTable2`                                                                                               |
+| Private route tables (2)                                                               | `VpcPrivateRouteTable1`, `VpcPrivateRouteTable2`                                                                                             |
+| Route table associations (4)                                                           | `VpcPublicRouteTableAssociation1`, `VpcPublicRouteTableAssociation2`, `VpcPrivateRouteTableAssociation1`, `VpcPrivateRouteTableAssociation2` |
+| NAT instances (2, fck-nat `t4g.nano`; the first is also the bastion) — production only | `VpcNatInstance1`, `VpcNatInstance2`                                                                                                         |
+| Elastic IPs (2) — production only                                                      | `VpcElasticIp1`, `VpcElasticIp2`                                                                                                             |
+| EIP associations (2) — production only                                                 | `VpcNatInstanceEipAssociation1`, `VpcNatInstanceEipAssociation2`                                                                             |
+| Key pair — production only                                                             | `VpcKeyPair`                                                                                                                                 |
+| Security group for NAT instances — production only                                     | `VpcNatInstanceSecurityGroup`                                                                                                                |
+| Security group for the load balancer                                                   | `GatewayLoadBalancerSecurityGroup`                                                                                                           |
+| Security group for the Code Interpreter, no egress rules                               | `CodeInterpreterSecurityGroup`                                                                                                               |
+
+Names in the **Logical name** column are the SST component names. They are stable across accounts and stages, so use them to match resources after deploying elsewhere.
+
+Physical names and IDs (`vpc-…`, bucket names, ARNs) are generated per deployment and are deliberately omitted. Resources marked **production only** come from `bastion` and `nat: "ec2"` in `infra/server.ts`, which are enabled only when `$app.stage === "production"`.
+
+## Gateway compute (12)
+
+| Resource                                                         | Logical name                                                    |
+| ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| ECS cluster                                                      | `ClusterCluster`                                                |
+| Cluster capacity providers (Fargate and Fargate Spot)            | `ClusterCapacityProviders`                                      |
+| Task definition, 0.25 vCPU / 512 MiB, Linux x86-64               | `GatewayTask`                                                   |
+| ECS service, desired count 1                                     | `GatewayService`                                                |
+| Application Load Balancer                                        | `GatewayLoadBalancer`                                           |
+| Listener HTTP:80                                                 | `GatewayListenerHTTP80`                                         |
+| Target group, container port 3210, health check `/system/health` | `GatewayTargetGatewayHTTP3210`                                  |
+| Application Auto Scaling target                                  | `GatewayAutoScalingTarget`                                      |
+| Auto Scaling policies (CPU, memory)                              | `GatewayAutoScalingCpuPolicy`, `GatewayAutoScalingMemoryPolicy` |
+| Cloud Map private DNS namespace                                  | `VpcCloudmapNamespace`                                          |
+| Cloud Map service                                                | `GatewayCloudmapService`                                        |
+
+The autoscaling target is pinned to `min: 1, max: 1`. The policies exist but cannot scale beyond one task until OAuth callback state moves out of process memory.
+
+## Database (5)
+
+| Resource                                                      | Logical name                    |
+| ------------------------------------------------------------- | ------------------------------- |
+| Aurora PostgreSQL Serverless v2 cluster, engine 17, encrypted | `DatabaseCluster`               |
+| Writer instance, `db.serverless`                              | `DatabaseInstance`              |
+| Cluster parameter group                                       | `DatabaseClusterParameterGroup` |
+| Instance parameter group                                      | `DatabaseParameterGroup`        |
+| DB subnet group over the private subnets                      | `DatabaseSubnetGroup`           |
+
+Capacity is 4–4 ACU in production and 1–4 ACU in other stages. The Gateway connects with `sslmode=no-verify` over the private network using the generated master credentials.
+
+## Migration (3)
+
+| Resource                                                               | Logical name               |
+| ---------------------------------------------------------------------- | -------------------------- |
+| Lambda function, Node.js 22, VPC-attached, 15-minute timeout           | `DatabaseMigratorFunction` |
+| Lambda invocation, re-triggered when the migration bundle hash changes | `DatabaseMigration`        |
+| CloudWatch log group                                                   | `DatabaseMigratorLogGroup` |
+
+The Gateway ECS service depends on `DatabaseMigration`, so a failed migration stops the rollout before any new task starts.
+
+## Storage
+
+11 resources plus website files:
+
+| Resource                                                             | Logical name                                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Application storage bucket                                           | `StorageBucket`                                                                |
+| Storage bucket CORS, lifecycle, policy, public-access block          | `StorageCors`, `StorageLifecycle`, `StoragePolicy`, `StoragePublicAccessBlock` |
+| Web assets bucket                                                    | `WebAssetsBucket`                                                              |
+| Web assets CORS, policy, public-access block                         | `WebAssetsCors`, `WebAssetsPolicy`, `WebAssetsPublicAccessBlock`               |
+| Migration Lambda code and sourcemap objects, in the SST asset bucket | `DatabaseMigratorCode`, `DatabaseMigratorSourcemap0`                           |
+| Built web UI, roughly 530 objects, in the web assets bucket          | uploaded by the `Web` static site                                              |
+
+The storage lifecycle rule expires objects under `tool-output/` after 7 days. Both buckets block public access; CloudFront reads the web assets bucket through its bucket policy.
+
+## Web delivery (4)
+
+| Resource                                                         | Logical name                      |
+| ---------------------------------------------------------------- | --------------------------------- |
+| CloudFront distribution, the single public origin for UI and API | `RouterCdnDistribution`           |
+| CloudFront Function, request router                              | `RouterCloudfrontFunctionRequest` |
+| CloudFront KeyValueStore holding the route table                 | `RouterKvStore`                   |
+| Cache policy for routed origin requests                          | `RouterServerCachePolicy`         |
+
+The KeyValueStore maps `/auth`, `/api`, `/mcp`, `/system`, `/oauth`, `/.well-known`, and `/inference` to the ALB; every other path serves the static site. `/auth` uses a 60-second origin read timeout.
+
+## AI (1)
+
+| Resource                                                                         | Logical name              |
+| -------------------------------------------------------------------------------- | ------------------------- |
+| Bedrock AgentCore Code Interpreter, VPC network mode, private subnets, no egress | `CodeInterpreterResource` |
+
+## Secrets (4)
+
+| Resource                                                 | Logical name                                        |
+| -------------------------------------------------------- | --------------------------------------------------- |
+| Secrets Manager secret and version, database credentials | `DatabaseProxySecret`, `DatabaseProxySecretVersion` |
+| SSM parameter, bastion private key — production only     | `VpcPrivateKeyValue`                                |
+| CloudWatch log group, Gateway container                  | `GatewayLogGroupGateway`                            |
+
+Application secrets (`WEB_COOKIE_KEY`, `BYMORNING_API_KEY`) are SST secrets. They live encrypted in the SST state bucket and are injected into the task definition; they are not separate AWS resources.
+
+## IAM (6)
+
+| Resource                               | Logical name                   |
+| -------------------------------------- | ------------------------------ |
+| Gateway execution role                 | `GatewayExecutionRole`         |
+| Gateway task role                      | `GatewayTaskRole`              |
+| Migration Lambda role                  | `DatabaseMigratorRole`         |
+| NAT instance role — production only    | `VpcNatInstanceRole`           |
+| Code Interpreter execution role        | `CodeInterpreterExecutionRole` |
+| NAT instance profile — production only | `VpcNatInstanceProfile`        |
+
+See [AWS permissions](/deploy/aws-permissions#application-roles) for what each role grants and which resource assumes it.
+
+## Outside
+
+### Bootstrap
+
+Created once per account and region on the first `sst deploy`, shared by every stage, and left in place by `sst remove`:
+
+- S3 state bucket
+- S3 asset bucket
+- ECR repository `sst-asset` for the Gateway container image
+- SSM parameters holding bootstrap metadata and the state encryption passphrase
+
+### Service-linked
+
+AWS creates these on first use if the deployer may call `iam:CreateServiceLinkedRole`; otherwise they must already exist:
+
+| Role                                                 | Service                   |
+| ---------------------------------------------------- | ------------------------- |
+| `AWSServiceRoleForECS`                               | ECS service orchestration |
+| `AWSServiceRoleForElasticLoadBalancing`              | Application Load Balancer |
+| `AWSServiceRoleForRDS`                               | Aurora                    |
+| `AWSServiceRoleForApplicationAutoScaling_ECSService` | ECS autoscaling           |
+| `AWSServiceRoleForBedrockAgentCoreNetwork`           | AgentCore VPC networking  |
+
+### Not created
+
+No Route 53 or ACM resources exist because the stack does not attach a custom domain. Bedrock model access is an account-level setting, not a deployed resource.
+
+## Inspect
+
+The SST state file is the authoritative record of what a deploy created. Download it from the state bucket and list the AWS entries:
+
+```sh
+aws s3api get-object \
+  --bucket <sst-state-bucket> \
+  --key app/bymorning/<stage>.json \
+  state.json
+
+jq '
+  .checkpoint.latest.resources[]
+  | select(.type | startswith("aws:"))
+  | { name: (.urn | split("::") | last), type, id }
+' state.json
+```
+
+The state records inputs and outputs for every resource, so it also answers questions such as which task definition revision is live or which engine version Aurora reports. It does not capture manual changes made in the console after the deploy.

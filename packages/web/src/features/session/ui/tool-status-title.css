@@ -1,0 +1,10 @@
+[data-component="tool-status-title"] {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  text-align: start;
+}
+
+[data-component="tool-status-title"] [data-slot="tool-status-done"] {
+  color: var(--color-text-base);
+}

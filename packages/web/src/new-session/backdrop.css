@@ -1,0 +1,37 @@
+[data-component="session-backdrop"] {
+  position: absolute;
+  top: -156px;
+  left: 50%;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  width: 336px;
+  pointer-events: none;
+  transform: translate(-50%, -32px);
+  mask-image: linear-gradient(#000, transparent 55%);
+  -webkit-mask-image: linear-gradient(#000, transparent 55%);
+}
+
+[data-component="session-backdrop"] svg {
+  flex: none;
+  height: 336px;
+  width: auto;
+}
+
+@media (max-width: 600px) {
+  [data-component="session-backdrop"] {
+    top: -128px;
+    width: 280px;
+    transform: translate(-50%, -20px);
+  }
+
+  [data-component="session-backdrop"] svg {
+    height: 280px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-component="session-backdrop"] svg {
+    filter: none;
+  }
+}

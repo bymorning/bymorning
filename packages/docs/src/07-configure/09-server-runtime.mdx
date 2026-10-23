@@ -1,0 +1,91 @@
+---
+title: Server runtime
+description: Set the database, origin, authentication, telemetry, and Provider environment for a ByMorning server.
+---
+
+Server runtime variables configure one ByMorning process or deployment. Set them in your platform's secret and environment controls before the server starts.
+
+| Variable | Required | Validation and use |
+| --- | --- | --- |
+| `DATABASE_URL` | Yes | PostgreSQL URL using `postgres:` or `postgresql:`, with a host and database path. Treat the whole URL as secret when it contains credentials. |
+| `APP_ORIGIN` | Yes | Exact `http:` or `https:` origin used for browser security and callbacks. It cannot contain credentials, a path, query, or fragment. Use HTTPS outside trusted local development. |
+| `WEB_COOKIE_KEY` | Yes | Base64url-encoded 32-byte key used for AES-256-GCM browser cookies. Keep it secret and stable across all instances. |
+
+## Required
+
+These variables are not Workspace configuration. The server cannot start successfully without valid database, origin, and cookie settings.
+
+- Single sign-on is not a runtime variable. On first boot, complete Setup with the setup token from the host (the log names the file) to register the Auth Provider, and replace the connection later through Settings → Security (Auth Provider). The local host uses Local Login (**Continue locally**) on loopback origins.
+- `APP_ORIGIN` must be the public browser origin, not an internal load-balancer address.
+- Setup derives each Auth Provider's callback URL from that same origin (`<origin>/auth/callback/<providerID>`) and shows it before you save; register it with your identity provider. A mismatched origin breaks browser requests and callbacks.
+- Rotating `WEB_COOKIE_KEY` invalidates encrypted login and authentication-attempt cookies. Coordinate rotation across every instance; mixed keys cause intermittent failures.
+
+## Database
+
+| Variable | Required | Default | Constraint and behavior |
+| --- | --- | --- | --- |
+| `DATABASE_MAX_CONNECTIONS` | No | `10` | Positive integer connection-pool limit per server process. Recalculate the aggregate pool size before adding replicas. |
+| `DATABASE_CA` | No | Unset | PEM contents of the CA certificate that verifies the PostgreSQL server (the value itself, not a file path). When set, the connection uses TLS and verifies the certificate chain and server name against this CA. |
+| `PORT` | No | `3210` | Valid TCP port on which the HTTP server listens. |
+
+The database client adds a 14-second PostgreSQL statement timeout. It uses a 5-second connect timeout and a 30-second idle timeout. Migrations are a separate step: the serving process does not migrate. Run `node bymorning.mjs migrate` (or your platform's equivalent gate) to completion before routing traffic to a new version. The `bun run local` development host is the exception — it applies migrations on start.
+
+## Telemetry
+
+The server writes structured logs to standard error. OTLP export is disabled unless you set an endpoint.
+
+| Variable | Required | Default | Use |
+| --- | --- | --- | --- |
+| `BYMORNING_LOG_LEVEL` | No | `Info` | Case-insensitive `DEBUG`, `WARN`, or `ERROR` select those minimum levels. Any other value uses `Info`. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | No | Unset | Base HTTP endpoint without a trailing slash. ByMorning appends `/v1/logs` and `/v1/traces`. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | No | Unset | Comma-separated `key=value` exporter headers. Values may contain `=`. Treat authentication headers as secrets. |
+| `OTEL_RESOURCE_ATTRIBUTES` | No | Unset | Comma-separated, percent-encoded OpenTelemetry `key=value` resource attributes. Invalid input is ignored. |
+
+OTLP initialization failure falls back to local structured logging. Do not put credentials or personal data in resource attributes. Restrict access to logs and telemetry because operational errors can contain request context.
+
+## Credentials
+
+Provider environment variables create process-backed Integration connections. Keep them in the deployment secret store; discovery reports availability but never returns their values.
+
+| Integration | Environment variable |
+| --- | --- |
+| Bymorning Provider | `BYMORNING_API_KEY` |
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Google | `GOOGLE_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, or `GEMINI_API_KEY` |
+| OpenCode Zen | `OPENCODE_API_KEY` |
+| Fireworks | `FIREWORKS_API_KEY` |
+| Exa web search | `EXA_API_KEY` |
+| Firecrawl web search | `FIRECRAWL_API_KEY` |
+| Parallel web search | `PARALLEL_API_KEY` |
+| Tavily web search | `TAVILY_API_KEY` |
+| Context7 plugin | `CONTEXT7_API_KEY` |
+
+These variables are optional for server startup. A Provider or external service may be unavailable, keyless, or limited until you supply its credential. You can instead create stored credentials through [Integration authentication](/developer-reference/integration-authentication). See [Integrations](/configure/integrations) for Workspace selection.
+
+### Bedrock
+
+Bedrock discovers complete environment credential groups automatically. Set the Provider activation to `enabled` to use the deployment's AWS credential chain without a saved or environment Connection.
+
+| Authentication | Required variables | Optional variable |
+| --- | --- | --- |
+| Bedrock bearer token | `AWS_BEARER_TOKEN_BEDROCK`, `AWS_REGION` | None |
+| AWS SigV4 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` | `AWS_SESSION_TOKEN` |
+
+Partial groups do not create an environment Connection. When both groups are complete, the bearer-token group takes precedence. Saved Connections take precedence over both groups.
+
+- When Bedrock activation is `enabled` and no saved or complete environment Connection exists, Bedrock uses the deployment's AWS credential chain, including ECS task credentials. It resolves temporary credentials for each signed request.
+- Set `AWS_REGION` or `AWS_DEFAULT_REGION` to a commercial or GovCloud AWS region; the default is `us-east-1`.
+- AWS determines Model access and regional availability. A failed selected Connection does not fall back to another identity.
+
+Grant `bedrock:InvokeModelWithResponseStream` for Converse inference (the Gateway calls `ConverseStream`, which IAM authorizes under that action) and `bedrock-mantle:CreateInference` for Mantle. The bundled AWS task declaration includes these actions and also `bedrock:InvokeModel`, which the Gateway does not call.
+
+## Deploy
+
+1. **Create dependencies.** Provision PostgreSQL and the public HTTPS origin. Register an OIDC client with your identity provider; its values are configured later in Setup, not as runtime variables. Provision SES and an OTLP collector only when you use them.
+2. **Store secrets.** Put `DATABASE_URL`, `WEB_COOKIE_KEY`, and external credentials in your platform's secret store. Do not commit them or bake them into an image.
+3. **Set non-secret environment.** Set `APP_ORIGIN`, `PORT`, pool sizing, logging, telemetry endpoints, and feature controls for the deployment.
+4. **Deploy and migrate.** Start the server only after the database is reachable. Run the image's `migrate` command (`node bymorning.mjs migrate`) and let it complete before routing traffic to the new version.
+5. **Verify.** Check `/system/health`, sign in through the public origin, create and claim a test invitation, and confirm Provider and telemetry connectivity.
+
+Keep platform-specific resource links, generated URLs, IAM attachment mechanics, and secret injection syntax in deployment automation. The variables above are the public operator boundary.

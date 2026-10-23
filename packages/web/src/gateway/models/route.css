@@ -1,0 +1,238 @@
+[data-component="workspace-page"]:has([data-component="gateway-page"]) {
+  [data-slot="workspace-page-card"] {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  [data-slot="workspace-page-heading"] {
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    [data-slot="workspace-page-heading"] {
+      align-items: stretch;
+    }
+  }
+}
+[data-component="workspace-page"] [data-component="gateway-page"] {
+  display: grid;
+  min-width: 0;
+  gap: 20px;
+}
+
+[data-component="gateway-models"] {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+[data-component="gateway-models"] [data-slot="card"] {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 16px;
+}
+
+[data-component="gateway-models"] [data-slot="model-list-header"],
+[data-component="gateway-models"] [data-slot="model-list"] > li {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(380px, 2fr) 56px;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+[data-component="gateway-models"] [data-slot="model-list-header"] {
+  padding: 8px 12px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 530;
+}
+
+[data-component="gateway-models"] [data-slot="model-pricing-header"],
+[data-component="gateway-models"] [data-slot="model-pricing"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+[data-component="gateway-models"] [data-slot="model-pricing-header"] {
+  text-align: right;
+}
+[data-component="gateway-models"] [data-slot="model-pricing-header"] > span {
+  white-space: nowrap;
+}
+[data-component="gateway-models"] [data-slot="model-list"] {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+[data-component="gateway-models"] [data-slot="model-list"] > li {
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-border-muted);
+}
+
+[data-component="gateway-models"] [data-slot="model-unavailable"],
+[data-component="gateway-models"] [data-slot="model-error"] {
+  grid-column: 2 / -1;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+}
+[data-component="gateway-models"] [data-slot="model-unavailable"] {
+  color: var(--color-text-muted);
+}
+[data-component="gateway-models"] [data-slot="model-error"] {
+  color: var(--color-danger-fg);
+}
+
+[data-component="gateway-models"] [data-slot="model-pricing"] {
+  margin: 0;
+}
+[data-component="gateway-models"] [data-slot="model-pricing"] > div {
+  min-width: 0;
+  text-align: right;
+}
+[data-component="gateway-models"] [data-slot="model-pricing"] dd {
+  margin: 0;
+  color: var(--color-text-base);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+[data-component="gateway-models"] [data-slot="model-cost"] sup {
+  margin-inline-start: 2px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+[data-component="gateway-models"] [data-slot="model-actions"] {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+[data-component="gateway-models"]
+  [data-slot="model-list"]
+  > li[data-enabled="false"]
+  [data-component="gateway-model-identity"],
+[data-component="gateway-models"] [data-slot="model-list"] > li[data-enabled="false"] [data-slot="model-pricing"] {
+  opacity: 0.6;
+}
+[data-component="gateway-models"] [data-slot="model-actions"] [data-slot="switch-control"] {
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+[data-component="gateway-models"]
+  [data-slot="model-actions"]
+  [data-component="switch"]:not([data-checked])
+  [data-slot="switch-control"] {
+  background: var(--color-bg-layer-2);
+}
+[data-component="gateway-models"]
+  [data-slot="model-actions"]
+  [data-component="switch"]:not([data-checked])
+  [data-slot="switch-thumb"] {
+  background: var(--color-text-muted);
+}
+
+[data-component="gateway-models"] [data-slot="model-filter"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 12px;
+}
+[data-component="gateway-models"] [data-slot="model-filter"] > [data-component="text-input"],
+[data-component="gateway-models"] [data-slot="model-filter"] > [data-component="select-root"] {
+  min-width: 0;
+  flex: 1;
+}
+[data-component="gateway-models"] [data-slot="model-filter"] [data-component="select"] {
+  width: 100%;
+}
+[data-component="gateway-models"] [data-slot="filtered-empty"] {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: 20px 0;
+}
+[data-component="gateway-models"] [data-slot="model-status"] {
+  padding: 20px 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  [data-component="gateway-models"] [data-slot="model-list-header"] {
+    display: none;
+  }
+  [data-component="gateway-models"] [data-slot="model-list"] {
+    display: grid;
+    gap: 10px;
+  }
+  [data-component="gateway-models"] [data-slot="model-list"] > li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "identity actions"
+      "pricing pricing";
+    align-items: start;
+    gap: 14px;
+    border: 1px solid var(--color-border-muted);
+    border-radius: var(--radius);
+    padding-block: 12px;
+  }
+  [data-component="gateway-models"] [data-component="gateway-model-identity"] {
+    grid-area: identity;
+  }
+  [data-component="gateway-models"] [data-slot="model-pricing"] {
+    grid-area: pricing;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  [data-component="gateway-models"] [data-slot="model-pricing"] > div {
+    text-align: left;
+  }
+  [data-component="gateway-models"] [data-slot="model-pricing"] dt.sr-only {
+    position: static;
+    display: grid;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    gap: 2px;
+    clip: auto;
+    clip-path: none;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    line-height: 15px;
+    white-space: normal;
+  }
+  [data-component="gateway-models"] [data-slot="model-pricing"] dd {
+    margin-top: 4px;
+  }
+  [data-component="gateway-models"] [data-slot="model-actions"] {
+    grid-area: actions;
+    align-self: center;
+  }
+}
+
+@media (max-width: 600px) {
+  [data-component="gateway-models"] [data-slot="card"] {
+    padding: 12px;
+  }
+  [data-component="gateway-models"] [data-slot="model-filter"] {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  [data-component="gateway-models"] [data-slot="model-filter"] > [data-component="text-input"],
+  [data-component="gateway-models"] [data-slot="model-filter"] > [data-component="select-root"] {
+    /* In a column, `flex: 1` would zero the basis and collapse the input to its padding. */
+    flex: none;
+    width: 100%;
+  }
+  [data-component="gateway-models"] [data-slot="model-pricing"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 10px;
+  }
+}

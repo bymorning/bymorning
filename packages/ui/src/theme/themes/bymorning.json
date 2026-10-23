@@ -1,0 +1,36 @@
+{
+  "id": "bymorning",
+  "name": "Sand",
+  "radius": 6,
+  "fonts": {
+    "heading": "atkinson-hyperlegible-next",
+    "body": "atkinson-hyperlegible-next",
+    "mono": "jetbrains-mono"
+  },
+  "light": {
+    "palette": {
+      "neutral": "#faf3e4",
+      "ink": "#231b10",
+      "primary": "#ee8a3e",
+      "accent": "#7152f4",
+      "success": "#3e9c35",
+      "warning": "#a6791a",
+      "error": "#de4a34",
+      "info": "#22afff",
+      "interactive": "#22afff"
+    }
+  },
+  "dark": {
+    "palette": {
+      "neutral": "#121110",
+      "ink": "#f1ece8",
+      "primary": "#ee8a3e",
+      "accent": "#7152f4",
+      "success": "#357f2e",
+      "warning": "#a6791a",
+      "error": "#bc3b28",
+      "info": "#1580bd",
+      "interactive": "#22afff"
+    }
+  }
+}

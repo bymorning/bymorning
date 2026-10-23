@@ -1,0 +1,34 @@
+{
+  "id": "ink",
+  "name": "Ink",
+  "radius": 6,
+  "fonts": {
+    "heading": "inter",
+    "body": "inter",
+    "mono": "jetbrains-mono"
+  },
+  "light": {
+    "palette": {
+      "neutral": "#ffffff",
+      "ink": "#000000",
+      "primary": "#68016e",
+      "accent": "#d5e04d",
+      "success": "#aab43e",
+      "warning": "#d5e04d",
+      "error": "#b01730",
+      "info": "#00529c"
+    }
+  },
+  "dark": {
+    "palette": {
+      "neutral": "#010101",
+      "ink": "#ffffff",
+      "primary": "#68016e",
+      "accent": "#d5e04d",
+      "success": "#aab43e",
+      "warning": "#d5e04d",
+      "error": "#b01730",
+      "info": "#00529c"
+    }
+  }
+}

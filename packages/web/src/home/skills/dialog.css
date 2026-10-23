@@ -1,0 +1,10 @@
+[data-component="skill-dialog"] [data-slot="skill-dialog-instructions"] {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+[data-component="skill-dialog"] [data-slot="skill-dialog-empty"] {
+  margin: 0;
+  color: var(--color-text-muted);
+}

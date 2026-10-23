@@ -1,0 +1,174 @@
+[data-component="session-composer-attachments"] {
+  position: relative;
+  min-width: 0;
+  padding-block-start: 8px;
+  timeline-scope: --session-composer-attachments-scroll;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachments-scroll"] {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-inline: 10px;
+  scrollbar-width: none;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachments-scroll"]::-webkit-scrollbar {
+  display: none;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment"] {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: var(--radius-md);
+  padding: 8px;
+  background: var(--color-overlay-hover);
+  box-shadow: inset 0 0 0 1px var(--color-border-muted);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 12px;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment"][data-state="error"] {
+  box-shadow: inset 0 0 0 1px var(--color-danger-border);
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment-path"],
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment-subtitle"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment-path"] {
+  padding-inline-end: 18px;
+  color: var(--color-text-base);
+  font-weight: 600;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment-subtitle"] {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment-subtitle"] > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-component="session-composer-attachments"]
+  [data-slot="session-composer-attachment-subtitle"]
+  [data-component="file-icon"],
+[data-component="session-composer-attachments"]
+  [data-slot="session-composer-attachment-subtitle"]
+  [data-component="loader"] {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachment-error"] {
+  color: var(--color-danger-fg);
+}
+
+[data-component="session-composer-attachments"]
+  [data-slot="session-composer-attachment"]
+  > [data-component="tooltip-trigger"] {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: 2px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+[data-component="session-composer-attachments"]
+  [data-slot="session-composer-attachment"]:hover
+  > [data-component="tooltip-trigger"],
+[data-component="session-composer-attachments"]
+  [data-slot="session-composer-attachment"]
+  > [data-component="tooltip-trigger"]:focus-within {
+  opacity: 1;
+}
+
+[data-component="session-composer-attachments"] [data-slot^="session-composer-attachments-fade-"] {
+  position: absolute;
+  inset-block: 8px 0;
+  z-index: 1;
+  width: 20px;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachments-fade-start"] {
+  inset-inline-start: 0;
+  background: linear-gradient(to right, var(--color-bg-layer-1), transparent);
+}
+
+[dir="rtl"] [data-component="session-composer-attachments"] [data-slot="session-composer-attachments-fade-start"] {
+  background: linear-gradient(to left, var(--color-bg-layer-1), transparent);
+}
+
+[data-component="session-composer-attachments"] [data-slot="session-composer-attachments-fade-end"] {
+  inset-inline-end: 0;
+  background: linear-gradient(to left, var(--color-bg-layer-1), transparent);
+}
+
+[dir="rtl"] [data-component="session-composer-attachments"] [data-slot="session-composer-attachments-fade-end"] {
+  background: linear-gradient(to right, var(--color-bg-layer-1), transparent);
+}
+
+@keyframes session-composer-attachments-fade-start {
+  from {
+    visibility: hidden;
+  }
+
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes session-composer-attachments-fade-end {
+  from {
+    visibility: visible;
+  }
+
+  to {
+    visibility: hidden;
+  }
+}
+
+@supports (animation-timeline: --session-composer-attachments-scroll) and
+  (timeline-scope: --session-composer-attachments-scroll) {
+  [data-component="session-composer-attachments"] [data-slot="session-composer-attachments-scroll"] {
+    scroll-timeline: --session-composer-attachments-scroll inline;
+  }
+
+  [data-component="session-composer-attachments"] [data-slot="session-composer-attachments-fade-start"] {
+    animation: session-composer-attachments-fade-start linear both;
+    animation-timeline: --session-composer-attachments-scroll;
+    animation-range: 0 0.1px;
+  }
+
+  [data-component="session-composer-attachments"] [data-slot="session-composer-attachments-fade-end"] {
+    animation: session-composer-attachments-fade-end linear both;
+    animation-timeline: --session-composer-attachments-scroll;
+    animation-range: calc(100% - 1.1px) calc(100% - 1px);
+  }
+}
+
+@media (hover: none) {
+  [data-component="session-composer-attachments"]
+    [data-slot="session-composer-attachment"]
+    > [data-component="tooltip-trigger"] {
+    opacity: 1;
+  }
+}
