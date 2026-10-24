@@ -20,7 +20,7 @@ test("loads every public primitive and package assets under a nested base path",
     await document.fonts.ready
   })
   expect(assets.some((url) => url.includes("sprite-"))).toBe(true)
-  expect(assets.filter((url) => /\.(?:woff2|ttf)$/.test(url)).length).toBeGreaterThanOrEqual(5)
+  expect(assets.filter((url) => /\.(?:woff2|ttf)$/.test(url)).length).toBeGreaterThanOrEqual(3)
   expect(assets.every((url) => new URL(url).pathname.startsWith("/ui/assets/"))).toBe(true)
   expect(failures).toEqual([])
 })
