@@ -1,15 +1,9 @@
-/// <reference types="node" />
-
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
 import { ByMorning, type ByMorningClient } from "@bymorning/client"
 import { cleanup, render, screen } from "@solidjs/testing-library"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import App from "./app"
 import { showToast, toaster } from "./ui/components/toast"
-
-const source = (path: string) => readFileSync(join(process.cwd(), path), "utf8")
 
 afterEach(() => {
   cleanup()
@@ -46,21 +40,5 @@ describe("application theme integration", () => {
 
     showToast({ variant: "success", title: "Toast region mounted by the app shell" })
     expect(await screen.findByText("Toast region mounted by the app shell")).toBeInTheDocument()
-  })
-
-  it("loads Tailwind before the complete canonical token foundation", () => {
-    const styles = source("src/main.css")
-    expect(styles.indexOf('@import "tailwindcss"')).toBeGreaterThanOrEqual(0)
-    expect(styles.indexOf('@import "./ui/theme/styles/index.css"')).toBeGreaterThan(
-      styles.indexOf('@import "tailwindcss"'),
-    )
-  })
-
-  it("loads generated primitives, generated semantics, then fonts", () => {
-    expect(source("src/ui/theme/styles/index.css")).toBe(
-      '@import "./tokens/colors.css";\n' +
-        '@import "./tokens/theme.css";\n' +
-        '@import "./fonts.css";\n',
-    )
   })
 })

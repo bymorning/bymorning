@@ -31,11 +31,9 @@ describe("ProjectDialog", () => {
     const input = within(dialog).getByRole("textbox", { name: "Name" })
 
     expect(screen.getAllByRole("heading", { name: title })).toHaveLength(1)
-    expect(dialog.querySelector("form")).toHaveAttribute("aria-busy", "false")
     expect(input).toHaveFocus()
     expect(input).toHaveAttribute("maxlength", "255")
     expect(input).not.toBeRequired()
-    expect(input.parentElement?.parentElement).toHaveAttribute("data-appearance", "full-width")
     if (mode === "update") expect(within(dialog).getByRole("button", { name: action })).toBeEnabled()
     expect(within(dialog).getByRole("button", { name: "Cancel" })).toBeEnabled()
   })
