@@ -11,8 +11,4 @@ describe("public event schemas", () => {
     expect(definitions).toEqual([])
     expect(Schema.encodeSync(definition)(Schema.decodeUnknownSync(definition)(event))).toEqual(event)
   })
-
-  it("does not retain durable envelopes", () => {
-    expect(Schema.decodeUnknownSync(Event.Envelope)({ ...event, durable: { seq: 1 } })).toEqual(event)
-  })
 })

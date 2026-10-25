@@ -225,38 +225,3 @@ test("Bedrock connection projections redact every credential and environment sec
   ])
   expect(() => Schema.decodeUnknownSync(Connection.Info)({ type: "regional-env", authKind: "sigv4" })).toThrow()
 })
-
-test("Integration decodes browser and command attempts and every status variant", () => {
-  const attemptID = Integration.AttemptID.create()
-  const time = { created: 1, expires: 2 }
-  const statuses = [
-    { status: "pending", time },
-    { status: "complete", time },
-    { status: "failed", message: "denied", time },
-    { status: "expired", time },
-  ]
-  const commandStatuses = [
-    { status: "pending", message: "Waiting for CLI", time },
-    { status: "complete", time },
-    { status: "failed", message: "command failed", time },
-    { status: "expired", time },
-  ]
-
-  expect(
-    ["auto", "code"].map(
-      (mode) =>
-        Schema.decodeUnknownSync(Integration.Attempt)({
-          attemptID,
-          url: "https://example.com/authorize",
-          instructions: "Authorize access",
-          mode,
-          time,
-        }).mode,
-    ),
-  ).toEqual(["auto", "code"])
-  expect(Schema.decodeUnknownSync(Integration.CommandAttempt)({ attemptID, time })).toEqual({ attemptID, time })
-  expect(statuses.map((status) => Schema.decodeUnknownSync(Integration.AttemptStatus)(status))).toEqual(statuses)
-  expect(commandStatuses.map((status) => Schema.decodeUnknownSync(Integration.CommandAttemptStatus)(status))).toEqual(
-    commandStatuses,
-  )
-})

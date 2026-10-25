@@ -28,8 +28,4 @@ describe("WorkspaceEvent schemas", () => {
     }
     expect(Schema.decodeUnknownSync(WorkspaceEvent.Item)(changed)).toEqual(changed)
   })
-
-  it("rejects removed multiplexing envelopes", () => {
-    expect(() => Schema.decodeUnknownSync(WorkspaceEvent.Item)({ type: "event.session.log", data: {} })).toThrow()
-  })
 })

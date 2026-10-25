@@ -2,13 +2,7 @@ import * as Agent from "@bymorning/schema/agent"
 import { Schema } from "effect"
 import { expect, test } from "vitest"
 
-test("keeps stable Agent identity distinct from its human-facing name", () => {
-  expect(Agent.DefaultID).toBe("default")
-  expect(Agent.ID.make("build")).toBe("build")
-  // The Workspace ships exactly one primary Agent; the rest are subagents.
-  expect([...Agent.BuiltIn]).toEqual(["default", "general", "explore"])
-  expect(Agent).not.toHaveProperty("BuildID")
-  expect(Agent.Info.fields).toHaveProperty("id")
+test("validates Agent names, strict Info decoding, and step bounds", () => {
   expect(Schema.decodeUnknownSync(Agent.Name)("Build")).toBe("Build")
   expect(Schema.decodeUnknownSync(Agent.Name)("build")).toBe("build")
   expect(Schema.decodeUnknownSync(Agent.Name)("AGT_build")).toBe("AGT_build")

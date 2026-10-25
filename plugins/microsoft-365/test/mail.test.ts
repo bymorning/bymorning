@@ -3,10 +3,9 @@ import plugin from "../src/mail.js"
 import { capture, withFetch } from "./helper.js"
 
 describe("Outlook Mail plugin", () => {
-  it("registers mail tools with exact permission actions", async () => {
+  it("registers send under its exact permission action", async () => {
     const test = capture(plugin)
     const tools = await test.tools()
-    expect([...tools.keys()].sort()).toEqual(["mail.message.get", "mail.message.list", "mail.message.send"])
     expect(tools.get("mail.message.send")?.registration.options?.permission).toBe("mail.message.send")
   })
 

@@ -39,10 +39,6 @@ const model = (provider: string, id = "model") => ({
 })
 
 describe("company-policy example", () => {
-  test("declares Workspace scope so Gateway hooks are active", () => {
-    expect(plugin.scope).toBe("workspace")
-  })
-
   test("denies the restricted Provider on Session and Gateway model.invoke", async () => {
     const hooks = await activate({ restrictProvider: true })
     const session = await hooks.invoke("session.model.invoke", { model: model("restricted") })

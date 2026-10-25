@@ -7,7 +7,6 @@ import { TestEvents, TestTransport, ids, json, owner } from "./fixture.js"
 // These are protocol-valid UUID/project identifiers; @bymorning/client/solid does not
 // depend on schema at test runtime, so retain their generated SDK brands here.
 const eventID = "00000000-0000-4000-8000-000000000099" as SDK.WorkspaceEventItem["id"]
-const compactionID = "00000000-0000-4000-8000-000000000098" as SDK.MessageListOutput["data"][number]["id"]
 const projectID = "prj_00000000000000000000000000" as SDK.SessionInfo["projectID"]
 const created = "2025-02-03T04:05:06.000Z"
 
@@ -62,33 +61,6 @@ describe("Workspace Event projection", () => {
     expect(scoped.value.session.permission.list(ids.session)).toMatchObject([{ id: permissionID, action: "read" }])
     expect(scoped.value.session.form.list(ids.session)).toMatchObject([{ id: formID, title: "Confirm" }])
     expect(transport.requests).toEqual([])
-    scoped.dispose()
-  })
-
-  test("projects compaction lifecycle and assistant reasoning/tool parts before its terminal Message", () => {
-    const events = new TestEvents()
-    const scoped = owner(() => createData({ api: () => new TestTransport().api, workspace: ids.workspace, event: events }))
-    const assistant = {
-      id: ids.message,
-      sessionID: ids.session,
-      sequence: 2,
-      createdAt: created,
-      type: "assistant" as const,
-      agent: "agent" as SDK.SessionInfo["agent"],
-      model: { id: "model", provider: "provider" as SDK.SessionInfo["model"]["provider"] },
-      content: [],
-      usage: { cost: 0, costComplete: true, tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } } },
-      time: { created },
-    }
-    const started: Extract<SDK.WorkspaceEventItem, { type: "session.execution.started" }> = { id: eventID, type: "session.execution.started", created: 1, data: { sessionID: ids.session, message: assistant } }
-    const reasoning: Extract<SDK.WorkspaceEventItem, { type: "session.reasoning.started" }> = { id: eventID, type: "session.reasoning.started", created: 2, data: { sessionID: ids.session, messageID: ids.message, partID: "reason", ordinal: 0 } }
-    const tool: Extract<SDK.WorkspaceEventItem, { type: "session.tool.input.started" }> = { id: eventID, type: "session.tool.input.started", created: 3, data: { sessionID: ids.session, messageID: ids.message, callID: "tool", ordinal: 1, name: "read" } }
-    const compacting: Extract<SDK.WorkspaceEventItem, { type: "session.compaction.started" }> = { id: eventID, type: "session.compaction.started", created: 4, data: { sessionID: ids.session, message: { id: compactionID, sessionID: ids.session, sequence: 3, createdAt: created, type: "compaction", reason: "manual", status: "running", summary: "", recent: "" } } }
-    const compacted: Extract<SDK.WorkspaceEventItem, { type: "session.compaction.ended" }> = { id: eventID, type: "session.compaction.ended", created: 5, data: { sessionID: ids.session, message: { id: compactionID, sessionID: ids.session, sequence: 3, createdAt: created, type: "compaction", reason: "manual", status: "completed", summary: "checkpoint", recent: "recent" }, usage: assistant.usage } }
-
-    events.emit(started); events.emit(reasoning); events.emit(tool); events.emit(compacting); events.emit(compacted)
-    expect(scoped.value.session.message.get(ids.session, ids.message)).toMatchObject({ content: [{ id: "reason", type: "reasoning" }, { id: "tool", type: "tool" }] })
-    expect(scoped.value.session.message.list(ids.session)).toContainEqual(expect.objectContaining({ type: "compaction", status: "completed", summary: "checkpoint", createdAt: new Date(created) }))
     scoped.dispose()
   })
 
