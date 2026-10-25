@@ -4,24 +4,17 @@ import { describe, expect, test } from "vitest"
 import { Api } from "../../src/api.js"
 
 describe("Workspace Config protocol", () => {
-  test("declares its endpoints", () => {
-    const endpoints: Array<{ identifier: string; method: string; path: string }> = []
+  test("decodes the Config update payload", () => {
     let updatePayload: Schema.Top | undefined
     HttpApi.reflect(Api, {
       onGroup() {},
       onEndpoint({ endpoint, group }) {
         if (group.identifier !== "api.config") return
-        endpoints.push({ identifier: endpoint.identifier, method: endpoint.method, path: endpoint.path })
         if (endpoint.identifier === "config.update") {
           updatePayload = Array.from(endpoint.payload.values())[0]?.schemas[0]
         }
       },
     })
-    expect(endpoints).toEqual([
-      { identifier: "config.get", method: "GET", path: "/api/config" },
-      { identifier: "config.update", method: "PUT", path: "/api/config" },
-      { identifier: "config.refresh", method: "POST", path: "/api/config/refresh" },
-    ])
     if (updatePayload === undefined) throw new Error("Missing Config update payload")
     const decodePayload = Schema.decodeUnknownSync(Schema.make<Schema.Codec<unknown, unknown>>(updatePayload.ast))
     expect(

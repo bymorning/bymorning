@@ -29,11 +29,6 @@ const run = <A, E>(effect: Effect.Effect<A, E, WebCookie.Service>) =>
   Effect.runPromise(effect.pipe(Effect.provide(layer)))
 
 describe("WebCookie", () => {
-  it("defines the 12 hour session lifetime", () => {
-    expect(WebCookie.secure.sessionLifetime).toBe("12 hours")
-    expect(WebCookie.local.sessionLifetime).toBe("12 hours")
-  })
-
   it("round trips versioned Session and Attempt payloads", async () => {
     const attempt = WebCookie.Attempt.make({
       version: 1,

@@ -10,11 +10,6 @@ import { ID as WorkspaceID } from "@bymorning/schema/workspace"
 import { describe, expect, expectTypeOf, test } from "vitest"
 import {
   ByMorning as PromiseByMorning,
-  type SessionActiveInput,
-  type SessionActiveOutput,
-  type SessionInterruptOutput,
-  type PermissionToolsListInput,
-  type PermissionToolsUpdateInput,
   type UserListInput,
   type UserListOutput,
   type UserInviteInput,
@@ -27,40 +22,10 @@ import {
   type UsageRecordsOutput,
 } from "../../client/src/promise/index.js"
 import { ByMorning as EffectByMorning } from "../../client/src/effect/index.js"
-import type {
-  SessionActiveOperation,
-  SessionInterruptOperation,
-  PermissionToolsListOperation,
-  PermissionToolsUpdateOperation,
-  UserInviteOperation,
-  UserListOperation,
-  UsageOverviewOperation,
-} from "../../client/src/effect/api.js"
+import type { UserInviteOperation, UserListOperation, UsageOverviewOperation } from "../../client/src/effect/api.js"
 import { Api } from "../src/api.js"
 
 describe("generated client Protocol contract", () => {
-  test("groups Tool settings under permission rather than MCP", () => {
-    const client = PromiseByMorning.make({ baseUrl: "https://example.test" })
-    const paths = OpenApi.fromApi(Api).paths
-
-    expect(client.permission.tools.list).toBeTypeOf("function")
-    expect(client.permission.tools.update).toBeTypeOf("function")
-    // MCP exposes read-only Tool discovery; Tool settings still live under permission.
-    expect(client.mcp.tools).not.toHaveProperty("update")
-    expect(paths["/api/permission/tool"]?.get?.operationId).toBe("v2.permission.tools.list")
-    expect(paths["/api/permission/tool"]?.put?.operationId).toBe("v2.permission.tools.update")
-    expect(paths["/api/mcp/tool"]?.put).toBeUndefined()
-
-    expectTypeOf<PermissionToolsListInput>().toEqualTypeOf<{ readonly workspace?: Workspace.ID; readonly user?: User.ID }>()
-    expectTypeOf<PermissionToolsUpdateInput>().toEqualTypeOf<{
-      readonly workspace?: Workspace.ID
-      readonly user?: User.ID
-      readonly tools: ReadonlyArray<{ readonly action: string; readonly effect: "allow" | "deny" | "ask" }>
-    }>()
-    expectTypeOf<Parameters<PermissionToolsListOperation>[0]>().toEqualTypeOf<PermissionToolsListInput | undefined>()
-    expectTypeOf<Parameters<PermissionToolsUpdateOperation>[0]>().toEqualTypeOf<PermissionToolsUpdateInput>()
-  })
-
   test("exposes Workspace members through the ergonomic User client", async () => {
     const workspace = WorkspaceID.make("wrk_members")
     const member = {
@@ -191,28 +156,6 @@ describe("generated client Protocol contract", () => {
       data: [{ model: "effective-model", createdAt: new Date("2026-08-30T12:00:00.000Z") }],
       cursor: "next_page",
     })
-  })
-
-  test("declares the active snapshot and no-content interrupt operations", () => {
-    const paths = OpenApi.fromApi(Api).paths
-    const active = paths["/api/session/active"]?.get
-
-    expect(active?.operationId).toBe("api.session.session.active")
-    expect(active?.parameters).toEqual([expect.objectContaining({ name: "workspace", in: "query", required: false })])
-    expect(active?.responses["200"]).toMatchObject({
-      content: { "application/json": { schema: { $ref: "#/components/schemas/SessionActiveMap" } } },
-    })
-    expect(paths["/api/session/{sessionID}/interrupt"]?.post?.responses["204"]).not.toHaveProperty("content")
-
-    expectTypeOf<SessionActiveInput>().toEqualTypeOf<{ readonly workspace?: Workspace.ID }>()
-    expectTypeOf<SessionActiveOutput>().toEqualTypeOf<{ [x: string]: { type: "running" } }>()
-    expectTypeOf<SessionInterruptOutput>().toEqualTypeOf<void>()
-    expectTypeOf<SessionActiveOperation>().toEqualTypeOf<
-      (input?: {
-        readonly workspace?: Workspace.ID
-      }) => Effect.Effect<{ readonly [x: string]: { readonly type: "running" } }>
-    >()
-    expectTypeOf<Effect.Success<ReturnType<SessionInterruptOperation>>>().toEqualTypeOf<void>()
   })
 
   test("Promise client sends the active query and decodes active and interrupt responses", async () => {

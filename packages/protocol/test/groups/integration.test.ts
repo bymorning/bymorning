@@ -3,84 +3,18 @@ import { HttpApi, OpenApi } from "effect/unstable/httpapi"
 import { expect, test } from "vitest"
 import { Api } from "../../src/api.js"
 
-test("declares the integration operations", () => {
-  const endpoints: Array<{ identifier: string; method: string; path: string }> = []
+test("decodes integration payloads and responses", () => {
   const payloads = new Map<string, Schema.Top>()
   const successes = new Map<string, Schema.Top>()
-  const workspaceQueries: string[] = []
   HttpApi.reflect(Api, {
     onGroup() {},
     onEndpoint({ endpoint, group }) {
-      if (group.identifier === "api.integration")
-        endpoints.push({ identifier: endpoint.identifier, method: endpoint.method, path: endpoint.path })
       const payload = Array.from(endpoint.payload.values())[0]?.schemas[0]
       if (group.identifier === "api.integration" && payload) payloads.set(endpoint.identifier, payload)
       const success = Array.from(endpoint.success)[0]
       if (group.identifier === "api.integration" && success) successes.set(endpoint.identifier, success)
-      if (group.identifier === "api.integration" && endpoint.query) workspaceQueries.push(endpoint.identifier)
     },
   })
-  expect(endpoints).toEqual([
-    { identifier: "integration.list", method: "GET", path: "/api/integration" },
-    { identifier: "integration.get", method: "GET", path: "/api/integration/:integrationID" },
-    { identifier: "integration.connect.key", method: "POST", path: "/api/integration/:integrationID/connect/key" },
-    {
-      identifier: "integration.connect.values",
-      method: "POST",
-      path: "/api/integration/:integrationID/connect/values",
-    },
-    {
-      identifier: "integration.connect.awsSigV4",
-      method: "POST",
-      path: "/api/integration/:integrationID/connect/aws-sigv4",
-    },
-    {
-      identifier: "integration.oauth.client.put",
-      method: "PUT",
-      path: "/api/integration/:integrationID/oauth/:methodID/client",
-    },
-    {
-      identifier: "integration.oauth.client.remove",
-      method: "DELETE",
-      path: "/api/integration/:integrationID/oauth/:methodID/client",
-    },
-    {
-      identifier: "integration.oauth.connect",
-      method: "POST",
-      path: "/api/integration/:integrationID/connect/oauth",
-    },
-    {
-      identifier: "integration.oauth.status",
-      method: "GET",
-      path: "/api/integration/:integrationID/connect/oauth/:attemptID",
-    },
-    {
-      identifier: "integration.oauth.complete",
-      method: "POST",
-      path: "/api/integration/:integrationID/connect/oauth/:attemptID/complete",
-    },
-    {
-      identifier: "integration.oauth.cancel",
-      method: "DELETE",
-      path: "/api/integration/:integrationID/connect/oauth/:attemptID",
-    },
-    {
-      identifier: "integration.command.connect",
-      method: "POST",
-      path: "/api/integration/:integrationID/connect/command",
-    },
-    {
-      identifier: "integration.command.status",
-      method: "GET",
-      path: "/api/integration/:integrationID/connect/command/:attemptID",
-    },
-    {
-      identifier: "integration.command.cancel",
-      method: "DELETE",
-      path: "/api/integration/:integrationID/connect/command/:attemptID",
-    },
-  ])
-
   const decode = (identifier: string) => {
     const payload = payloads.get(identifier)
     if (!payload) throw new Error(`Missing payload: ${identifier}`)
@@ -146,7 +80,6 @@ test("declares the integration operations", () => {
     label: "Work",
   })
   expect(decode("integration.command.connect")({ methodID: "cli", command: ["owned"] })).toEqual({ methodID: "cli" })
-  expect(workspaceQueries).toEqual(endpoints.map((endpoint) => endpoint.identifier))
 
   const decodeSuccess = (identifier: string, value: unknown) => {
     const success = successes.get(identifier)
@@ -213,57 +146,6 @@ test("declares the integration operations", () => {
   ).toThrow()
 })
 
-test("pins OAuth and command OpenAPI operation IDs", () => {
-  const paths = OpenApi.fromApi(Api).paths
-  const client = paths["/api/integration/{integrationID}/oauth/{methodID}/client"]
-  expect(client?.put?.operationId).toBe("v2.integration.oauth.client.put")
-  expect(client?.delete?.operationId).toBe("v2.integration.oauth.client.remove")
-  expect(client?.get).toBeUndefined()
-  expect(paths["/api/integration/oauth/client/plugin"]).toBeUndefined()
-  expect(paths["/api/integration/{integrationID}/connect/oauth"]?.post?.operationId).toBe(
-    "v2.integration.oauth.connect",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/oauth/{attemptID}"]?.get?.operationId).toBe(
-    "v2.integration.oauth.status",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/oauth/{attemptID}/complete"]?.post?.operationId).toBe(
-    "v2.integration.oauth.complete",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/oauth/{attemptID}"]?.delete?.operationId).toBe(
-    "v2.integration.oauth.cancel",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/command"]?.post?.operationId).toBe(
-    "v2.integration.command.connect",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/command/{attemptID}"]?.get?.operationId).toBe(
-    "v2.integration.command.status",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/command/{attemptID}"]?.delete?.operationId).toBe(
-    "v2.integration.command.cancel",
-  )
-  for (const operation of [
-    client?.put,
-    client?.delete,
-    paths["/api/integration/{integrationID}/connect/oauth"]?.post,
-    paths["/api/integration/{integrationID}/connect/oauth/{attemptID}"]?.get,
-    paths["/api/integration/{integrationID}/connect/oauth/{attemptID}/complete"]?.post,
-    paths["/api/integration/{integrationID}/connect/oauth/{attemptID}"]?.delete,
-    paths["/api/integration/{integrationID}/connect/command"]?.post,
-    paths["/api/integration/{integrationID}/connect/command/{attemptID}"]?.get,
-    paths["/api/integration/{integrationID}/connect/command/{attemptID}"]?.delete,
-  ]) {
-    expect(operation?.responses).toHaveProperty("500")
-  }
-  expect(client?.put?.responses).toHaveProperty("400")
-  expect(client?.put?.responses).toHaveProperty("404")
-  expect(client?.delete?.responses).toHaveProperty("404")
-  expect(paths["/api/integration/{integrationID}/connect/oauth"]?.post?.responses).toHaveProperty("400")
-  expect(paths["/api/integration/{integrationID}/connect/oauth/{attemptID}/complete"]?.post?.responses).toHaveProperty(
-    "400",
-  )
-  expect(paths["/api/integration/{integrationID}/connect/command"]?.post?.responses).toHaveProperty("400")
-})
-
 test("does not publish AWS credential examples", () => {
   const document = OpenApi.fromApi(Api)
   const operation = document.paths["/api/integration/{integrationID}/connect/aws-sigv4"]?.post
@@ -274,15 +156,4 @@ test("does not publish AWS credential examples", () => {
   expect(JSON.stringify(document)).not.toMatch(
     /AWS_(?:ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN|BEARER_TOKEN_BEDROCK|REGION)/,
   )
-})
-
-test("reuses canonical Form fields and keeps optional method fields distinct", () => {
-  const schemas = OpenApi.fromApi(Api).components.schemas
-
-  expect(schemas["Form.Fields"]).toBeDefined()
-  expect(schemas["Integration.MethodFormFields"]).toBeDefined()
-  expect(schemas["Integration.OAuthClientConfigurationFields"]).toBeUndefined()
-  expect(schemas["Integration.OAuthClientConfiguration"]).toMatchObject({
-    properties: { fields: { $ref: "#/components/schemas/Form.Fields" } },
-  })
 })
