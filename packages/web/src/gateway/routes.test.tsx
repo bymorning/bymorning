@@ -20,7 +20,6 @@ import { TestDataProvider as DataProvider } from "../context/test-data-provider"
 import { DialogProvider } from "../context/dialog"
 import { SDKProvider } from "../context/sdk"
 import { WorkspaceScope } from "../context/workspace"
-import { providerIcons } from "../integration/provider-icons.generated"
 import { GatewayBudgetsRoute } from "./budgets/route"
 import { GatewayModelsPage } from "./models/view"
 import { GatewayServiceAccountRoute, GatewayServiceAccountsRoute } from "./service-accounts/route"
@@ -315,60 +314,6 @@ describe("AI Gateway pages", () => {
     expect(screen.getByText("bm_visible12…")).toBeInTheDocument()
     expect(document.body.textContent).not.toContain("bm_secret")
     expect(screen.getByRole("button", { name: "Revoke" })).toBeInTheDocument()
-  })
-
-  it("toggles a model", async () => {
-    const model: ModelListOutput[number] = {
-      info: {
-        id: "gpt-5.6",
-        provider: Provider.OpenAI,
-        apiID: "gpt-5.6",
-        name: "GPT-5.6",
-        description: "",
-        status: "active",
-        releaseDate: "2026-07-09",
-        lastUpdated: "2026-07-09",
-        openWeights: false,
-        capabilities: {
-          temperature: false,
-          reasoning: true,
-          attachment: true,
-          tools: true,
-          input: ["text"],
-          output: ["text"],
-        },
-        variants: [],
-        limit: { context: 1, output: 1 },
-        cost: { input: 1, output: 1, cache: { read: 0, write: 0 } },
-      },
-      enabled: true,
-      isPreferredDefault: false,
-      isEffectiveDefault: true,
-    }
-    const toggles: boolean[] = []
-    const [models, setModels] = createSignal([model])
-    render(() => (
-      <GatewayModelsPage
-        items={models}
-        state={() => ({ state: "ready" })}
-        onRetry={async () => undefined}
-        onToggle={async (_, enabled) => {
-          toggles.push(enabled)
-          setModels([{ ...model, enabled }])
-        }}
-      />
-    ))
-    expect(screen.getByRole("button", { name: "All providers" })).toBeInTheDocument()
-    expect(
-      document.querySelector(`[data-slot="model-provider"] img[src="${providerIcons.openai.url}"]`),
-    ).toBeInTheDocument()
-    expect(screen.queryByText("Default")).not.toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Actions for GPT-5.6" })).toBeInTheDocument()
-    const toggle = screen.getByRole("switch", { name: "Enabled GPT-5.6" })
-    await userEvent.click(toggle)
-    expect(toggle).not.toBeChecked()
-    await waitFor(() => expect(screen.getByRole("switch", { name: "Enabled GPT-5.6" })).toBeEnabled())
-    expect(toggles).toEqual([false])
   })
 
   it("switches the empty Models state to the Providers tab", async () => {

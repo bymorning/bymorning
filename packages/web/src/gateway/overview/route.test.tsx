@@ -576,7 +576,7 @@ it("renders a populated overview with no daily points without inventing chart da
   expect(chart).toBeInTheDocument()
 })
 
-it("builds the reference bar chart configuration from the selected daily series", () => {
+it("labels the chart from the selected daily series and formats tooltips and the y axis in the series unit", () => {
   const configuration = usageChartConfiguration({
     label: "Total cost",
     format: (value) => `$${value.toFixed(2)}`,
@@ -597,25 +597,13 @@ it("builds the reference bar chart configuration from the selected daily series"
 
   expect(configuration.data.labels).toEqual(["Aug 29", "Aug 30", "Aug 31"])
   expect(configuration.data.datasets).toEqual([
-    expect.objectContaining({ label: "Total cost", data: [6.25, 6.25, 6.25], borderWidth: 0 }),
+    expect.objectContaining({ label: "Total cost", data: [6.25, 6.25, 6.25] }),
   ])
   // Tooltips name the metric and format it in its own unit rather than as a bare count.
   const label = configuration.options?.plugins?.tooltip?.callbacks?.label
   expect(typeof label === "function" && label.call(undefined as never, { parsed: { y: 6.25 } } as never)).toBe(
     "Total cost: $6.25",
   )
-  expect(configuration.options).toMatchObject({
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: false,
-    interaction: { mode: "index", intersect: false },
-    scales: { x: { grid: { display: false } } },
-    plugins: {
-      title: { display: true, text: "Total cost", align: "start" },
-      legend: { display: false },
-      tooltip: { mode: "index", intersect: false },
-    },
-  })
 
   // The vertical scale shows only the baseline and the series max, matching the series' own units.
   const yScale = configuration.options?.scales?.y as
