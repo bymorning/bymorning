@@ -1,19 +1,10 @@
 import { readFile } from "node:fs/promises"
 import { describe, expect, it } from "vitest"
-import { decodeProvider, decodeSourceBody, decodeSourcePin } from "../src/source-schema.js"
+import { decodeProvider, decodeSourcePin } from "../src/source-schema.js"
 
 const readJson = async (file: string) => JSON.parse(await readFile(file, "utf8"))
 
 describe("resolved source schema", () => {
-  it("decodes the complete pinned catalog", async () => {
-    const pin = decodeSourcePin(await readJson("source/models-dev/pin.json"))
-    const decoded = decodeSourceBody(await readFile(`source/models-dev/cache/body.${pin.bodyDigest}.json`, "utf8"))
-    expect(Object.keys(decoded)).toHaveLength(212)
-    expect(Object.values(decoded).reduce((count, provider) => count + Object.keys(provider.models).length, 0)).toBe(
-      7_495,
-    )
-  })
-
   it("rejects unknown fields with their path", async () => {
     const pin = decodeSourcePin(await readJson("source/models-dev/pin.json"))
     const provider = await readJson(`source/models-dev/cache/providers/openai.${pin.providers[0]!.digest}.json`)

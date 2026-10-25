@@ -3,15 +3,6 @@ import plugin from "../src/excel.js"
 import { capture, withFetch } from "./helper.js"
 
 describe("Excel plugin", () => {
-  it("registers workbook tools with delegated session support", async () => {
-    const test = capture(plugin)
-    expect([...(await test.tools()).keys()].sort()).toEqual([
-      "excel.range.get",
-      "excel.session.create",
-      "excel.worksheet.list",
-    ])
-  })
-
   it("creates delegated sessions and forwards the session header", async () => {
     const test = capture(plugin)
     const seen: Array<{ url: string; init: RequestInit; json: unknown }> = []

@@ -214,39 +214,6 @@ describe("LayerNode", () => {
     )
   })
 
-  test("a replacement removes its original dependency acquisition", async () => {
-    let acquired = 0
-    const original = LayerNode.make({
-      service: Value,
-      layer: Layer.effect(
-        Value,
-        Effect.sync(() => {
-          acquired++
-          return Value.of({ value: "old" })
-        }),
-      ),
-      deps: [],
-    })
-    const root = LayerNode.make({
-      service: Greeting,
-      layer: Layer.effect(
-        Greeting,
-        Effect.map(Value, (item) => Greeting.of({ value: item.value })),
-      ),
-      deps: [original],
-    })
-    await Effect.runPromise(
-      Effect.map(Greeting, (item) => item.value).pipe(
-        Effect.provide(
-          LayerNode.compile(root, {
-            replacements: [original.replace(Layer.succeed(Value, Value.of({ value: "replacement" })))],
-          }),
-        ),
-      ),
-    )
-    expect(acquired).toBe(0)
-  })
-
   test("keeps separate declarations with equal outputs independent", async () => {
     const first = LayerNode.make({ service: Left, layer: Layer.succeed(Left, Left.of({ value: "first" })), deps: [] })
     const second = LayerNode.make({

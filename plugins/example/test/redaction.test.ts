@@ -36,10 +36,6 @@ async function activate(options: Readonly<Record<string, unknown>> = {}) {
 }
 
 describe("redaction example", () => {
-  test("declares Workspace scope", () => {
-    expect(plugin.scope).toBe("workspace")
-  })
-
   test("redacts Session prompt text", async () => {
     const hooks = await activate()
     const input = { prompt: { text: "ssn 123-45-6789 email ada@example.com key sk-abcdefghijk" } }

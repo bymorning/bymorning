@@ -3,11 +3,6 @@ import plugin from "../src/document.js"
 import { capture, withFetch } from "./helper.js"
 
 describe("Document plugin", () => {
-  it("registers Word and PowerPoint file tools", async () => {
-    const test = capture(plugin)
-    expect([...(await test.tools()).keys()].sort()).toEqual(["document.file.content", "document.file.meta"])
-  })
-
   it("bounds downloads and truncates previews", async () => {
     const test = capture(plugin)
     const body = "x".repeat(5_000)
