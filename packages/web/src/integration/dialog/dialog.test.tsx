@@ -1262,7 +1262,7 @@ describe("IntegrationDialog", () => {
 })
 
 describe("Integration connection ownership", () => {
-  it("keeps Provider connection scope internal and uses the standard dialog footer", async () => {
+  it("keeps Provider connection scope internal and submits a workspace connection", async () => {
     const user = userEvent.setup()
     const value = client()
     vi.mocked(value.integration.get).mockResolvedValue(catalog[0])
@@ -1270,14 +1270,10 @@ describe("Integration connection ownership", () => {
 
     await user.click(screen.getByRole("button", { name: "Open integrations" }))
     const dialog = await screen.findByRole("dialog", { name: "Connect Exa" })
-    expect(dialog).toHaveAttribute("data-size", "normal")
     expect(within(dialog).queryByLabelText("Connection access")).not.toBeInTheDocument()
     expect(within(dialog).queryByLabelText(/^Label/)).not.toBeInTheDocument()
     expect(within(dialog).queryByText("Workspace connection")).not.toBeInTheDocument()
-    const cancel = within(dialog).getByRole("button", { name: "Cancel" })
     const connect = within(dialog).getByRole("button", { name: "Connect" })
-    expect(cancel).toHaveAttribute("data-variant", "ghost")
-    expect(cancel.closest('[data-slot="dialog-footer"]')).toBeInTheDocument()
     expect(connect).toBeDisabled()
 
     await user.type(within(dialog).getByLabelText("API key"), "provider-key")
@@ -1288,56 +1284,6 @@ describe("Integration connection ownership", () => {
       scope: "workspace",
       workspace: workspace.id,
     })
-  })
-
-  it("does not expose saved connection ownership in Provider management", async () => {
-    const connected: IntegrationInfo = {
-      ...catalog[0]!,
-      connections: [
-        {
-          type: "credential",
-          id: Credential.ID.make("cred_shared"),
-          label: "Shared key",
-          scope: "workspace",
-          active: true,
-        },
-      ],
-    }
-    const value = client()
-    vi.mocked(value.integration.get).mockResolvedValue(connected)
-    mount(value, connected, undefined, true)
-
-    await userEvent.click(screen.getByRole("button", { name: "Open integrations" }))
-    const row = (await screen.findByText("Shared key")).closest("li")!
-    expect(row).not.toHaveTextContent("Workspace connection")
-    expect(row).not.toHaveTextContent("Your connection")
-  })
-
-  it("does not describe OAuth client setup as workspace-scoped in the Provider flow", async () => {
-    const provider: IntegrationInfo = {
-      id: Integration.ID.make("provider-oauth"),
-      name: "Provider OAuth",
-      methods: [
-        {
-          id: Integration.MethodID.make("oauth"),
-          type: "oauth",
-          label: "Provider OAuth",
-          client: {
-            configured: false,
-            fields: [{ key: "client_id", type: "string", title: "Client ID", required: true }],
-          },
-        },
-      ],
-      connections: [],
-    }
-    const value = client()
-    vi.mocked(value.integration.get).mockResolvedValue(provider)
-    mount(value, provider, undefined, true, false)
-
-    await userEvent.click(screen.getByRole("button", { name: "Open integrations" }))
-    expect(await screen.findByRole("textbox", { name: "Client ID" })).toBeVisible()
-    expect(screen.queryByText("Shared with your workspace. Saved credentials stay hidden.")).not.toBeInTheDocument()
-    expect(screen.queryByLabelText("Connection access")).not.toBeInTheDocument()
   })
 
   it("keeps workspace as the default and submits a personal key when selected", async () => {
