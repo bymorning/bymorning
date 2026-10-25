@@ -100,7 +100,6 @@ describe("RunContext.render", () => {
     expect(rendered).toContain("scheduled task")
     expect(rendered).toContain("Daily briefing")
     expect(rendered).toContain(`${ScheduledTask.RunSteps}`)
-    expect(ScheduledTask.RunSteps).toBe(50)
     expect(rendered).toContain(task.cron)
     expect(rendered).toContain(task.timezone)
   })

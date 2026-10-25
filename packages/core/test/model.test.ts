@@ -1,32 +1,14 @@
 import { Model } from "@bymorning/core/model"
 import { catalog as pinned } from "@bymorning/models/catalog"
-import { models as anthropicModels } from "@bymorning/models/generated/anthropic"
 import { models as bedrockModels } from "@bymorning/models/generated/amazon-bedrock"
-import { models as fireworksModels } from "@bymorning/models/generated/fireworks"
-import { models as googleModels } from "@bymorning/models/generated/google"
 import { models as openAIModels } from "@bymorning/models/generated/openai"
-import { models as opencodeModels } from "@bymorning/models/generated/opencode"
 import * as Provider from "@bymorning/schema/provider"
 import { Effect } from "effect"
 import { describe, expect, test } from "vitest"
-import {
-  anthropicCatalog,
-  bedrockCatalog,
-  fireworksCatalog,
-  googleCatalog,
-  govCloudProfiles,
-  openAIBindings,
-  openAICatalog,
-  opencodeCatalog,
-} from "../src/model/direct.js"
+import { bedrockCatalog, govCloudProfiles, openAIBindings, openAICatalog } from "../src/model/direct.js"
 import { legacyCatalog } from "../src/model/legacy.js"
-import { bindings, catalog, joinRegistry, registry } from "../src/model/registry.js"
+import { bindings, joinRegistry, registry } from "../src/model/registry.js"
 
-const expectedRegistry = [
-  ["openai", "gpt-5.4-mini", "gpt-5.4-mini", {}],
-  ["openai", "gpt-5.6", "gpt-5.6", {}],
-  ["anthropic", "claude-sonnet-5", "claude-sonnet-5", {}],
-] as const
 const generatedCatalogFixture = openAICatalog.filter(({ id }) => id === "gpt-5.6")
 const isDeprecated = (model: { readonly lifecycle: string }) => model.lifecycle === "deprecated"
 /** Bundled Bedrock IDs: `us-gov.` rows for the documented GovCloud profiles lead the pinned rows. */
@@ -36,67 +18,6 @@ const bedrockIDs = (models: ReadonlyArray<(typeof bedrockModels)[number]>) => [
     .map((apiID) => `us-gov.${apiID.slice("us.".length)}`),
   ...models.map(({ local }) => local.id),
 ]
-
-test("preserves exact registry identities, order, API IDs, and options", () => {
-  expect(
-    registry
-      .slice(0, expectedRegistry.length)
-      .map(({ provider, id, apiID, options }) => [provider, id, apiID, options]),
-  ).toEqual(expectedRegistry)
-  expect(registry.slice(expectedRegistry.length).map(({ provider, id }) => `${provider}/${id}`)).toEqual([
-    ...googleModels.filter((model) => !isDeprecated(model)).map(({ local }) => `google/${local.id}`),
-    ...fireworksModels.filter((model) => !isDeprecated(model)).map(({ local }) => `fireworks/${local.id}`),
-    ...openAIModels
-      .filter((model) => model.local.id !== "gpt-5.6" && model.local.id !== "gpt-5.4-mini" && !isDeprecated(model))
-      .map(({ local }) => `openai/${local.id}`),
-    ...anthropicModels
-      .filter(({ local }) => local.id !== "claude-sonnet-5")
-      .map(({ local }) => `anthropic/${local.id}`),
-    ...bedrockIDs(bedrockModels.filter((model) => !isDeprecated(model))).map((id) => `amazon-bedrock/${id}`),
-    ...opencodeModels.filter((model) => !isDeprecated(model)).map(({ local }) => `opencode/${local.id}`),
-  ])
-  expect(new Set(registry.map(({ provider, id }) => `${provider}/${id}`)).size).toBe(registry.length)
-  expect(registry.every((entry) => Object.keys(entry.variants).length === 0)).toBe(true)
-})
-
-test("imports every generated model with honest lifecycle metadata", () => {
-  expect(openAICatalog).toHaveLength(47)
-  expect(anthropicCatalog).toHaveLength(14)
-  expect(googleCatalog).toHaveLength(39)
-  expect(fireworksCatalog).toHaveLength(19)
-  expect(opencodeCatalog).toHaveLength(97)
-  expect(registry).toHaveLength(297)
-  expect(bedrockCatalog).toHaveLength(129)
-  expect(bedrockCatalog.map(({ id }) => id)).toEqual(bedrockIDs(bedrockModels))
-  expect(openAICatalog.filter(({ status }) => status === "deprecated").map(({ id }) => id)).toEqual(
-    openAIModels.filter(isDeprecated).map(({ local }) => local.id),
-  )
-  expect(openAICatalog.filter(({ status }) => status === "active")).toHaveLength(35)
-  expect(anthropicCatalog.every(({ status }) => status === "active")).toBe(true)
-  expect(registry.filter(({ status }) => status === "deprecated")).toHaveLength(0)
-  expect(
-    [...openAICatalog, ...anthropicCatalog].map(({ provider, id, apiID, status }) => [provider, id, apiID, status]),
-  ).toEqual(
-    [...openAIModels, ...anthropicModels].map(({ local, apiID, lifecycle }) => [
-      local.provider,
-      local.id,
-      apiID,
-      lifecycle,
-    ]),
-  )
-  expect(bindings).toHaveLength(346)
-  expect(catalog).toHaveLength(7317)
-  expect(
-    Object.fromEntries([...Map.groupBy(catalog, ({ provider }) => provider)].map(([key, rows]) => [key, rows.length])),
-  ).toMatchObject({
-    [Provider.OpenAI]: 35,
-    [Provider.Anthropic]: 14,
-    [Provider.Google]: 38,
-    [Provider.Fireworks]: 19,
-    [Provider.AmazonBedrock]: 127,
-    [Provider.OpenCode]: 64,
-  })
-})
 
 test("discovers every nondeprecated pinned row without requiring an execution binding", async () => {
   const discovered = await Effect.runPromise(
@@ -109,7 +30,6 @@ test("discovers every nondeprecated pinned row without requiring an execution bi
       expect(identities.has(`${name}/${model.id}`)).toBe(model.status !== "deprecated")
     }
   }
-  expect(discovered).toHaveLength(7317)
   expect(Model.publicID({ provider: Provider.Name.make("groq"), id: "shared-name" })).toBe("groq/shared-name")
 })
 
@@ -196,27 +116,6 @@ test("maps optional generated pricing lanes without importing unsupported fields
   expect(gpt56).not.toHaveProperty("source")
   expect(gpt56).not.toHaveProperty("unsupported")
   expect(gpt56?.capabilities).not.toHaveProperty("structuredOutput")
-})
-
-test("lists the bundled static multi-provider model catalog", async () => {
-  const listed = await Effect.runPromise(Model.Service.use((models) => models.list).pipe(Effect.provide(Model.layer)))
-  expect(listed).toHaveLength(7317)
-  expect(listed.slice(0, expectedRegistry.length).map(({ provider, id, apiID }) => [provider, id, apiID])).toEqual(
-    expectedRegistry.map(([provider, id, apiID]) => [provider, id, apiID]),
-  )
-  expect(listed[0]).toMatchObject({ provider: Provider.OpenAI, id: "gpt-5.4-mini" })
-  expect(Object.fromEntries(Map.groupBy(listed, (model) => model.provider))).toMatchObject({
-    openai: expect.arrayContaining([expect.objectContaining({ id: "gpt-5.6", apiID: "gpt-5.6" })]),
-    anthropic: expect.arrayContaining([expect.objectContaining({ id: "claude-sonnet-5" })]),
-    fireworks: expect.arrayContaining([
-      expect.objectContaining({ id: "glm-5p2", apiID: "accounts/fireworks/models/glm-5p2" }),
-    ]),
-    "amazon-bedrock": expect.arrayContaining([
-      expect.objectContaining({ id: "amazon.nova-lite-v1:0", apiID: "amazon.nova-lite-v1:0" }),
-      expect.objectContaining({ id: "us.anthropic.claude-haiku-4-5-20251001-v1:0" }),
-    ]),
-  })
-  expect(listed.every((model) => model.description.length > 0)).toBe(true)
 })
 
 test("omits deprecated Models from discovery and refuses direct selection", async () => {

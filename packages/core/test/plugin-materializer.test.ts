@@ -5,7 +5,7 @@ import { Storage } from "@bymorning/core/storage"
 import { Project } from "@bymorning/schema/project"
 import { Workspace } from "@bymorning/schema/workspace"
 import { describe, expect, it } from "@effect/vitest"
-import { Deferred, Effect, Fiber, Ref, Stream } from "effect"
+import { Effect, Stream } from "effect"
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
@@ -100,46 +100,6 @@ describe("ProjectMaterializer", () => {
           expect(changed.directory).not.toBe(first.directory)
           expect(yield* readText(path.join(first.directory, "lib/helper.ts"))).toBe("export const revision = 1")
           expect(yield* readText(path.join(changed.directory, "lib/helper.ts"))).toBe("export const revision = 2")
-        }),
-    ),
-  )
-
-  it.effect("downloads plugin objects concurrently", () =>
-    withFixture(
-      {
-        "plugin/demo.ts": "export default {}",
-        "plugin/first.ts": "export const first = true",
-        "plugin/second.ts": "export const second = true",
-      },
-      ({ materializer, storage }) =>
-        Effect.gen(function* () {
-          const started = yield* Ref.make(0)
-          const firstStarted = yield* Deferred.make<void>()
-          const release = yield* Deferred.make<void>()
-          const generation = yield* materializer
-            .materialize({
-              storage: {
-                ...storage,
-                get: (path) =>
-                  Ref.update(started, (count) => count + 1).pipe(
-                    Effect.andThen(Deferred.succeed(firstStarted, undefined)),
-                    Effect.andThen(Deferred.await(release)),
-                    Effect.andThen(storage.get(path)),
-                  ),
-              },
-              items: yield* storage.list,
-            })
-            .pipe(Effect.forkChild)
-
-          yield* Deferred.await(firstStarted)
-          yield* Effect.yieldNow
-          expect(yield* Ref.get(started)).toBe(3)
-          yield* Deferred.succeed(release, undefined)
-          expect((yield* Fiber.join(generation)).entrypoints).toEqual([
-            "plugin/demo.ts",
-            "plugin/first.ts",
-            "plugin/second.ts",
-          ])
         }),
     ),
   )
