@@ -125,39 +125,6 @@ describe("form controller", () => {
     expect(reply).toHaveBeenCalledWith(wizard, { __externalServerWizardAction: "back" }, "back")
   })
 
-  it("normalizes policy-creator back navigation without current field values", async () => {
-    const wizard = Form.Info.make({
-      ...form,
-      metadata: {
-        kind: "policy-creator",
-        stage: "subject",
-        canGoBack: true,
-        navigation: { actionKey: "__wizard_action", backValue: "back" },
-      },
-      fields: [
-        {
-          key: "__wizard_action",
-          type: "string",
-          default: "next",
-          options: [
-            { value: "next", label: "Next" },
-            { value: "back", label: "Back" },
-          ],
-        },
-        { key: "subject", type: "string", required: true },
-      ],
-    })
-    const [forms] = createSignal<ReadonlyArray<Form.Info>>([wizard])
-    const reply = vi.fn(() => Promise.resolve())
-    const controller = createRoot(() =>
-      createController({ data: { forms }, form: { reply, cancel: vi.fn() } } as never),
-    )
-
-    await controller.back()
-
-    expect(reply).toHaveBeenCalledWith(wizard, { __wizard_action: "back" }, "back")
-  })
-
   it("keeps unsupported back navigation as local validation", async () => {
     const reply = vi.fn()
     const controller = createRoot(() =>

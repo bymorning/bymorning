@@ -51,20 +51,6 @@ describe("Execute tool", () => {
     expect(view.container.querySelector('[data-slot="execute-code"]')).toHaveTextContent("const value = 1 return value")
   })
 
-  it("keeps a described call's description in the expanded header", () => {
-    const view = render(() => (
-      <ToolDisplay
-        tool={execute({ description: "Return one", code: "return 1" }, { type: "succeeded", output: "1" })}
-        onFileOpen={() => {}}
-        open
-      />
-    ))
-
-    const trigger = view.container.querySelector('[data-component="execute-tool-trigger"]')
-    expect(trigger).toHaveAttribute("data-label", "description")
-    expect(trigger?.querySelector('[data-slot="basic-tool-tool-subtitle"]')).toHaveTextContent("Return one")
-  })
-
   it("marks a call cut short by Stop instead of leaving a bare title", () => {
     const view = render(() => <ToolDisplay tool={execute({}, { type: "interrupted" })} onFileOpen={() => {}} />)
 

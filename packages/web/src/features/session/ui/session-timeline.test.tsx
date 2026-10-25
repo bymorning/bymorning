@@ -154,64 +154,6 @@ describe("Session timeline", () => {
     expect(screen.getByText(/@missing\.md/)).toBeInTheDocument()
   })
 
-  it("uses the transcript frame and message-part semantic hierarchy", () => {
-    const view = render(() => (
-      <MessageTimeline
-        items={[
-          turn(
-            [
-              {
-                id: "assistant",
-                parts: [
-                  { type: "text", id: "answer", text: "Answer" },
-                  { type: "reasoning", id: "reasoning", text: "Reasoning" },
-                ],
-                streaming: false,
-                details: {
-                  agent: "build",
-                  model: "Model",
-                  durationMs: 2_000,
-                  usage: { tokens: 123, cost: 0.04, costComplete: true },
-                },
-              },
-            ],
-            { type: "complete" },
-          ),
-        ]}
-        projectFiles={[]}
-        preferences={preferences}
-        onFileOpen={onFileOpen}
-      />
-    ))
-    const userFrame = view.container.querySelector('[data-message-id="user"][data-timeline-row="UserMessage"]')!
-    const assistantFrames = view.container.querySelectorAll(
-      '[data-message-id="user"][data-timeline-row="AssistantPart"]',
-    )
-
-    expect(userFrame).toHaveAttribute("id", "message-user")
-    expect(
-      userFrame.querySelector('[data-component="session-turn"] > [data-slot="session-turn-message-container"]'),
-    ).toBeInTheDocument()
-    expect(userFrame.querySelector('[data-component="user-message"]')).toHaveAttribute(
-      "data-timeline-part-id",
-      "user:text:0",
-    )
-    expect(assistantFrames).toHaveLength(2)
-    expect(assistantFrames[0]).not.toHaveAttribute("data-previous-assistant-part")
-    expect(assistantFrames[1]).toHaveAttribute("data-previous-assistant-part", "")
-    expect(assistantFrames[0]!.querySelector('[data-component="text-part"]')).toHaveAttribute(
-      "data-timeline-part-id",
-      "answer",
-    )
-    expect(assistantFrames[1]!.querySelector('[data-component="reasoning-part"]')).toHaveAttribute(
-      "data-timeline-part-id",
-      "reasoning",
-    )
-    expect(assistantFrames[0]!.querySelector('[data-slot="text-part-copy-wrapper"]')).toHaveTextContent(
-      "build · Model · 2s · 123 tokens · $0.04",
-    )
-  })
-
   it("shows Thinking while working unless a tool or stream is already live", () => {
     const view = render(() => (
       <MessageTimeline

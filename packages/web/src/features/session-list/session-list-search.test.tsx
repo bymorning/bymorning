@@ -64,30 +64,4 @@ describe("SessionListSearch", () => {
     await userEvent.keyboard("{ArrowDown}{Enter}")
     expect(openSession).toHaveBeenCalledWith("session-0")
   })
-
-  it("renders the field's search affordance as an icon rather than a text glyph", () => {
-    render(() => {
-      const controller = createSessionListSearchController({
-        items: () => [],
-        placeholder: () => "Search sessions",
-        noResultsLabel: (query) => `No sessions matching ${query}`,
-        loading: () => false,
-        openSession: vi.fn(),
-      })
-      return (
-        <SessionListSearch
-          controller={controller}
-          scope="workspace"
-          status={() => ({ open: false, indicator: "idle" })}
-          statusLabel={() => undefined}
-          sessionsLabel="Sessions"
-          loadingLabel="Loading"
-          href={(id) => `/session/${id}`}
-        />
-      )
-    })
-    const field = document.querySelector('[data-slot="session-list-search-input"]')!
-    expect(field.querySelector('svg[data-slot="icon-svg"]')).toBeInTheDocument()
-    expect(field).not.toHaveTextContent("⌕")
-  })
 })

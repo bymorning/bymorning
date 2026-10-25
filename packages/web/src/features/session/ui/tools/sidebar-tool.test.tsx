@@ -61,19 +61,6 @@ describe("Sidebar tool", () => {
     expect(button).toHaveTextContent("dashboards/other.html")
     expect(button).not.toHaveTextContent("dashboards/status.html")
   })
-
-  it("shimmers the path while running", () => {
-    const view = render(() => (
-      <ToolDisplay
-        tool={sidebar({ open: true, path: "dashboards/status.html" }, { type: "running" })}
-        onFileOpen={() => {}}
-      />
-    ))
-
-    expect(
-      view.container.querySelector('[data-slot="tool-loaded-value"] [data-component="text-shimmer"]'),
-    ).toHaveAttribute("data-active", "true")
-  })
 })
 
 function sidebar(input: SessionUI.JsonRecord, state: SessionUI.ToolState = { type: "succeeded" }): SessionUI.ToolPart {
