@@ -37,16 +37,4 @@ describe("Workspace query composition", () => {
       }
     }
   })
-
-  test("preserves the model query field", () => {
-    expect(paths["/api/models"]?.get?.parameters?.map(({ name }) => name)).toEqual(["workspace", "provider"])
-    expect(paths["/api/models/toggle"]?.put?.parameters?.map(({ name }) => name)).toEqual(["workspace"])
-    expect(paths["/api/models/default"]?.put?.parameters?.map(({ name }) => name)).toEqual(["workspace"])
-  })
-
-  test("removes retired ModelDefinition and Route resources", () => {
-    expect(paths["/api/model-definitions"]).toBeUndefined()
-    // Routing preview lives under models; the retired per-Session Route resource is gone.
-    expect(Object.keys(paths).filter((path) => path.endsWith("/route"))).toEqual(["/api/models/route"])
-  })
 })

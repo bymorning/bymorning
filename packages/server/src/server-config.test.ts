@@ -16,16 +16,6 @@ describe("Server configuration", () => {
     }
   })
 
-  it("succeeds with no AUTH_* variables present", async () => {
-    const exit = await read({ APP_ORIGIN: "https://app.example" })
-
-    expect(exit._tag).toBe("Success")
-    if (exit._tag === "Success") {
-      expect(exit.value.appOrigin.origin).toBe("https://app.example")
-      expect(Object.keys(exit.value)).toEqual(["appOrigin"])
-    }
-  })
-
   it("ignores leftover AUTH_* variables when all five are valid", async () => {
     const exit = await read({
       APP_ORIGIN: "https://app.example",

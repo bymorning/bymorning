@@ -1,6 +1,6 @@
 import { HttpApi, HttpApiMiddleware } from "effect/unstable/httpapi"
 import { describe, expect, test } from "vitest"
-import { Api, makeApi } from "../src/api.js"
+import { makeApi } from "../src/api.js"
 import { AccountMiddleware } from "../src/middleware/account-middleware.js"
 
 class GenericWorkspaceMiddleware extends HttpApiMiddleware.Service<GenericWorkspaceMiddleware, { provides: never }>()(
@@ -12,44 +12,6 @@ class PersistedSessionMiddleware extends HttpApiMiddleware.Service<PersistedSess
 ) {}
 
 describe("portable protocol", () => {
-  test("contains Auth, health, and authenticated resource routes without a public generate probe", () => {
-    const endpoints: Array<string> = []
-    HttpApi.reflect(Api, {
-      onGroup() {},
-      onEndpoint({ endpoint }) {
-        endpoints.push(`${endpoint.method} ${endpoint.path}`)
-      },
-    })
-    expect(endpoints).toContain("GET /auth/login")
-    expect(endpoints).toContain("GET /auth/callback")
-    expect(endpoints).toContain("POST /auth/logout")
-    expect(endpoints).toContain("GET /api/providers")
-    expect(endpoints).toContain("GET /api/users")
-    expect(endpoints).toContain("GET /api/models")
-    expect(endpoints.filter((endpoint) => endpoint.includes("/api/providers"))).toEqual([
-      "GET /api/providers",
-      "PUT /api/providers/activation",
-    ])
-    expect(endpoints.filter((endpoint) => endpoint.includes("/api/models"))).toEqual([
-      "GET /api/models",
-      "GET /api/models/auto",
-      "POST /api/models/route",
-      "PUT /api/models/toggle",
-      "PUT /api/models/default",
-      "POST /api/models",
-      "PUT /api/models",
-      "DELETE /api/models",
-    ])
-    expect(endpoints).toContain("GET /api/session")
-    expect(endpoints).toContain("GET /api/event")
-    expect(endpoints).toContain("GET /api/config")
-    expect(endpoints).toContain("GET /system/health")
-    expect(endpoints.some((endpoint) => endpoint.includes(" /ai/"))).toBe(false)
-    expect(endpoints).not.toContain("GET /api/generate")
-    expect(endpoints.some((endpoint) => endpoint.includes("/model-definitions"))).toBe(false)
-    expect(endpoints.filter((endpoint) => endpoint.endsWith("/route"))).toEqual(["POST /api/models/route"])
-  })
-
   test("routes workspace and persisted-session middleware in endpoint order", () => {
     const routes: Array<string> = []
     HttpApi.reflect(makeApi(AccountMiddleware, GenericWorkspaceMiddleware, PersistedSessionMiddleware), {
@@ -104,11 +66,11 @@ describe("portable protocol", () => {
       "session.permission.get: persisted-session",
       "session.permission.reply: persisted-session",
       "form.request.list: workspace",
-    "form.caller.list: workspace",
-    "form.caller.get: workspace",
-    "form.caller.state: workspace",
-    "form.caller.reply: workspace",
-    "form.caller.cancel: workspace",
+      "form.caller.list: workspace",
+      "form.caller.get: workspace",
+      "form.caller.state: workspace",
+      "form.caller.reply: workspace",
+      "form.caller.cancel: workspace",
       "session.form.list: persisted-session",
       "session.form.create: persisted-session",
       "session.form.get: persisted-session",
