@@ -97,3 +97,34 @@ test("provider connections and activation stay within their own Workspace", asyn
     { signal },
   )
 }, 120_000)
+
+// The Workspace middleware is the tenant boundary: an authenticated Account that is not a member of a
+// Workspace must be refused when it selects that Workspace, on every Workspace-scoped group.
+test("an Account that is not a member cannot read another Workspace's Commands or References", async ({ signal }) => {
+  await Effect.runPromise(
+    Effect.gen(function* () {
+      const app = yield* TestApp.make()
+      const first = yield* app.login()
+      const firstWorkspace = first.properties.workspaceID
+      const outsiderClient = app.clientFor()
+      const outsider = yield* app.login(outsiderClient, {
+        subject: Auth.Sub.make("test-member"),
+        email: Auth.Email.make("member@bymorning.ai"),
+      })
+      expect(outsider.properties.workspaceID).not.toBe(firstWorkspace)
+
+      // Members can read their own Workspace's lists...
+      yield* Effect.tryPromise(() => app.client.command.list({ workspace: firstWorkspace }))
+      yield* Effect.tryPromise(() => app.client.reference.list({ workspace: firstWorkspace }))
+      // ...and the outsider is refused the other Workspace's.
+      const command = yield* Effect.tryPromise(() => outsiderClient.command.list({ workspace: firstWorkspace })).pipe(
+        Effect.flip,
+      )
+      const reference = yield* Effect.tryPromise(() =>
+        outsiderClient.reference.list({ workspace: firstWorkspace }),
+      ).pipe(Effect.flip)
+      for (const error of [command, reference]) expect(error.cause).toMatchObject({ _tag: "UnauthorizedError" })
+    }).pipe(Effect.scoped),
+    { signal },
+  )
+})

@@ -1,8 +1,8 @@
 # PR gate for every push to dev and every pull request (plans/single-image.md, T3).
 #
 # Independent jobs run in parallel so wall clock is the slowest job, not the sum:
-#   static       format, lint, ast-grep rule tests, generated-file checks, model
-#                catalog check, codegen tests; typecheck in three matrix shards
+#   static       format, lint, ast-grep rule tests, generated-file checks (including
+#                the theme CSS), model catalog check, codegen tests; typecheck in three matrix shards
 #                (packages without web / plugins+backends / web and the host).
 #   unit         one matrix entry per owning package group: core, server, web,
 #                small packages, plugins, backends (RustFS and Azurite emulators),
@@ -77,6 +77,10 @@ jobs:
         run: bun run --cwd packages/client check:generated
       - if: matrix.typecheck == 'packages'
         run: bun run test:codegen
+      - if: matrix.typecheck == 'packages'
+        run: bun run --cwd packages/ui theme:check
+      - if: matrix.typecheck == 'packages'
+        run: bun run --cwd packages/web theme:check
       - run: bun run typecheck:${{ matrix.typecheck }}
 
   unit:

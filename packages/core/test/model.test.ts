@@ -19,6 +19,17 @@ const bedrockIDs = (models: ReadonlyArray<(typeof bedrockModels)[number]>) => [
   ...models.map(({ local }) => local.id),
 ]
 
+// The registry order is the default-selection order: the catalog falls back to the first available model.
+test("keeps the default-selection order at the head of the registry and the listing", async () => {
+  expect(registry.slice(0, 3).map(({ provider, id, apiID }) => [provider, id, apiID])).toEqual([
+    ["openai", "gpt-5.4-mini", "gpt-5.4-mini"],
+    ["openai", "gpt-5.6", "gpt-5.6"],
+    ["anthropic", "claude-sonnet-5", "claude-sonnet-5"],
+  ])
+  const listed = await Effect.runPromise(Model.Service.use((models) => models.list).pipe(Effect.provide(Model.layer)))
+  expect(listed[0]).toMatchObject({ provider: Provider.OpenAI, id: "gpt-5.4-mini" })
+})
+
 test("discovers every nondeprecated pinned row without requiring an execution binding", async () => {
   const discovered = await Effect.runPromise(
     Model.Service.use((service) => service.list).pipe(Effect.provide(Model.layer)),

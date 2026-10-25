@@ -9,6 +9,7 @@ import paperJson from "./paper.json"
 
 const byMorning = requireTheme(byMorningJson)
 const ink = requireTheme(inkJson)
+const paper = requireTheme(paperJson)
 const paletteFields = [
   "neutral",
   "ink",
@@ -35,6 +36,23 @@ function effective(tokens: Readonly<Record<string, string>>, key: string) {
 }
 
 describe("bundled palette definitions", () => {
+  // The only positive check that a theme's component config reaches the resolved tokens of the default theme.
+  it("resolves the Paper component button contract", () => {
+    const resolved = resolveTheme(paper)
+    for (const mode of ["light", "dark"] as const) {
+      expect(resolved[mode]["button-radius"]).toBe("9999px")
+      expect(resolved[mode]["button-radius-small"]).toBe("9999px")
+      expect(resolved[mode]["button-primary-shadow"]).toBe("none")
+      expect(resolved[mode]["button-primary-hover-background-color"]).toBe(paper[mode].palette.primary)
+      expect(resolved[mode]["button-primary-hover-background-image"]).toBe(
+        resolved[mode]["button-primary-base-background-image"],
+      )
+      expect(resolved[mode]["button-primary-hover-foreground"]).toBe(resolved[mode]["button-primary-base-foreground"])
+      expect(resolved[mode]["button-primary-hover-edge-opacity"]).toBe("0.8")
+      expect(resolved[mode]["button-focus-ring"]).toBe(paper[mode].palette.primary)
+    }
+  })
+
   it("retains canonical button radius, focus, and shadow behavior without component config", () => {
     for (const definition of [byMorning, ink]) {
       for (const mode of ["light", "dark"] as const) {

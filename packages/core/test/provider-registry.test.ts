@@ -15,6 +15,21 @@ describe("Provider registry", () => {
     }
   })
 
+  it("sends Google and OpenCode credentials to their canonical API with their native authentication", () => {
+    const find = (name: Provider.Name) => registry.find((entry) => entry.info.name === name)!
+    // `info.api` is the destination a Connection's key is sent to.
+    expect(find(Provider.Google)).toMatchObject({
+      info: { api: "https://generativelanguage.googleapis.com/v1beta", format: "google" },
+      authentication: "google-api-key",
+      catalog: "direct",
+    })
+    expect(find(Provider.OpenCode)).toMatchObject({
+      info: { api: "https://opencode.ai/zen/v1", format: "oa-compat" },
+      authentication: "bearer",
+      catalog: "aggregator",
+    })
+  })
+
   it("sends each provider's credential under its native header", () => {
     const entry = (name: Provider.Name) => registry.find((candidate) => candidate.info.name === name)!
     expect(credentialHeader(entry(Provider.OpenCode), "secret")).toEqual(["authorization", "Bearer secret"])

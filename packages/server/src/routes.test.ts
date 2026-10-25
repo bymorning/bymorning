@@ -2161,6 +2161,17 @@ describe("HTTP authentication admission", () => {
       expect(startedLogins).toBe(1)
     }, "http://localhost:3000"))
 
+  it("does not expose direct AI ingress", () =>
+    withServer(async (baseURL) => {
+      // /inference/* is the only model ingress: it carries the spend, rate, and audit middleware.
+      const response = await fetch(`${baseURL}/ai/v1/responses`, {
+        method: "POST",
+        headers: { authorization: "Bearer invalid", "content-type": "application/json" },
+        body: JSON.stringify({ model: "owned" }),
+      })
+      expect(response.status).toBe(404)
+    }))
+
   it("rejects duplicate reserved Account cookies", () =>
     withServer(async (baseURL) => {
       const response = await fetch(`${baseURL}/api/providers`, {

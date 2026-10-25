@@ -1,12 +1,13 @@
 /// <reference types="node" />
 
-import { readdirSync, readFileSync, statSync } from "node:fs"
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
 import byMorningJson from "../themes/bymorning.json"
 import inkJson from "../themes/ink.json"
 import paperJson from "../themes/paper.json"
+import { FONTS } from "../font"
 import { CANONICAL_TOKENS } from "../tokens"
 import type { ThemeDefinition, ThemeMode } from "../types"
 import { requireTheme } from "../validate"
@@ -15,6 +16,7 @@ const root = process.cwd()
 const styles = join(root, "src/ui/theme/styles")
 const colorsCss = readFileSync(join(styles, "tokens/colors.css"), "utf8")
 const themeCss = readFileSync(join(styles, "tokens/theme.css"), "utf8")
+const fontsCss = readFileSync(join(styles, "fonts.css"), "utf8")
 const definitions = [requireTheme(byMorningJson), requireTheme(inkJson), requireTheme(paperJson)]
 
 function block(css: string, selector: string) {
@@ -55,6 +57,26 @@ describe("generated static theme architecture", () => {
           }
         }
       }
+    }
+  })
+
+  // Native controls and scrollbars follow `color-scheme`; losing it from the generator is invisible to theme:check.
+  it("emits color-scheme once per theme and mode, and never in the shared foundation", () => {
+    expect(colorsCss).not.toContain("color-scheme:")
+    for (const theme of definitions) {
+      for (const mode of ["light", "dark"] as const) {
+        const body = block(themeCss, themeSelector(theme, mode))
+        expect(body.match(/color-scheme:/g)).toHaveLength(1)
+        expect(body).toMatch(new RegExp(`^\\n    color-scheme: ${mode};`))
+      }
+    }
+  })
+
+  // A missing font file only warns in the Vite build, so this is the check that catches it.
+  it("registers local font assets that exist on disk", () => {
+    for (const font of Object.values(FONTS)) {
+      expect(fontsCss).toContain(`font-family: "${font.family}"`)
+      for (const face of font.faces) expect(existsSync(join(root, "public", face.source))).toBe(true)
     }
   })
 

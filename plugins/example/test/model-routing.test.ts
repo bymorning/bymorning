@@ -61,6 +61,7 @@ describe("model-routing example", () => {
     await hooks.invoke("session.model.request", session)
     await hooks.invoke("gateway.model.request", gateway)
 
+    expect(plugin.scope).toBe("workspace")
     expect(session.model).toEqual(ref("approved-provider", "approved-model"))
     expect(gateway.model).toBe("approved-provider/approved-model")
     expect(gateway.body.model).toBe("requested-provider/requested-model")

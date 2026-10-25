@@ -183,6 +183,15 @@ describe("PluginInternal", () => {
       const shellHooks = Context.get(hooksContext, PluginHooks.Service)
       const storage = yield* Storage.Service
       const internal = yield* PluginInternal.list(Effect.succeed({ all: [], available: [] }))
+      // Dropping one of these silently disables project instructions, web-search config, or the MCP codemode exclusion.
+      expect(internal.post.map((plugin) => plugin.id)).toEqual([
+        "bymorning.config.instruction",
+        "bymorning.config.agent",
+        "bymorning.config.websearch",
+        "bymorning.config.code-interpreter",
+        "bymorning.config.mcp",
+        "bymorning.mcp.codemode.exclusion",
+      ])
       const plugins = Context.get(
         yield* Layer.buildWithScope(
           Plugin.layer(pluginHost(tools, agents, skills, integrations, shellHooks, storage)).pipe(Layer.provide(busLayer)),
