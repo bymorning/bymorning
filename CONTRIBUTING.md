@@ -41,6 +41,26 @@ the application harness; start with
 [`packages/testing/src/README.md`](packages/testing/src/README.md). Script the external model with
 `TestLLM`; do not fake API responses or add sleeps.
 
+### What makes a test worth keeping
+
+A test is a cost (maintenance, CI time, noise when it breaks for no reason) that pays
+off only by the risk it removes. A test belongs here only if it:
+
+1. **Protects something real**: user-visible behavior, an API or wire contract,
+   authorization and security, data integrity, or a regression for a real bug. Ask who
+   notices if it breaks in production.
+2. **Survives a refactor**: renaming a file, restructuring the implementation, adding
+   an item to a list, or swapping a font must not break it while behavior is unchanged.
+3. **Is not already enforced** by the typechecker, lint, a generator `--check`, or a
+   stronger test.
+4. **Asserts outcomes, not implementation**: no grepping source text, no counts of
+   files or assets, no constants copied from the source, no checks that a deleted thing
+   stays deleted, and no mocks asserting only that the mock was called.
+5. **Costs less than it protects**: not flaky, not slow for what it guards.
+
+When a test fails only because you changed something harmless, delete it rather than
+update it. Tests that carry a compliance ID such as `[SEC-...]` are kept.
+
 Before you push:
 
 ```sh

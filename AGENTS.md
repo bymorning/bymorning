@@ -30,6 +30,10 @@ Bun, Node 22+, Docker, and Chromium are the prerequisites. Each test gets its ow
 migrated database, files, API/web ports, model script, and browser context; one
 PostgreSQL server per `vitest` run serves every database as a template clone.
 
+Write only tests that meet the bar in
+[CONTRIBUTING.md](CONTRIBUTING.md#what-makes-a-test-worth-keeping): no source-text greps,
+asset counts, or restated constants.
+
 Seed through public services. Do not reconstruct the Workspace graph, replace the SDK,
 or fabricate API/event responses to claim application-level coverage. Script the external
 model with `TestLLM`, including the next request's actual Tool result and any background
