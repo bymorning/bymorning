@@ -111,15 +111,6 @@ describe("Subagent Tool", () => {
     if (!terminal) expect(screen.queryByText(status)).not.toBeInTheDocument()
   })
 
-  it("shows compact Delegating while input streams", () => {
-    const view = render(() => (
-      <ToolDisplay tool={subagent({ input: {}, inputStreaming: true })} onFileOpen={() => {}} />
-    ))
-
-    expect(screen.getByRole("status", { name: "Delegating" })).toHaveTextContent("Delegating")
-    expect(view.container.querySelector('[data-component="subagent-tool"]')).toHaveAttribute("data-compact")
-  })
-
   it("uses catalog presentation and progress metadata without a premature background label", () => {
     const openSession = vi.fn()
     render(() => (

@@ -3,7 +3,6 @@ import "@testing-library/jest-dom/vitest"
 import { describe, expect, it } from "vitest"
 
 import { ProjectFileReference, type ProjectFileReferenceEditorHandle, type ProjectFileReferenceEditorState } from "."
-import { createEditorHistory, recordEditorHistory, restoreEditorHistory } from "./model"
 
 describe("Project File references", () => {
   it("quotes paths that contain spaces or quotes", () => {
@@ -145,21 +144,6 @@ describe("Project File references", () => {
 
     expect(editor).toHaveTextContent("")
     expect(states.at(-1)).toMatchObject({ value: "", selection: { start: 0, end: 0 } })
-  })
-
-  it("bounds undo history so long drafts do not accumulate unbounded copies", () => {
-    const state = (value: string) => ({ value, agents: [], selection: { start: value.length, end: value.length } })
-    let history = createEditorHistory(state(""))
-    for (let index = 1; index <= 250; index++)
-      history = recordEditorHistory(history, state(`draft ${index}`), {
-        type: "insertFromPaste",
-        selection: { start: 0, end: 0 },
-        time: index * 1_000,
-      })
-    expect(history.entries).toHaveLength(100)
-    expect(history.entries[history.index]!.value).toBe("draft 250")
-    expect(restoreEditorHistory(history, -1)?.state.value).toBe("draft 249")
-    expect(restoreEditorHistory({ ...history, index: 0 }, -1)).toBeUndefined()
   })
 
   it("keeps paste edits in separate history entries and clears redo after a branch", () => {

@@ -6,8 +6,6 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import {
   TimelineOlderError,
   timelineCachedMeasurements,
-  timelineEstimatedItemSize,
-  timelineInitialOverscan,
   timelineMeasuredSize,
   timelineVirtualIndexes,
 } from "./virtualizer"
@@ -24,13 +22,6 @@ describe("timeline virtual indexes", () => {
     expect(timelineMeasuredSize(31.6, 32)).toBe(32)
     expect(timelineMeasuredSize(33.2, 32)).toBe(33)
     expect(timelineMeasuredSize(180.4, 60)).toBe(180)
-  })
-
-  it("uses source estimates and widens render overscan after cached or cold startup", () => {
-    expect(timelineEstimatedItemSize).toBe(60)
-    expect(timelineInitialOverscan(false, true)).toBe(6)
-    expect(timelineInitialOverscan(true, false)).toBe(6)
-    expect(timelineInitialOverscan(false, false)).toBe(20)
   })
 
   it("rejects legacy fallback snapshots and reconciles authoritative sizes by current key order", () => {

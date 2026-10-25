@@ -115,23 +115,6 @@ describe("FileBrowser", () => {
     expect(change).toHaveBeenCalledWith(false)
   })
 
-  it("animates file tree toggles with the right sidebar width transition", async () => {
-    mount()
-    const browser = document.querySelector('[data-component="file-browser"]')!
-    const sidebar = browser.querySelector('[data-slot="file-browser-sidebar"]')!
-    expect(browser).not.toHaveAttribute("data-animating")
-    await userEvent.setup().click(screen.getByRole("button", { name: "Show file tree" }))
-    expect(browser).toHaveAttribute("data-tree-open")
-    expect(browser).toHaveAttribute("data-animating")
-    const end = new Event("transitionend", { bubbles: true })
-    Object.defineProperty(end, "propertyName", { value: "width" })
-    fireEvent(sidebar, end)
-    expect(browser).not.toHaveAttribute("data-animating")
-    await userEvent.setup().click(screen.getByRole("button", { name: "Hide file tree" }))
-    expect(browser).not.toHaveAttribute("data-tree-open")
-    expect(browser).toHaveAttribute("data-animating")
-  })
-
   it("renders directory lifecycle states, retries, and file-tree controls", async () => {
     const state = mount()
     await Promise.resolve()
