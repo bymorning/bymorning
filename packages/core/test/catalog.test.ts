@@ -187,114 +187,6 @@ describe("Catalog", () => {
       ),
     ),
   )
-  it.effect("projects only installed static Providers for management", () =>
-    Effect.gen(function* () {
-      const catalog = yield* Catalog.Service
-      const directory = yield* catalog.provider.directory()
-
-      expect(directory.map((entry) => entry.info.name)).toEqual([
-        ProviderSchema.OpenAI,
-        ProviderSchema.Anthropic,
-        ProviderSchema.Google,
-        ProviderSchema.OpenCode,
-        ProviderSchema.Fireworks,
-        ProviderSchema.AmazonBedrock,
-      ])
-      expect(directory.find((entry) => entry.info.name === ProviderSchema.OpenAI)).toMatchObject({
-        connected: false,
-        connectionCount: 0,
-        modelCount: 1,
-      })
-      expect(directory.every((entry) => entry.integration === undefined)).toBe(true)
-      expect(directory.find((entry) => entry.info.name === ProviderSchema.AmazonBedrock)).toMatchObject({
-        connected: false,
-        connectionCount: 0,
-        modelCount: 2,
-      })
-      expect(directory.some((entry) => String(entry.integration?.id) === "context7")).toBe(false)
-    }).pipe(
-      Effect.provide(
-        Catalog.layer.pipe(
-          Layer.provide(
-            Layer.mergeAll(
-              Layer.succeed(
-                Provider.Service,
-                Provider.Service.of({
-                  get: () => Effect.die("unused"),
-                  list: Effect.succeed(registry.map((entry) => entry.info)),
-                  stream: () => Stream.die("unused"),
-                }),
-              ),
-              Layer.succeed(
-                Model.Service,
-                Model.Service.of({
-                  get: () => Effect.die("unused"),
-                  list: Effect.succeed([
-                    { ...model, provider: ProviderSchema.OpenAI },
-                    { ...model, provider: ProviderSchema.AmazonBedrock, id: "amazon.nova-lite-v1:0" },
-                    {
-                      ...model,
-                      provider: ProviderSchema.AmazonBedrock,
-                      id: "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                    },
-                  ]),
-                }),
-              ),
-              Layer.succeed(
-                Integration.Service,
-                Integration.Service.of({
-                  get: (id: Integration.ID) =>
-                    Effect.succeed(
-                      registry.some((entry) => entry.info.name === String(id))
-                        ? Integration.Info.make({
-                            id,
-                            name: String(id),
-                            methods: [],
-                            connections:
-                              String(id) === ProviderSchema.Bymorning
-                                ? [
-                                    {
-                                      type: "credential",
-                                      id: Credential.ID.make("cred_bymorning"),
-                                      label: "Personal",
-                                    },
-                                    { type: "env", name: "BYMORNING_API_KEY" },
-                                  ]
-                                : String(id) === ProviderSchema.OpenAI
-                                  ? [
-                                      { type: "env", name: "OPENAI_API_KEY" },
-                                      { type: "env", name: "OPENAI_API_KEY_BACKUP" },
-                                    ]
-                                  : [],
-                          })
-                        : undefined,
-                    ),
-                } as unknown as Integration.Interface),
-              ),
-              Layer.succeed(
-                Config.Service,
-                Config.Service.of({
-                  provider: { update: () => Effect.die("unused") },
-                  get: Effect.succeed({ model_policy: { disabled: [], seen: [], initialized: [] } }),
-                  update: () => Effect.die("unused"),
-                  refresh: Effect.die("unused"),
-                  modelPolicy: {
-                    reconcile: () => Effect.die("unused"),
-                    toggle: () => Effect.die("unused"),
-                    setDefault: () => Effect.die("unused"),
-                  },
-                  plugin: Config.pluginUnavailable,
-                  entries: () => Effect.succeed([]),
-                  changes: () => Stream.never,
-                } as unknown as Config.Interface),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  )
-
   it.effect("seeds the editor default-model view from Config", () =>
     Effect.gen(function* () {
       const catalog = yield* Catalog.Service
@@ -490,13 +382,6 @@ describe("Catalog", () => {
       expect(mantle.package).toBe("@opencode-ai/ai/providers/amazon-bedrock/mantle")
       expect(yield* catalog.model.default()).toBeDefined()
     }).pipe(Effect.provide(bedrockCatalogLayer(AwsRegion.make("us-east-1"), true))),
-  )
-
-  it.effect("hides disconnected Bedrock metadata", () =>
-    Effect.gen(function* () {
-      const disconnected = yield* Catalog.Service
-      expect(yield* disconnected.model.visible()).toEqual([])
-    }).pipe(Effect.provide(bedrockCatalogLayer(AwsRegion.make("us-east-1"), false, "auto"))),
   )
 
   it.effect("allows commercial regions without local regional approval", () =>

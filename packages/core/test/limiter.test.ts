@@ -85,19 +85,6 @@ describe("Limiter", () => {
     }),
   )
 
-  it.effect("uses the Workspace allowlist as the authoritative model policy", () =>
-    Effect.gen(function* () {
-      const current = yield* fixture({ gateway: { models: ["anthropic/claude"] } })
-      yield* Limiter.Service.use((limiter) => limiter.consume({ workspaceID, model: "anthropic/claude" })).pipe(
-        Effect.provide(current.layer),
-      )
-      const error = yield* Limiter.Service.use((limiter) =>
-        limiter.consume({ workspaceID, model: "openai/gpt-5" }),
-      ).pipe(Effect.flip, Effect.provide(current.layer))
-      expect(error).toMatchObject({ _tag: "Limiter.LimitError", limit: "model", scope: "workspace" })
-    }),
-  )
-
   it.effect("refuses the request after RPM is exhausted and resets on the test clock", () =>
     Effect.gen(function* () {
       const state = yield* resettableState

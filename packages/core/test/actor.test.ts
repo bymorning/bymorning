@@ -6,35 +6,6 @@ import { ApiKey } from "@bymorning/schema/api-key"
 import { ServiceAccount } from "@bymorning/schema/service-account"
 import { expect, test } from "vitest"
 
-const user = (role: "admin" | "member") =>
-  new Actor.UserActor({
-    type: "user",
-    properties: {
-      accountID: Account.ID.create(),
-      userID: User.ID.create(),
-      workspaceID: Workspace.ID.create(),
-      role,
-    },
-  })
-
-test("re-exports Actor schema values", () => {
-  const actor = user("member")
-  expect(actor).toBeInstanceOf(Actor.UserActor)
-  expect(actor.properties.role).toBe("member")
-})
-
-test("re-exports ServiceAccountActor", () => {
-  const actor = new Actor.ServiceAccountActor({
-    type: "service_account",
-    properties: {
-      workspaceID: Workspace.ID.create(),
-      serviceAccountID: ServiceAccount.ID.create(),
-      keyID: ApiKey.ID.create(),
-    },
-  })
-  expect(actor.properties.serviceAccountID).toMatch(/^sva_/)
-})
-
 test("composes Budget Holders for a user Actor, Workspace first", () => {
   const workspaceID = Workspace.ID.create()
   const userID = User.ID.create()

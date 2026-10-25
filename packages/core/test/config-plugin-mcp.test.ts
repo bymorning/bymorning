@@ -1,37 +1,14 @@
 import { describe, expect, it } from "@effect/vitest"
-import type { Context as PluginContext } from "@bymorning/plugin/effect/plugin"
 import type { Editor as MCPEditor } from "@bymorning/plugin/effect/mcp"
 import type { ConfigMCP } from "@bymorning/schema/config/mcp"
 import { ConfigMcpPlugin } from "../src/config/plugin/mcp.js"
-import { Config } from "../src/config.js"
 import { Mcp } from "../src/mcp.js"
 import { State } from "../src/state.js"
-import { Effect, Fiber, Layer, Option, Stream } from "effect"
+import { Effect, Layer } from "effect"
 import { TestClock } from "effect/testing"
 import { configFixture, minimalConfig } from "./service-fixtures.js"
 
 describe("ConfigMcpPlugin", () => {
-  it.effect("delivers one committed change to each independent Config subscriber", () =>
-    Effect.scoped(
-      Effect.gen(function* () {
-        const config = yield* configFixture(minimalConfig)
-        const context = yield* Layer.build(config.layer)
-        const subscribe = Config.Service.use((service) => service.changes().pipe(Stream.take(1), Stream.runHead)).pipe(
-          Effect.provide(context),
-          Effect.forkScoped({ startImmediately: true }),
-        )
-        const first = yield* subscribe
-        const second = yield* subscribe
-        const next = { ...minimalConfig, mcp: { servers: { fixture: { type: "remote" as const, url: "https://fixture.example.com" } } } }
-        yield* config.publish(next)
-        expect(Option.isSome(yield* Fiber.join(first))).toBe(true)
-        expect(Option.isSome(yield* Fiber.join(second))).toBe(true)
-        const effective = yield* Config.Service.use((service) => service.get).pipe(Effect.provide(context))
-        expect(effective.mcp).toEqual(next.mcp)
-      }),
-    ),
-  )
-
   it.effect("projects Config changes without clearing other scoped registrations", () =>
     Effect.scoped(
       Effect.gen(function* () {

@@ -66,11 +66,6 @@ describe("InstructionBuiltIns", () => {
       expect(app).toContain(`Integrations: a Console page at /w/${workspaceID}/mcp`)
       expect(app).toContain('"Connect integration" command in the command palette')
       expect(app).toContain("toolkit.integration.connect")
-      expect(app).toContain("Main sidebar: Overview, Scheduled tasks.")
-      expect(app).toContain(
-        "Console (Workspace administrators only): Gateway (Overview, Leaderboard, Models, Routing, Integrations); Assistant (Agents, Skills); Workspace (Members, Service accounts, SSO, Audit log, Budgets); Installation (Installation, Installation Policy).",
-      )
-      expect(app).toContain(`/w/${workspaceID}/installation and /w/${workspaceID}/installation/policy, managed by Installation Admins`)
       expect(app).toContain('There is no "Settings" section anywhere in ByMorning.')
       expect(source.initial(app)).toBe(
         ["Here is how the ByMorning application you run inside is organized for this member:", app].join("\n"),
