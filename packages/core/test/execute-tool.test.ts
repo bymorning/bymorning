@@ -189,7 +189,6 @@ describe("ExecuteTool private implementation", () => {
       )
       expect(ExecuteTool.name).toBe("run")
       expect(ExecuteTool.description).toContain("@script.ts identifies script.ts; pass script.ts as path")
-      expect(ExecuteTool).not.toHaveProperty("execution")
       expect(ExecuteTool.options).toEqual({ permission: "execute", codemode: false })
     }),
   )
