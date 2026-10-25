@@ -32,9 +32,15 @@ vi.mock("../../gateway/service-accounts/route", async () => {
   const { page } = await import("./routes.test-support")
   return { GatewayServiceAccountsRoute: page("service-accounts"), GatewayServiceAccountRoute: page("service-account") }
 })
+// The Overview route preloads the Session page on match; keep that import away from the real module graph.
+vi.mock("../../session/route", async () => ({ SessionRoute: (await import("./routes.test-support")).page("session") }))
 vi.mock("../../share/route", async () => ({ ShareRoute: (await import("./routes.test-support")).page("share") }))
 
-afterEach(cleanup)
+afterEach(async () => {
+  cleanup()
+  // Lazy route chunks and the Overview preload import asynchronously; none may outlive the test environment.
+  await vi.dynamicImportSettled()
+})
 
 /** Mount the application routes at `path`; resolves once a page marker is on screen. */
 async function visit(path: string) {
