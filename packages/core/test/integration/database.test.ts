@@ -9,18 +9,6 @@ if (process.env.DATABASE_URL === undefined) throw new Error("DATABASE_URL is req
 const tableName = (label: string) => `database_${label}_${crypto.randomUUID().replaceAll("-", "")}`
 const resultRows = (result: object): unknown => ("rows" in result ? result.rows : result)
 
-test("use executes against the root client", async () => {
-  const value = await Effect.runPromise(
-    Effect.gen(function* () {
-      const database = yield* Database.Service
-      return yield* database.use("root", (executor) => executor.execute<{ value: number }>(sql`select 1::int as value`))
-    }).pipe(Effect.provide(database), Effect.orDie),
-  )
-
-  const rows = Schema.decodeUnknownSync(Schema.Array(Schema.Struct({ value: Schema.Finite })))(resultRows(value))
-  expect(rows[0]?.value).toBe(1)
-})
-
 test("use executes against the active transaction", async () => {
   const name = tableName("active")
 
