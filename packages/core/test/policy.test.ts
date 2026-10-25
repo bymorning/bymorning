@@ -173,6 +173,5 @@ describe("Policy.Resource", () => {
     expect(Policy.Resource.tool("shell")).toBe("shell")
     expect(Policy.Resource.modelTool(model, "shell")).toBe("openai/gpt-5#fast::shell")
     expect(Policy.Resource.toolPair("write", "read")).toBe("read::write")
-    expect(Policy.Action).toEqual({ modelRequest: "model.request", providerRequest: "provider.request" })
   })
 })

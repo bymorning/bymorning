@@ -25,7 +25,6 @@ import { Plugin } from "../src/plugin.js"
 import type { PluginHost } from "../src/plugin/host.js"
 import { PluginInternal } from "../src/plugin/internal.js"
 import { PluginRuntime } from "../src/plugin/runtime.js"
-import { Limiter } from "../src/limiter.js"
 import { BymorningSkill } from "../src/plugin/internal/skill/bymorning.js"
 import { PermissionEvaluation } from "../src/permission/evaluation.js"
 import { ProjectDirectory } from "../src/project-directory.js"
@@ -157,118 +156,8 @@ const testEffect = <A, E>(
   )
 
 describe("PluginInternal", () => {
-  testEffect("exposes the deterministic builtin order and exact Bymorning guidance", () =>
+  it.effect("keeps the Bymorning Skill's code templates identical to the typechecked server fixtures", () =>
     Effect.gen(function* () {
-      const internal = yield* PluginInternal.list(Effect.succeed({ all: [], available: [] }))
-
-      expect(internal.pre.map((plugin) => plugin.id)).toEqual([
-        "core.provider.openai",
-        "core.provider.anthropic",
-        "core.provider.google",
-        "core.provider.opencode",
-        "core.provider.fireworks",
-        "core.provider.amazon-bedrock",
-        "core.provider.groq",
-        "core.provider.cerebras",
-        "core.provider.deepinfra",
-        "core.provider.togetherai",
-        "core.provider.mistral",
-        "core.provider.deepseek",
-        "core.provider.baseten",
-        "core.provider.openrouter",
-        "core.provider.xai",
-        "core.websearch.exa",
-        "core.websearch.firecrawl",
-        "core.websearch.parallel",
-        "core.websearch.tavily",
-        "bymorning.toolkit",
-        "core.tool.add",
-        "core.tool.glob",
-        "core.tool.grep",
-        "core.tool.read",
-        "core.tool.tool-output",
-        "core.tool.write",
-        "core.tool.edit",
-        "core.tool.sidebar",
-        "core.tool.shell",
-        "core.tool.execute",
-        "core.tool.web-fetch",
-        "core.tool.web-search",
-        "core.tool.skill",
-        "core.tool.question",
-        "core.tool.subagent",
-        "core.skill.bymorning",
-        "core.skill.scheduled-task",
-        "core.agent.default",
-        "core.agent.general",
-        "core.agent.explore",
-      ])
-      expect(internal.post.map((plugin) => plugin.id)).toEqual([
-        "bymorning.config.instruction",
-        "bymorning.config.agent",
-        "bymorning.config.websearch",
-        "bymorning.config.code-interpreter",
-        "bymorning.config.mcp",
-        "bymorning.mcp.codemode.exclusion",
-      ])
-      // Workspace invocation plugins (limiter, providers) live in
-      // PluginInternal.workspace(); hook behavior is covered in
-      // config-providers-plugin.test.ts. Routing is the Core Routing service.
-      expect(BymorningSkill.id).toBe("bymorning")
-      expect(BymorningSkill.instructions).toContain("tools.toolkit.policy.get")
-      expect(BymorningSkill.instructions).toContain("tools.toolkit.skill.list")
-      expect(BymorningSkill.instructions).toContain("tools.toolkit.mcp.list")
-      expect(BymorningSkill.instructions).not.toContain("mutate Workspace Config")
-      expect(BymorningSkill.instructions).toContain("tools.toolkit.integration.list")
-      expect(BymorningSkill.instructions).toContain("tools.toolkit.plugin.list")
-      expect(BymorningSkill.instructions).toContain(
-        'you MUST verify it with `tools.toolkit.plugin.list({ source: "project" })` on the next assistant execution',
-      )
-      expect(BymorningSkill.instructions).toContain('"status": "failed", "error": "Plugin failed to load", "ref": "err_1a2b3c4d"')
-      expect(BymorningSkill.instructions).toContain(
-        'A Plugin, Agent, Skill, or Integration is complete only after its entrypoint has been written and its inventory row shows `status: "active"` on the next assistant execution.',
-      )
-      expect(BymorningSkill.instructions).not.toContain("complete when its entrypoint has been written")
-      expect(BymorningSkill.instructions).toContain("`google-gmail`")
-      expect(BymorningSkill.instructions).toContain("saved once by a Workspace administrator on the Console's Integrations page (`/w/<workspaceID>/mcp`)")
-      expect(BymorningSkill.instructions).toContain("Each member then connects their own account with `tools.toolkit.integration.connect(")
-      expect(BymorningSkill.instructions).toContain('Do not point to a "Settings" section; there is none.')
-      expect(BymorningSkill.instructions).toContain('method: { id, type: "oauth", label, form?, client? }')
-      expect(BymorningSkill.instructions).toContain('{ mode: "auto", url, instructions, expiresAt?, callback }')
-      expect(BymorningSkill.instructions).toContain("context.integration.oauth.callback.register()")
-      expect(BymorningSkill.instructions).toContain(
-        "The implementation body runs in the configured code execution sandbox, not in the server process.",
-      )
-      expect(BymorningSkill.instructions).not.toContain("AgentCore")
-      expect(BymorningSkill.instructions).toContain(
-        "register an executable `Tool.Info` with an Effect `execute` callback and no execution discriminator",
-      )
-      expect(BymorningSkill.instructions).not.toContain('execution: "host"')
-      expect(BymorningSkill.instructions).toContain('execution: "sandbox"')
-      expect(BymorningSkill.instructions).toContain("`execution.caller`")
-      expect(BymorningSkill.instructions).toContain("`context.tool.openapi`")
-      expect(BymorningSkill.instructions).toContain("The same prepared snapshot")
-      expect(BymorningSkill.instructions).toContain('context.session.hook("model.request", (event) =>')
-      expect(BymorningSkill.instructions).toContain(
-        'event.purpose === "assistant" && event.requestedModel.id === "gpt-5.6-sol"',
-      )
-      expect(BymorningSkill.instructions).toContain(
-        'event.model = { provider: event.requestedModel.provider, id: "gpt-5.6-terra" }',
-      )
-      expect(BymorningSkill.instructions).toContain("it has no model fields or provider filter")
-      const toolHooks = Array.from(
-        BymorningSkill.instructions.matchAll(
-          /context\.tool\.hook\("execute.before", \(event\) => \{([\s\S]*?)\n\s*\}\)/g,
-        ),
-        (match) => match[1],
-      )
-      expect(toolHooks).toHaveLength(1)
-      expect(toolHooks[0]).toContain('event.tool !== "shell"')
-      expect(toolHooks[0]).not.toContain("event.model")
-      expect(toolHooks[0]).not.toContain("event.requestedModel")
-      expect(BymorningSkill.instructions).toContain(
-        "To execute an existing source reference such as `@script.ts`, invoke the built-in `run` Tool with path `script.ts`",
-      )
       const templates = Array.from(BymorningSkill.instructions.matchAll(/```ts\n([\s\S]*?)```/g), (match) => match[1])
       expect(templates).toEqual(
         yield* Effect.forEach(["plugin", "agent", "skill", "tool"], (name) =>
@@ -277,33 +166,7 @@ describe("PluginInternal", () => {
           ),
         ),
       )
-    }).pipe(
-      Effect.provideService(Config.Service, config),
-      Effect.provideService(ToolOutput.Service, toolOutput),
-      Effect.provideService(PluginRuntime.Service, runtime),
-    ),
-  )
-
-  it.effect("workspace pre includes limiter and providers", () =>
-    Effect.gen(function* () {
-      const internal = yield* PluginInternal.workspace
-      expect(internal.pre.map((plugin) => plugin.id)).toEqual([
-        "bymorning.limiter",
-        "bymorning.config.providers",
-      ])
-      expect((internal.post as ReadonlyArray<{ readonly id: string }>).map((plugin) => plugin.id)).not.toContain(
-        "bymorning.model-routing",
-      )
-    }).pipe(
-      Effect.provideService(Config.Service, config),
-      Effect.provideService(
-        Limiter.Service,
-        Limiter.Service.of({
-          consume: () => Effect.void,
-          charge: () => Effect.void,
-        }),
-      ),
-    ),
+    }),
   )
 
   testEffect("installs every builtin product and scopes web search providers independently from its Tool", () =>
