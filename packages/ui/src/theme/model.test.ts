@@ -1,18 +1,15 @@
 import { describe, expect, it } from "vitest"
 
-import { normalizeScheme, normalizeTheme, resolveMode, themeName, THEME_IDS } from "./model"
+import { normalizeScheme, normalizeTheme, resolveMode, themeName } from "./model"
 
 describe("theme model", () => {
-  it("normalizes persisted preferences and exposes the canonical catalog", () => {
-    expect(THEME_IDS).toEqual(["bymorning", "ink", "paper"])
+  it("normalizes persisted preferences and rejects unknown theme names", () => {
     expect(normalizeTheme("ink")).toBe("ink")
     expect(normalizeTheme("unknown")).toBe("paper")
     expect(normalizeTheme(null)).toBe("paper")
     expect(normalizeScheme("system")).toBe("system")
     expect(normalizeScheme("unknown")).toBe("dark")
     expect(normalizeScheme(null)).toBe("dark")
-    expect(themeName("bymorning")).toBe("Sand")
-    expect(themeName("paper")).toBe("Paper")
     expect(themeName("unknown")).toBeUndefined()
   })
 

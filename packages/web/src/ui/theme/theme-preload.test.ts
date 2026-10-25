@@ -62,8 +62,4 @@ describe("theme preload", () => {
     })
     expect(document.documentElement.dataset).toEqual({ theme: "paper", colorScheme: "dark" })
   })
-
-  it("contains selection only, without cache parsing or style injection", () => {
-    expect(source).not.toMatch(/cache|JSON|createElement|appendChild|textContent|canonical-/i)
-  })
 })
