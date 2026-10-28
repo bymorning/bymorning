@@ -6,10 +6,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
-  # bun.lock is a Bun lockfile; dependabot's npm ecosystem updates the
-  # package.json manifests and the lockfile is refreshed by the maintainer
-  # with `bun install` when merging (CI enforces --frozen-lockfile).
-  - package-ecosystem: npm
+  # bun.lock is a Bun lockfile, which dependabot's npm ecosystem cannot update; the bun
+  # ecosystem updates the manifests and the lockfile together (CI enforces --frozen-lockfile).
+  - package-ecosystem: bun
     directory: /
     schedule:
       interval: weekly
