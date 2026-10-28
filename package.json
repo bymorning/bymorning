@@ -37,7 +37,7 @@
     "oxlint": "1.60.0",
     "oxlint-tsgolint": "0.21.0",
     "prettier": "^3.6.2",
-    "sst": "4.17.1",
+    "sst": "4.17.2",
     "solid-js": "^1.9.7",
     "vite": "^7.0.6",
     "vite-plugin-solid": "^2.11.8",
