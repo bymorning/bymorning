@@ -39,7 +39,7 @@
     "prettier": "^3.6.2",
     "sst": "4.17.1",
     "solid-js": "^1.9.7",
-    "vite": "^7.0.6",
+    "vite": "^8.3.5",
     "vite-plugin-solid": "^2.11.8",
     "tsx": "^4",
     "@effect/atom-solid": "4.0.0-rc.112",
