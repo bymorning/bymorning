@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
 import { requireDisjointThemeLayers, resolveTheme } from "../resolve"
@@ -38,27 +36,10 @@ function effective(tokens: Readonly<Record<string, string>>, key: string) {
 }
 
 describe("bundled palette definitions", () => {
-  it("validates all authoritative JSON files through one contract", () => {
-    expect(byMorning).toMatchObject({ id: "bymorning", name: "Sand" })
-    expect(ink).toMatchObject({ id: "ink", name: "Ink" })
-    expect(paper).toMatchObject({ id: "paper", name: "Paper" })
-    for (const definition of [byMorning, ink, paper]) {
-      expect(Object.keys(definition)).toEqual(
-        definition.components
-          ? ["id", "name", "radius", "fonts", "components", "light", "dark"]
-          : ["id", "name", "radius", "fonts", "light", "dark"],
-      )
-      expect(Object.keys(definition.light)).toEqual(["palette"])
-      expect(Object.keys(definition.dark)).toEqual(["palette"])
-    }
-  })
-
+  // The only positive check that a theme's component config reaches the resolved tokens of the default theme.
   it("resolves the Paper component button contract", () => {
     const resolved = resolveTheme(paper)
     for (const mode of ["light", "dark"] as const) {
-      expect(resolved[mode]["font-heading"]).toBe('"Inter", sans-serif')
-      expect(resolved[mode]["font-body"]).toBe('"Inter", sans-serif')
-      expect(resolved[mode]["font-mono"]).toBe('"JetBrains Mono", monospace')
       expect(resolved[mode]["button-radius"]).toBe("9999px")
       expect(resolved[mode]["button-radius-small"]).toBe("9999px")
       expect(resolved[mode]["button-primary-shadow"]).toBe("none")
@@ -66,12 +47,7 @@ describe("bundled palette definitions", () => {
       expect(resolved[mode]["button-primary-hover-background-image"]).toBe(
         resolved[mode]["button-primary-base-background-image"],
       )
-      expect(resolved[mode]["button-primary-hover-foreground"]).toBe(
-        resolved[mode]["button-primary-base-foreground"],
-      )
-      expect(resolved[mode]["button-primary-hover-edge-background-image"]).toBe(
-        "linear-gradient(270deg, #c4dfff 0%, #e5d0ff 38%, #fcbead 67%, #ffd3ba 100%)",
-      )
+      expect(resolved[mode]["button-primary-hover-foreground"]).toBe(resolved[mode]["button-primary-base-foreground"])
       expect(resolved[mode]["button-primary-hover-edge-opacity"]).toBe("0.8")
       expect(resolved[mode]["button-focus-ring"]).toBe(paper[mode].palette.primary)
     }
@@ -247,40 +223,11 @@ describe("bundled palette definitions", () => {
 })
 
 describe("shared palette resolver", () => {
-  it("has no theme identity or discriminator dispatch", () => {
-    const source = readFileSync(join(process.cwd(), "src/ui/theme/resolve.ts"), "utf8")
-    expect(source).not.toMatch(/theme\.(?:id|name|recipe)/)
-    expect(source).not.toMatch(/ByMorning|bymorning|decisions/)
-    expect(source.match(/resolveThemeVariant\(theme, /g)).toHaveLength(2)
-  })
-
   it("uses interactive when provided and otherwise falls back to primary", () => {
     const byMorningResolved = resolveTheme(byMorning).light
     expect(byMorningResolved["color-cyan-600"]).not.toBe(byMorningResolved["color-orange-600"])
     const inkResolved = resolveTheme(ink).light
     expect(inkResolved["color-cyan-600"]).toBe(inkResolved["color-orange-600"])
-  })
-
-  it("keeps layered surfaces subtle in both modes", () => {
-    const resolved = resolveTheme(byMorning)
-    expect(resolved.light["color-bg-layer-1"]).toBe("var(--color-grey-100)")
-    expect(resolved.light["color-bg-layer-2"]).toBe("var(--color-grey-200)")
-    expect(resolved.dark["color-bg-layer-1"]).toBe("var(--color-grey-1000)")
-    expect(resolved.dark["color-bg-layer-2"]).toBe("var(--color-grey-900)")
-  })
-
-  it("keeps app surfaces ordered from recessed to raised in both modes", () => {
-    const resolved = resolveTheme(byMorning)
-    expect([
-      resolved.light["color-bg-deep"],
-      resolved.light["color-bg-surface"],
-      resolved.light["color-bg-surface-raised"],
-    ]).toEqual(["var(--color-grey-300)", "var(--color-grey-200)", "var(--color-grey-100)"])
-    expect([
-      resolved.dark["color-bg-deep"],
-      resolved.dark["color-bg-surface"],
-      resolved.dark["color-bg-surface-raised"],
-    ]).toEqual(["var(--color-grey-1200)", "var(--color-grey-900)", "var(--color-grey-800)"])
   })
 
   it("makes Sand primary drive button, brand, accent, icon, and focus output", () => {

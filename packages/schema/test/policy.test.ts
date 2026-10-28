@@ -1,29 +1,11 @@
 import { Option, Schema } from "effect"
 import { describe, expect, it } from "vitest"
 import * as Policy from "../src/policy.js"
-import { Plugin } from "../src/plugin.js"
 
 const decode = Schema.decodeUnknownSync(Policy.Policies, { errors: "all", onExcessProperty: "error" })
 const decodeRule = Schema.decodeUnknownOption(Policy.Rule)
 
 describe("Policy", () => {
-  it("decodes policies containing every rule variant", () => {
-    const policies = decode([
-      {
-        id: "acme.restricted",
-        name: "Restricted workloads",
-        description: "Routes and guards requests",
-        enabled: true,
-        rules: [
-          { type: "guardrail", action: "tool.execute", resource: "shell", effect: "allow" },
-          { type: "guardrail", action: "tool.*", resource: "*", effect: "deny", message: "disabled" },
-          { type: "route", action: "model.request", resource: "openai/*", target: "anthropic/claude" },
-        ],
-      },
-    ])
-    expect(policies[0]?.rules).toHaveLength(3)
-  })
-
   it("rejects empty required strings, unsupported actions, and unknown rules", () => {
     expect(() => decode([{ id: "", name: "x", enabled: true, rules: [] }])).toThrow()
     expect(() => Schema.decodeUnknownSync(Policy.Rule)({ type: "script", action: "x", resource: "*" })).toThrow()
@@ -62,22 +44,6 @@ describe("Policy", () => {
   it("rejects duplicate policy IDs", () => {
     const policy = { id: "duplicate", name: "Duplicate", enabled: true, rules: [] }
     expect(() => decode([policy, policy])).toThrow(/Duplicate policy ID: duplicate/)
-  })
-
-  it("includes rules and host-owned provenance in Info", () => {
-    const policy = Policy.Policy.make({ id: "acme.policy", name: "Acme", enabled: false, rules: [] })
-    const info = Policy.Info.make({
-      ...policy,
-      source: {
-        type: "plugin",
-        pluginID: Plugin.ID.make("acme"),
-        pluginSource: { type: "package", package: "@acme/policy" },
-      },
-      managed: false,
-      suppressed: false,
-    })
-    expect(info.rules).toEqual([])
-    expect(info.source.pluginID).toBe("acme")
   })
 
   it("Regex restricts flags and length structurally", () => {

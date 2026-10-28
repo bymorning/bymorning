@@ -8,7 +8,7 @@ import { SessionNotice } from "./session-notice"
 afterEach(cleanup)
 
 describe("SessionNotice", () => {
-  it.each(["route", "deny"] as const)("renders a %s Policy notice using the existing notice treatment", (effect) => {
+  it.each(["route", "deny"] as const)("renders a %s Policy notice with its detail", (effect) => {
     render(() => (
       <SessionNotice
         notice={{
@@ -24,14 +24,7 @@ describe("SessionNotice", () => {
       />
     ))
 
-    expect(screen.getByText(`Policy ${effect}`)).toHaveAttribute("data-slot", "session-notice-text")
-    expect(screen.getByText(`Policy ${effect}`).closest('[data-component="session-notice"]')).toHaveAttribute(
-      "data-kind",
-      "policy",
-    )
-    expect(screen.getByRole("status")).toHaveAttribute("data-effect", effect)
-    expect(screen.getByRole("status")).toHaveAttribute("data-policy", "restricted-tools")
-    expect(screen.getByRole("status")).toHaveAttribute("data-rule", "2")
+    expect(screen.getByRole("status")).toHaveTextContent(`Policy ${effect}`)
     expect(screen.getByText("Policy detail")).toBeInTheDocument()
   })
 

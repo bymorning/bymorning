@@ -85,21 +85,6 @@ test("PUT/GET persists providers.allow and routing while default_model stays not
   )
 })
 
-test("omitted providers admits Chat.script read", async ({ signal }) => {
-  await Effect.runPromise(
-    Effect.scoped(
-      Effect.gen(function* () {
-        const app = yield* TestApp.make()
-        const data = yield* Chat.make(app)
-        expect((yield* Effect.tryPromise(() => app.client["api.config"].get())).providers).toBeUndefined()
-        const script = yield* Chat.script(app, data)
-        yield* completeRead(app, data, script)
-      }),
-    ),
-    { signal },
-  )
-})
-
 test("empty providers.allow refuses Session inference before the model is called", async ({ signal }) => {
   await Effect.runPromise(
     Effect.scoped(

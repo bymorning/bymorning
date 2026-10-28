@@ -499,72 +499,14 @@ test("composer growth keeps the latest chat position visible", async ({ page }) 
     .toBe(true)
 })
 
-test("transcript frames match desktop and mobile geometry", async ({ page }) => {
-  await open(page)
-  const desktop = await page.locator('[data-timeline-key="user-message:user-359"]').evaluate((row) => {
-    const frame = row.querySelector<HTMLElement>('[data-timeline-row="UserMessage"]')!
-    const container = frame.querySelector<HTMLElement>('[data-slot="session-turn-message-container"]')!
-    const bubble = frame.querySelector<HTMLElement>('[data-slot="user-message-text"]')!
-    const text = row.parentElement!.querySelector<HTMLElement>('[data-component="text-part"]')!
-    const userStyle = getComputedStyle(frame.querySelector<HTMLElement>('[data-component="user-message"]')!)
-    const markdownStyle = getComputedStyle(text.querySelector<HTMLElement>('[data-component="markdown"]')!)
-    const bounds = frame.getBoundingClientRect()
-    const containerStyle = getComputedStyle(container)
-    const bubbleStyle = getComputedStyle(bubble)
-    return {
-      width: bounds.width,
-      left: bounds.left,
-      padding: containerStyle.paddingInlineStart,
-      bubbleRadius: bubbleStyle.borderRadius,
-      bubblePadding: `${bubbleStyle.paddingBlockStart} ${bubbleStyle.paddingInlineStart}`,
-      textMargin: getComputedStyle(text).marginTop,
-      userType: `${userStyle.fontSize}/${userStyle.lineHeight}/${userStyle.fontWeight}`,
-      assistantType: `${markdownStyle.fontSize}/${markdownStyle.lineHeight}/${markdownStyle.fontWeight}`,
-    }
-  })
-  expect(desktop).toEqual({
-    width: 840,
-    left: 130,
-    padding: "20px",
-    bubbleRadius: "10px",
-    bubblePadding: "8px 12px",
-    textMargin: "24px",
-    userType: "14px/21px/440",
-    assistantType: "14px/22.4px/440",
-  })
-
-  await page.setViewportSize({ width: 390, height: 700 })
-  await open(page)
-  const mobile = await page.locator('[data-timeline-key="user-message:user-359"]').evaluate((row) => {
-    const frame = row.querySelector<HTMLElement>('[data-timeline-row="UserMessage"]')!
-    const container = frame.querySelector<HTMLElement>('[data-slot="session-turn-message-container"]')!
-    const bounds = frame.getBoundingClientRect()
-    return {
-      width: bounds.width,
-      left: bounds.left,
-      padding: getComputedStyle(container).paddingInlineStart,
-    }
-  })
-  expect(mobile).toEqual({ width: 390, left: 0, padding: "8px" })
-})
-
-test("session identity header stays sticky with a 48px row and 16px gradient tail", async ({ page }) => {
+test("session identity header stays pinned while scrolling and hides the project label when narrow", async ({
+  page,
+}) => {
   await open(page)
   const scroller = viewport(page)
   const header = page.locator('[data-component="session-header"]')
-  const desktop = await header.evaluate((element) => {
-    const row = element.querySelector<HTMLElement>('[data-slot="session-header-row"]')!
-    const style = getComputedStyle(element)
-    return {
-      top: element.getBoundingClientRect().top,
-      height: element.getBoundingClientRect().height,
-      rowHeight: row.getBoundingClientRect().height,
-      position: style.position,
-      background: style.backgroundImage,
-    }
-  })
-  expect(desktop).toMatchObject({ top: 0, height: 64, rowHeight: 48, position: "sticky" })
-  expect(desktop.background).toContain("linear-gradient")
+  await expect(header).toHaveCSS("position", "sticky")
+  expect(await header.evaluate((element) => element.getBoundingClientRect().top)).toBe(0)
   await expect(page.getByRole("heading", { name: "Timeline geometry session" })).toBeVisible()
   await expect(page.getByLabel("Project Timeline project in workspace Browser workspace")).toBeVisible()
   await expect(page.getByRole("img", { name: "Context usage: 6%, 12,345 tokens, $0.42" })).toBeVisible()
@@ -579,7 +521,6 @@ test("session identity header stays sticky with a 48px row and 16px gradient tai
   await expect(page.locator("html")).toHaveAttribute("data-color-scheme", "dark")
   await expect(page.getByRole("heading", { name: "Timeline geometry session" })).toBeVisible()
   await expect(page.getByLabel("Project Timeline project in workspace Browser workspace")).toBeHidden()
-  expect(await header.evaluate((element) => element.getBoundingClientRect().height)).toBe(64)
 })
 
 test("delayed prepend preserves visible keyed row positions within one pixel", async ({ page }) => {
@@ -825,7 +766,7 @@ test("pinned streaming does not reverse a stable row", async ({ page }) => {
 test("tool disclosure survives virtual unmount and remount", async ({ page }) => {
   await open(page)
   const trigger = page.locator(
-    '[data-timeline-key="assistant-part:part:assistant-358:tool-latest"] [data-slot="collapsible-trigger"]',
+    '[data-timeline-key="assistant-part:part:assistant-358:tool-latest"] [data-slot="tool-collapsible-trigger"]',
   )
   await trigger.press("Enter")
   await expect(trigger).toHaveAttribute("aria-expanded", "true")

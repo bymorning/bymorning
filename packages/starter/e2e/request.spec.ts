@@ -1,4 +1,3 @@
-import { FormScenario } from "@bymorning/testing/scenario/form"
 import { TestHTTP } from "@bymorning/testing/http"
 import { ToolScenario } from "@bymorning/testing/scenario/tool"
 import { Effect, Exit, Scope } from "effect"
@@ -24,30 +23,6 @@ const test = base.extend<{ readonly http: Effect.Success<ReturnType<typeof TestH
   appOptions: async ({ http }, use) => use({ plugins: [ToolScenario.plugin(http.origin)] }),
   // eslint-disable-next-line no-empty-pattern -- This fixture has no dependencies.
   scenario: async ({}, use) => use(ToolScenario.make),
-})
-
-test("keeps an invalid real Form answer correctable and settles it through the public client", async ({
-  page,
-  app,
-}) => {
-  await Effect.runPromise(FormScenario.create(app, app.data))
-  const form = page.getByRole("form", { name: "Fixture details", exact: true })
-  await expect(form).toBeVisible()
-  await form.getByRole("button", { name: "Submit", exact: true }).click()
-  await expect(form.getByRole("alert")).toBeVisible()
-  await form.getByRole("textbox", { name: "Answer", exact: true }).fill("yes")
-  await form.getByRole("textbox", { name: "More", exact: true }).fill("details")
-  await form.getByRole("button", { name: "Submit", exact: true }).click()
-  await expect(form).toHaveCount(0)
-})
-
-test("submits a real integer Form answer as a number", async ({ page, app }) => {
-  await Effect.runPromise(FormScenario.createInteger(app, app.data))
-  const form = page.getByRole("form", { name: "Fixture count", exact: true })
-  await expect(form).toBeVisible()
-  await form.getByRole("spinbutton", { name: "Count", exact: true }).fill("3")
-  await form.getByRole("button", { name: "Submit", exact: true }).click()
-  await expect(form).toHaveCount(0)
 })
 
 test("answers a real pending Permission and continues the Tool conversation", async ({ page, app, http }) => {

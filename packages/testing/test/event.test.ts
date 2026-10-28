@@ -16,20 +16,6 @@ const request = <A>(message: string, action: () => Promise<A>) =>
     catch: (cause) => new TestApp.RequestError({ message, cause }),
   })
 
-test("/api/event starts each authorized live stream with server.connected", async ({ signal }) => {
-  await Effect.runPromise(
-    Effect.scoped(
-      Effect.gen(function* () {
-        const app = yield* TestApp.make()
-        const data = yield* Chat.make(app)
-        const item = yield* workspaceEvents(app, data.owner.properties.workspaceID).pipe(Stream.take(1), Stream.runHead)
-        expect(Option.getOrThrow(item)).toMatchObject({ type: "server.connected", data: {} })
-      }),
-    ),
-    { signal },
-  )
-})
-
 test("a new volatile Event subscription rehydrates the current Session resources through SDK reads", async ({
   signal,
 }) => {

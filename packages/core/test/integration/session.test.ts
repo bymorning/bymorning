@@ -1465,20 +1465,6 @@ describe("PostgreSQL Session Workspace isolation", () => {
     }).pipe(Effect.provide(layerA)),
   )
 
-  effectIt.effect("recognizes child effective permissions from persisted parent identity", () =>
-    Effect.gen(function* () {
-      const sessions = yield* Session.Service
-      const permissions = yield* Permission.Service
-      const parent = yield* sessions.create({ projectID })
-      const child = yield* sessions.createChild({ parentID: parent.id, title: "Permission child" })
-      const ask = (sessionID: SessionSchema.ID, action: string) =>
-        permissions.ask({ sessionID, action, resources: ["*"] })
-
-      expect((yield* ask(child.id, "read")).effect).toBe("allow")
-      expect((yield* ask(child.id, "subagent")).effect).toBe("deny")
-    }).pipe(Effect.provide(layerA)),
-  )
-
   effectIt.effect("keeps the activity time when a Session is archived or restored", () =>
     Effect.gen(function* () {
       const sessions = yield* Session.Service

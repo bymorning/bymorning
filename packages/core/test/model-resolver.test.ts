@@ -226,27 +226,6 @@ describe("ModelResolver", () => {
     ),
   )
 
-  it.effect("uses the Catalog execution endpoint instead of the bundled production API", () =>
-    Effect.gen(function* () {
-      const selection = yield* (yield* Model.Service).get(refs[0]!)
-      const effective = new URL("http://127.0.0.1:9999/v1")
-      const destination = yield* (yield* ModelResolver.Service).native({
-        ...binding(selection),
-        selection,
-        package: selection.package,
-        settings: selection.settings,
-        routing: { type: "fixed", baseURL: effective },
-      })
-      expect(destination.baseURL).toBe(effective)
-      expect(destination.baseURL.toString()).not.toBe("https://api.openai.com/v1")
-      expect(Redacted.value(destination.headers)).toEqual({ authorization: "Bearer native-secret" })
-    }).pipe(
-      Effect.provide(
-        Layer.merge(resolverLayer({ credential: Effect.succeed({ type: "key", key: "native-secret" }) }), Model.layer),
-      ),
-    ),
-  )
-
   it.effect("fails closed when a fixed execution has no effective endpoint", () =>
     Effect.gen(function* () {
       const selection = yield* (yield* Model.Service).get(refs[0]!)

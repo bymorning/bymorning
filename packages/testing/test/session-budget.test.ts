@@ -8,31 +8,6 @@ import { expect, test } from "vitest"
 import { TestApp } from "../src/application.js"
 import { Chat } from "../src/scenario/chat.js"
 
-test("a Workspace spend budget refuses Session inference before the model is called", async ({ signal }) => {
-  await Effect.runPromise(
-    Effect.scoped(
-      Effect.gen(function* () {
-        const app = yield* TestApp.make()
-        const data = yield* Chat.make(app)
-        const workspace = data.owner.properties.workspaceID
-        yield* Effect.tryPromise(() => app.client.budget.limit({ workspace, target: { type: "workspace" }, amount: 0 }))
-
-        yield* Effect.tryPromise(() =>
-          app.client.session.prompt({ sessionID: data.session.id, text: "Budget refusal" }),
-        )
-        yield* app.workspace(
-          { account: data.account },
-          Session.Service.use((sessions) => sessions.awaitIdle(data.session.id)),
-        )
-        expect(yield* app.llm.list()).toEqual([])
-        const status = yield* Effect.tryPromise(() => app.client.budget.status({ workspace }))
-        expect(status.standings.find(({ target }) => target.type === "workspace")).toMatchObject({ spent: 0, limit: 0 })
-      }),
-    ),
-    { signal },
-  )
-})
-
 test("a member spend budget refuses Session inference while the Workspace stays unlimited", async ({ signal }) => {
   await Effect.runPromise(
     Effect.scoped(

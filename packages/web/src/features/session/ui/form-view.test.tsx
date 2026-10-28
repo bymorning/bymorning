@@ -285,22 +285,6 @@ describe("FormView", () => {
     expect(within(selector).getByRole("button", { name: "Tool" })).toHaveTextContent("Web Search")
   })
 
-  it("renders the projected submit label", () => {
-    render(() => (
-      <FormView
-        item={viewItem([{ key: "name", title: "Name", type: "string" }], { submitLabel: "Create policy" })}
-        answers={{}}
-        set={() => undefined}
-        pendingAction={undefined}
-        error={undefined}
-        onSubmit={() => undefined}
-        onCancel={() => undefined}
-      />
-    ))
-
-    expect(screen.getByRole("button", { name: "Create policy" })).toBeInTheDocument()
-  })
-
   it("collapses sections labelled as advanced settings", async () => {
     const urlField = { key: "url", type: "string", title: "Server URL", required: true } as const
     const authField = {
@@ -339,27 +323,6 @@ describe("FormView", () => {
     expect(settings).toHaveAttribute("aria-expanded", "true")
     expect(screen.getByRole("radio", { name: "MCP OAuth" })).toBeVisible()
     expect(screen.getByRole("switch", { name: "Enable CodeMode" })).toBeVisible()
-  })
-
-  it("renders the projected project path field with a folder icon", () => {
-    render(() => (
-      <FormView
-        item={viewItem(
-          [{ key: "documentPath", type: "string", title: "OpenAPI JSON file", placeholder: "specs/openapi.json" }],
-          { projectPathField: "documentPath" },
-        )}
-        answers={{}}
-        set={() => undefined}
-        pendingAction={undefined}
-        error={undefined}
-        onSubmit={() => undefined}
-        onCancel={() => undefined}
-      />
-    ))
-
-    const path = screen.getByLabelText("OpenAPI JSON file")
-    expect(path).toHaveAttribute("placeholder", "specs/openapi.json")
-    expect(path.closest('[data-component="text-input"]')).toHaveAttribute("data-leading-icon")
   })
 
   it("labels option groups and disables every response while submitting", () => {

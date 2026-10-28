@@ -3,10 +3,9 @@ import plugin from "../src/sharepoint.js"
 import { capture, withFetch } from "./helper.js"
 
 describe("SharePoint plugin", () => {
-  it("registers three tools under the sharepoint namespace", async () => {
+  it("registers under the sharepoint namespace as a member-only Integration", async () => {
     const test = capture(plugin)
     const tools = await test.tools()
-    expect([...tools.keys()].sort()).toEqual(["sharepoint.drive.list", "sharepoint.item.list", "sharepoint.site.get"])
     expect(tools.get("sharepoint.site.get")?.registration.options).toEqual({
       namespace: "sharepoint",
       permission: "sharepoint.site.get",

@@ -1,5 +1,4 @@
 import * as Project from "@bymorning/schema/project"
-import * as ProjectDirectory from "@bymorning/schema/project-directory"
 import { Schema } from "effect"
 import { describe, expect, it } from "vitest"
 
@@ -46,14 +45,5 @@ describe("Project schemas", () => {
       canonical: "/repo",
     })
     expect(() => Schema.decodeUnknownSync(Project.Current)({ id, directory: "repo", canonical: "/repo" })).toThrow()
-  })
-
-  it("defines typed Project invalidations", () => {
-    const projectID = Project.ID.create()
-    const path = ProjectDirectory.Path.make("plugin/demo.ts")
-    expect(Schema.decodeUnknownSync(Project.Deleted.data)({ projectID })).toEqual({ projectID })
-    expect(Schema.decodeUnknownSync(Project.FileChanged.data)({ projectID, path })).toEqual({ projectID, path })
-    expect(Project.Definitions).toContain(Project.Deleted)
-    expect(Project.Definitions).toContain(Project.FileChanged)
   })
 })

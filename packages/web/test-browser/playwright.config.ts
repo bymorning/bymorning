@@ -13,6 +13,9 @@ export default defineConfig({
   testMatch: hotReload ? "plugin-hot-reload.spec.ts" : "timeline-*.spec.ts",
   fullyParallel: false,
   workers: 1,
+  // A cold Vite server re-optimizes dependencies the first time a spec imports a route module and reloads the
+  // page; the retry runs against the warm server.
+  retries: process.env.CI ? 1 : 0,
   timeout: 30_000,
   expect: { timeout: 8_000 },
   outputDir: "../test-results/timeline",

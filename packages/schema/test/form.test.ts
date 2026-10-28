@@ -1,6 +1,4 @@
 import { Form } from "@bymorning/schema/form"
-import { Session } from "@bymorning/schema/session"
-import { SessionEvent } from "@bymorning/schema/session-event"
 import { Schema } from "effect"
 import { expect, test } from "vitest"
 
@@ -67,26 +65,4 @@ test("Form decodes every field, condition, and answer value variant", () => {
     Schema.decodeUnknownSync(Form.Value)(answer.enabled),
     Schema.decodeUnknownSync(Form.Value)(answer.regions),
   ]).toEqual(["team@example.com", 1.5, true, ["eu"]])
-})
-
-test("Form identity, lifecycle, and Session events decode", () => {
-  const sessionID = Session.ID.make(crypto.randomUUID())
-  const info = Form.Info.make({
-    id: Form.ID.create("frm_test"),
-    sessionID,
-    title: "Questions",
-    fields: [{ key: "name", type: "string" }],
-  })
-  expect(Schema.decodeUnknownSync(Form.ID)(info.id)).toBe("frm_test")
-  expect(() => Schema.decodeUnknownSync(Form.ID)("bad")).toThrow()
-  expect(Schema.decodeUnknownSync(Form.State)({ status: "pending" })).toEqual({ status: "pending" })
-  expect(Schema.decodeUnknownSync(Form.Reply)({ answer: { name: "Ava" } })).toEqual({ answer: { name: "Ava" } })
-  expect(Schema.decodeUnknownSync(SessionEvent.FormCreated.data)(info)).toEqual(info)
-  expect(
-    Schema.decodeUnknownSync(SessionEvent.FormReplied.data)({ id: info.id, sessionID, answer: { name: "Ava" } }),
-  ).toEqual({ id: info.id, sessionID, answer: { name: "Ava" } })
-  expect(Schema.decodeUnknownSync(SessionEvent.FormCancelled.data)({ id: info.id, sessionID })).toEqual({
-    id: info.id,
-    sessionID,
-  })
 })

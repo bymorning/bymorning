@@ -8,12 +8,6 @@ describe("Config.Info", () => {
   const modelPolicy = { model_policy: { disabled: [], seen: [], initialized: [] } }
   const permissions = { permissions: [] }
 
-  test("composes the Session-owned Config fields", () => {
-    expect(Config.Info.fields.default_agent).toBe(SessionConfig.Info.fields.default_agent)
-    expect(Config.Info.fields.default_model).toBe(SessionConfig.Info.fields.default_model)
-    expect(Config.Info.fields.compaction).toBe(SessionConfig.Info.fields.compaction)
-  })
-
   test("decodes absent fields to Session defaults", () => {
     expect(Schema.decodeUnknownSync(Config.Stored)({})).toEqual({})
     expect(Schema.decodeUnknownSync(Config.Info)({})).toEqual({

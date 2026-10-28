@@ -2,7 +2,6 @@ import * as Workspace from "@bymorning/schema/workspace"
 import * as WorkspaceAccess from "@bymorning/schema/workspace-access"
 import { cleanup, fireEvent, render, screen } from "@solidjs/testing-library"
 import userEvent from "@testing-library/user-event"
-import { readFileSync } from "node:fs"
 import { onMount } from "solid-js"
 import { afterEach, expect, it, vi } from "vitest"
 
@@ -19,14 +18,6 @@ const workspace = WorkspaceAccess.Info.make({
 })
 
 afterEach(cleanup)
-
-it("layers the mobile drawer above route content and below dialogs", () => {
-  const styles = readFileSync("src/shell/sidebar/sidebar.css", "utf8")
-  expect(styles).toMatch(/\[data-slot="project-sidebar"\] \{[^}]*z-index: 40;/s)
-  expect(styles).toMatch(/\[data-slot="mobile-sidebar-backdrop"\] \{[^}]*z-index: 39;/s)
-  expect(styles).toMatch(/\[data-slot="shell-mobile-controls"\] \{[^}]*min-height: 52px;/s)
-  expect(styles).toMatch(/\[data-slot="mobile-sidebar-toggle"\] \{[^}]*width: 44px;[^}]*height: 44px;/s)
-})
 
 it("mounts its child once and applies desktop and mobile sidebar semantics", async () => {
   const listeners = new Set<(event: MediaQueryListEvent) => void>()

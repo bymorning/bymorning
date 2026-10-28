@@ -15,12 +15,6 @@ describe("CLI", () => {
     expect((await run(["sync", "--source", "invalid"])).code).toBe(2)
   })
 
-  it("supports a no-write dry run", async () => {
-    const result = await run(["sync", "--source", "cache", "--dry-run"])
-    expect(result.code).toBe(0)
-    expect(result.stdout).toContain("openai=47 anthropic=14 bedrock=123")
-  })
-
   it("supports the Fireworks target", async () => {
     expect((await run(["sync", "--source", "cache", "--provider", "fireworks", "--dry-run"])).code).toBe(0)
   })

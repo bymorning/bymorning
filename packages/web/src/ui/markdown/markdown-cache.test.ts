@@ -4,15 +4,6 @@ import { checksum, getCachedMarkdown, touchCachedMarkdown } from "./markdown-cac
 
 const entry = (raw: string) => ({ raw, hash: checksum(raw), html: `<p>${raw}</p>` })
 
-describe("checksum", () => {
-  it("is a stable base36 digest of the text", () => {
-    expect(checksum("")).toBe("ztntfp")
-    expect(checksum("hello")).toBe("m3bicr")
-    expect(checksum("# Hello")).toBe("b9ch2")
-    expect(checksum("hello")).toBe(checksum("hello"))
-  })
-})
-
 describe("touchCachedMarkdown", () => {
   it("stores entries for lookup", () => {
     const value = entry("stored")

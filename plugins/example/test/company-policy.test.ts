@@ -39,6 +39,7 @@ const model = (provider: string, id = "model") => ({
 })
 
 describe("company-policy example", () => {
+  // Without Workspace scope the Gateway hooks never run for caller-less inference (packages/plugin/AGENTS.md).
   test("declares Workspace scope so Gateway hooks are active", () => {
     expect(plugin.scope).toBe("workspace")
   })

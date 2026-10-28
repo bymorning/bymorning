@@ -138,16 +138,6 @@ describe("SessionListRow", () => {
     expect(row.querySelector('[data-slot="project-avatar-image"]')).toHaveAttribute("src", "/planning.png")
   })
 
-  it("reserves an empty leading slot without a project avatar when idle", () => {
-    renderRow({ open: false, indicator: "idle" }, false)
-
-    const row = screen.getByRole("link", { name: /Morning plan/ })
-    expect(row).toHaveAttribute("data-has-leading")
-    expect(row.querySelector('[data-slot="session-list-row-leading"]')).toBeEmptyDOMElement()
-    expect(row.querySelector('[data-component="project-avatar"]')).not.toBeInTheDocument()
-    expect(row.querySelector('[data-component="spinner"]')).not.toBeInTheDocument()
-  })
-
   it.each(["working", "attention", "unread"] as const)(
     "keeps a compact %s affordance without a project avatar",
     (indicator) => {

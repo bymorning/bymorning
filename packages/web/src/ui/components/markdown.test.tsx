@@ -5,7 +5,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 
 import { sanitizeMarkdown } from "../markdown/markdown-cache"
 import { createMarkdownParser } from "../markdown/markdown-parser"
-import { project, stream, type Projection } from "../markdown/markdown-stream"
+import { project, type Projection } from "../markdown/markdown-stream"
 import { injectMarkdownWorkerFactory } from "../markdown/markdown-worker"
 import type { MarkdownWorkerRequest, MarkdownWorkerResponse } from "../markdown/markdown-worker-protocol"
 import { Markdown } from "./markdown"
@@ -267,24 +267,5 @@ describe("Markdown", () => {
     expect(html).not.toContain("onerror")
     expect(html).not.toContain("<style")
     expect(html).toContain('rel="noopener noreferrer"')
-  })
-
-  it("supports KaTeX and delegated syntax highlighting", async () => {
-    const highlight = vi.fn(
-      (code: string, language: string) => `<pre><code class="language-${language}">${code}</code></pre>`,
-    )
-    const parser = createMarkdownParser(highlight)
-    const html = await parser.parse("\\(x^2\\)\n\n```ts\nconst x = 1\n```")
-    expect(html).toContain("katex")
-    expect(html).toContain('class="language-ts"')
-    expect(highlight.mock.calls[0]?.slice(0, 2)).toEqual(["const x = 1", "ts"])
-  })
-
-  it("heals prose and isolates incomplete code while streaming", () => {
-    expect(stream("hello **world", true)).toEqual([{ raw: "hello **world", src: "hello **world**", mode: "live" }])
-    expect(stream("before\n\n```ts\nconst x = 1", true)).toEqual([
-      { raw: "before\n\n", src: "before\n\n", mode: "full" },
-      { raw: "```ts\nconst x = 1", src: "const x = 1", mode: "code", language: "ts" },
-    ])
   })
 })

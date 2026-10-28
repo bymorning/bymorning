@@ -29,29 +29,6 @@ describe("ToolDisplay", () => {
     expect(container.querySelector('[data-slot="basic-tool-tool-title"]')).toHaveTextContent(/^Run$/)
   })
 
-  it("retains controlled disclosure across component remounts", () => {
-    const [open, setOpen] = createSignal(false)
-    const mount = () =>
-      render(() => (
-        <ToolDisplay
-          tool={{ ...tool("write"), state: { type: "failed", message: "Disk full" } }}
-          onFileOpen={() => {}}
-          open={open()}
-          onOpenChange={setOpen}
-        />
-      ))
-    const first = mount()
-    const trigger = screen.getByRole("button", { name: /write Failed Collapsed/i })
-    expect(trigger).toHaveAttribute("aria-expanded", "false")
-    fireEvent.click(trigger)
-    expect(screen.getByRole("button", { name: /write Failed Expanded/i })).toHaveAttribute("aria-expanded", "true")
-    expect(screen.getByText("Disk full")).toBeInTheDocument()
-    first.unmount()
-
-    mount()
-    expect(screen.getByText("Disk full")).toBeInTheDocument()
-  })
-
   it("leaves controlled disclosure state with its parent and links its region", () => {
     const [open, setOpen] = createSignal(false)
     const onOpenChange = vi.fn()

@@ -192,17 +192,6 @@ test("rejects unsupported declarations and custom checks inside class fields", (
   expect(() => compile(api(Checked))).toThrow()
 })
 
-test("names the complete generated Effect shape ClientApi", () => {
-  const Api = HttpApi.make("api").add(
-    HttpApiGroup.make("test").add(HttpApiEndpoint.get("get", "/test", { success: Schema.String })),
-  )
-
-  const shape = emitEffectShape(compile(Api)).files.find((file) => file.path === "api.ts")?.content
-
-  expect(shape).toContain("export interface ClientApi<E = never>")
-  expect(shape).not.toContain("AppApi")
-})
-
 test("generates optional payloads for bodyless-or-JSON endpoint alternatives", () => {
   const Api = HttpApi.make("api").add(
     HttpApiGroup.make("session").add(

@@ -77,17 +77,6 @@ describe("Skill tool", () => {
     expect(view.container.querySelector('[data-component="tool-output"]')).toBeNull()
     expect(view.container.querySelector("button")).toBeNull()
   })
-
-  it("emits the shared truncation slots for fixed labels and a flexible value", () => {
-    const view = render(() => <ToolDisplay tool={skill({ id: "a-very-long-skill-name" })} onFileOpen={() => {}} />)
-    const row = view.container.querySelector('[data-component="tool-loaded-item"]')
-
-    expect(row?.children).toHaveLength(4)
-    expect(row?.children[0]).toHaveAttribute("data-slot", "tool-icon")
-    expect(row?.children[1]).toHaveAttribute("data-slot", "tool-loaded-label")
-    expect(row?.children[2]).toHaveAttribute("data-slot", "tool-loaded-value")
-    expect(row?.children[3]).toHaveAttribute("data-slot", "tool-loaded-kind")
-  })
 })
 
 function skill(

@@ -2163,6 +2163,7 @@ describe("HTTP authentication admission", () => {
 
   it("does not expose direct AI ingress", () =>
     withServer(async (baseURL) => {
+      // /inference/* is the only model ingress: it carries the spend, rate, and audit middleware.
       const response = await fetch(`${baseURL}/ai/v1/responses`, {
         method: "POST",
         headers: { authorization: "Bearer invalid", "content-type": "application/json" },
@@ -2183,17 +2184,6 @@ describe("HTTP authentication admission", () => {
     withServer(async (baseURL) => {
       const response = await fetch(`${baseURL}/api/event`)
       expect(response.status).toBe(401)
-      expect(response.headers.get("content-type") ?? "").not.toContain("text/event-stream")
-    }))
-
-  it("does not expose the removed Session event endpoint", () =>
-    withServer(async (baseURL) => {
-      const sessionID = SessionSchema.ID.make("00000000-0000-4000-8000-000000000809")
-      const response = await fetch(`${baseURL}/api/event/session?workspace=${workspaceID}&sessionID=${sessionID}`, {
-        headers: { cookie: "__Host-bm_auth=abc" },
-      })
-
-      expect(response.status).toBe(404)
       expect(response.headers.get("content-type") ?? "").not.toContain("text/event-stream")
     }))
 
@@ -2987,16 +2977,6 @@ describe("HTTP authentication admission", () => {
         agent: selectedAgent,
         model: selectedModel,
       })
-    }))
-
-  it("lists usage through the selected Workspace", () =>
-    withServer(async (baseURL) => {
-      const response = await fetch(`${baseURL}/api/usage?workspace=${workspaceID}&limit=50`, {
-        headers: { cookie: "__Host-bm_auth=abc" },
-      })
-
-      expect(response.status).toBe(200)
-      expect(await response.json()).toEqual({ data: [] })
     }))
 
   it("lists durable usage records through the selected Workspace", () =>

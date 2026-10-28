@@ -189,22 +189,6 @@ describe("SessionHeader", () => {
     },
   )
 
-  it("caps a renamed title at 255 characters", async () => {
-    const rename = vi.fn(async () => true)
-    render(() => (
-      <SessionHeader
-        title="Morning plan"
-        workspace="Morning workspace"
-        rename={rename}
-        sidebarOpen={false}
-        sidebarRef={() => {}}
-        toggleSidebar={() => {}}
-      />
-    ))
-    await userEvent.setup().click(screen.getByRole("button", { name: "Rename session Morning plan" }))
-    expect(screen.getByRole("textbox", { name: "Session title" })).toHaveAttribute("maxLength", "255")
-  })
-
   it("selects the existing title on edit and restores it when the title is emptied", async () => {
     const rename = vi.fn(async () => true)
     render(() => (

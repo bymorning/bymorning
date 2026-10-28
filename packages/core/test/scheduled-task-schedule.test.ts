@@ -100,6 +100,7 @@ describe("RunContext.render", () => {
     expect(rendered).toContain("scheduled task")
     expect(rendered).toContain("Daily briefing")
     expect(rendered).toContain(`${ScheduledTask.RunSteps}`)
+    // The only bound on unattended-run cost; the Console dialog tells users "Up to 50 turns".
     expect(ScheduledTask.RunSteps).toBe(50)
     expect(rendered).toContain(task.cron)
     expect(rendered).toContain(task.timezone)

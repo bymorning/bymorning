@@ -1,15 +1,11 @@
-/// <reference types="node" />
-
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
 import { ByMorning, type ByMorningClient } from "@bymorning/client"
 import { cleanup, render, screen } from "@solidjs/testing-library"
+import { existsSync, readFileSync } from "node:fs"
+import { dirname, join } from "node:path"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import App from "./app"
 import { showToast, toaster } from "./ui/components/toast"
-
-const source = (path: string) => readFileSync(join(process.cwd(), path), "utf8")
 
 afterEach(() => {
   cleanup()
@@ -48,19 +44,26 @@ describe("application theme integration", () => {
     expect(await screen.findByText("Toast region mounted by the app shell")).toBeInTheDocument()
   })
 
-  it("loads Tailwind before the complete canonical token foundation", () => {
-    const styles = source("src/main.css")
-    expect(styles.indexOf('@import "tailwindcss"')).toBeGreaterThanOrEqual(0)
-    expect(styles.indexOf('@import "./ui/theme/styles/index.css"')).toBeGreaterThan(
-      styles.indexOf('@import "tailwindcss"'),
-    )
-  })
-
-  it("loads generated primitives, generated semantics, then fonts", () => {
-    expect(source("src/ui/theme/styles/index.css")).toBe(
-      '@import "./tokens/colors.css";\n' +
-        '@import "./tokens/theme.css";\n' +
-        '@import "./fonts.css";\n',
-    )
+  // theme:check only verifies the generated files; nothing else fails if the app stops importing them,
+  // which would leave the whole UI without tokens or fonts.
+  it("reaches the generated token and font stylesheets from the application entry stylesheet", () => {
+    const reached = new Set<string>()
+    const visit = (file: string) => {
+      if (reached.has(file)) return
+      reached.add(file)
+      const css = readFileSync(file, "utf8")
+      for (const [, specifier] of css.matchAll(/@import\s+["'](\.{1,2}\/[^"']+)["']/g)) {
+        const next = join(dirname(file), specifier!)
+        if (existsSync(next)) visit(next)
+      }
+    }
+    visit(join(process.cwd(), "src/main.css"))
+    const names = [...reached].map((file) => file.slice(process.cwd().length + 1))
+    for (const required of [
+      "src/ui/theme/styles/tokens/colors.css",
+      "src/ui/theme/styles/tokens/theme.css",
+      "src/ui/theme/styles/fonts.css",
+    ])
+      expect(names).toContain(required)
   })
 })

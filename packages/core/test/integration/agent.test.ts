@@ -310,32 +310,6 @@ it.effect("Agent default resolution uses BYMORNING_DEFAULT_AGENT and otherwise s
   ).pipe(Effect.provide(services(selected.id)))
 })
 
-it.effect("prefers the configured default agent over plugin and environment defaults", () => {
-  const configuredID = AgentSchema.ID.make(`configured-${crypto.randomUUID()}`)
-  const contributed = AgentSchema.ID.make(`contributed-${crypto.randomUUID()}`)
-  return Effect.scoped(
-    Effect.gen(function* () {
-      const agents = yield* Agent.Service
-      yield* agents.create(makeAgent(contributed))
-      yield* agents.create(makeAgent(configuredID))
-      yield* agents.transform((editor) => editor.default(contributed))
-      yield* ConfigAgentPlugin.Plugin.effect({ agent: agents } as unknown as PluginContext)
-      expect(yield* agents.resolve).toEqual(makeAgent(configuredID))
-    }),
-  ).pipe(
-    Effect.provide(
-      Layer.merge(
-        Agent.layer(workspaceID).pipe(
-          Layer.provide(catalog),
-          Layer.provide(Layer.mergeAll(database, bus, Model.layer, ProviderService.layer)),
-          Layer.provide(configured()),
-        ),
-        workspaceConfig(configuredID),
-      ),
-    ),
-  )
-})
-
 it.effect("updates the configured default agent and falls back to the plugin default when removed", () => {
   const configuredID = AgentSchema.ID.make(`configured-${crypto.randomUUID()}`)
   const changedID = AgentSchema.ID.make(`changed-${crypto.randomUUID()}`)

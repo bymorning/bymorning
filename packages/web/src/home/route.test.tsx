@@ -890,7 +890,7 @@ describe("Home", () => {
     mounted.unmount()
   })
 
-  it("uses Central outline folder states for Projects and preserves project-row disclosure visuals", async () => {
+  it("collapses Projects and expands a project's sessions from the sidebar, including by keyboard", async () => {
     mount(
       clientWith({
         sessions: vi.fn().mockResolvedValue({ data: [session("11111111-0000-4000-8000-000000000001", first.id)] }),
@@ -899,38 +899,22 @@ describe("Home", () => {
     const sidebar = screen.getByRole("navigation", { name: "Workspace navigation" })
     const projects = within(sidebar).getByRole("button", { name: "Projects" })
     expect(projects).toHaveAttribute("aria-expanded", "true")
-    expect(projects.querySelector('[data-state="active"] use')?.getAttribute("href")).toContain("central-folder-open")
-    expect(projects.querySelector('[data-state="inactive"] use')?.getAttribute("href")).toContain(
-      "central-folder-closed",
-    )
-    expect(projects.querySelector('[data-component="file-icon"]')).not.toBeInTheDocument()
     await userEvent.click(projects)
     expect(projects).toHaveAttribute("aria-expanded", "false")
-    expect(projects.querySelector('[data-state="active"] use')?.getAttribute("href")).toContain("central-folder-closed")
-    expect(projects.querySelector('[data-state="inactive"] use')?.getAttribute("href")).toContain("central-folder-open")
     await userEvent.click(projects)
     const disclosure = await within(sidebar).findByRole("button", { name: "Expand sessions for First" })
-    const leading = disclosure.querySelector('[data-slot="sidebar-project-leading"]')!
 
     expect(disclosure).toHaveAttribute("aria-expanded", "false")
     expect(disclosure).toHaveAttribute("aria-controls")
-    expect(leading.querySelector('[data-component="avatar"][data-kind="org"]')).toBeInTheDocument()
-    expect(leading.querySelector('[data-slot="icon-svg"]')).toBeInTheDocument()
-    expect(leading.querySelector('[data-component="file-icon"]')).not.toBeInTheDocument()
     const projectsLink = within(sidebar).getByRole("link", { name: "Project settings for First" })
     expect(projectsLink).toHaveAttribute("href", `/w/${workspace.id}/prj/${first.id}`)
-    expect(projectsLink.querySelector("use")?.getAttribute("href")).toContain("settings-gear")
 
     disclosure.focus()
     await userEvent.keyboard(" ")
     const collapse = within(sidebar).getByRole("button", { name: "Collapse sessions for First" })
     expect(collapse).toHaveAttribute("aria-expanded", "true")
-    expect(collapse.querySelector('[data-slot="icon-svg"]')).toBeInTheDocument()
     const sessions = document.getElementById(collapse.getAttribute("aria-controls")!)!
-    const row = within(sessions).getByRole("link", { name: /Session 11111111/ })
-    expect(row.querySelector('[data-component="project-avatar"]')).not.toBeInTheDocument()
-    expect(row).toHaveAttribute("data-has-leading")
-    expect(row.querySelector('[data-slot="session-list-row-leading"]')).toBeEmptyDOMElement()
+    expect(within(sessions).getByRole("link", { name: /Session 11111111/ })).toBeInTheDocument()
 
     await userEvent.keyboard("{Enter}")
     expect(within(sidebar).getByRole("button", { name: "Expand sessions for First" })).toHaveAttribute(

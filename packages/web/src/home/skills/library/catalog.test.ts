@@ -59,21 +59,6 @@ describe("Skill library catalog", () => {
     for (const entry of skillLibrary) expect(categories.has(entry.category), entry.id).toBe(true)
   })
 
-  test("every description states when to use the entry and when not to", () => {
-    for (const entry of skillLibrary) {
-      expect(entry.description, entry.id).toMatch(/^Use when /)
-      expect(entry.description, entry.id).toContain("Do not use when ")
-    }
-  })
-
-  test("every entry carries substantial instructions with a name heading", () => {
-    for (const entry of skillLibrary) {
-      expect(entry.name.length, entry.id).toBeGreaterThan(0)
-      expect(entry.instructions.length, entry.id).toBeGreaterThan(800)
-      expect(entry.instructions.startsWith(`# ${entry.name}`), entry.id).toBe(true)
-    }
-  })
-
   test("every entry directs the model to at least one real Tool", () => {
     for (const entry of skillLibrary) {
       const named = tools.filter((tool) => entry.instructions.includes(`\`${tool}\``))

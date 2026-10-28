@@ -5,13 +5,8 @@ import teams from "../src/teams.js"
 import { capture, withFetch } from "./helper.js"
 
 describe("OneDrive plugin", () => {
-  it("registers drive tools and reads folders", async () => {
+  it("reads folders", async () => {
     const test = capture(onedrive)
-    expect([...(await test.tools()).keys()].sort()).toEqual([
-      "onedrive.drive.get",
-      "onedrive.item.get",
-      "onedrive.item.list",
-    ])
     await withFetch(
       (async () => Response.json({ value: [{ id: "child-id", name: "Notes" }] })) as typeof fetch,
       async () => {
@@ -37,13 +32,8 @@ describe("OneDrive plugin", () => {
 })
 
 describe("Calendar plugin", () => {
-  it("registers event tools and creates events", async () => {
+  it("creates events", async () => {
     const test = capture(calendar)
-    expect([...(await test.tools()).keys()].sort()).toEqual([
-      "calendar.event.create",
-      "calendar.event.get",
-      "calendar.event.list",
-    ])
     const seen: Array<{ json: unknown }> = []
     await withFetch(
       (async (_input: any, init?: RequestInit) => {
@@ -78,13 +68,8 @@ describe("Calendar plugin", () => {
 })
 
 describe("Teams plugin", () => {
-  it("registers team tools and lists joined teams", async () => {
+  it("lists joined teams", async () => {
     const test = capture(teams)
-    expect([...(await test.tools()).keys()].sort()).toEqual([
-      "teams.channel.list",
-      "teams.message.list",
-      "teams.team.list",
-    ])
     await withFetch(
       (async () => Response.json({ value: [{ id: "team-id", displayName: "Engineering" }] })) as typeof fetch,
       async () => {

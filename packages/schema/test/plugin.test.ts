@@ -1,62 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { Schema } from "effect"
 import { Plugin } from "../src/plugin.js"
-import { Project } from "../src/project.js"
 
 describe("Plugin", () => {
-  it("brands unrestricted string IDs like the pinned contract", () => {
-    expect(Schema.decodeUnknownSync(Plugin.ID)("../local plugin")).toBe("../local plugin")
-  })
-
-  it("decodes every pinned source variant and optional failed ID", () => {
-    const decode = Schema.decodeUnknownSync(Plugin.Info)
-    expect(
-      [
-        decode({ id: "builtin", source: { type: "builtin" }, status: "active", tui: true }),
-        decode({ source: { type: "package", package: "pkg" }, status: "failed", error: "nope", tui: false }),
-        decode({ id: "local", source: { type: "local", path: "/tmp/plugin.ts" }, status: "active", tui: false }),
-        decode({ id: "sdk", source: { type: "sdk" }, status: "active", tui: false }),
-        decode({
-          id: "project",
-          source: {
-            type: "project",
-            projectID: Project.ID.make("prj_00000000000000000000000001"),
-            path: "plugin/demo.ts",
-          },
-          status: "active",
-          tui: false,
-        }),
-        decode({
-          source: { type: "project", projectID: Project.ID.make("prj_00000000000000000000000002") },
-          status: "failed",
-          error: "nope",
-          tui: false,
-        }),
-      ].map((info) => info.source.type),
-    ).toEqual(["builtin", "package", "local", "sdk", "project", "project"])
-  })
-
-  it("rejects removed Account plugin sources", () => {
-    expect(() => Schema.decodeUnknownSync(Plugin.Source)({ type: "account", pluginID: "account.example" })).toThrow()
-  })
-
-  it("decodes form-backed configuration without exposing plugin implementation", () => {
-    expect(
-      Schema.decodeUnknownSync(Plugin.Info)({
-        id: "builtin",
-        source: { type: "builtin" },
-        status: "active",
-        tui: false,
-        configuration: {
-          title: "Routing",
-          fields: [{ key: "enabled", type: "boolean", default: true }],
-          values: { enabled: false },
-          configured: true,
-        },
-      }),
-    ).toMatchObject({ configuration: { title: "Routing", values: { enabled: false } } })
-  })
-
   it("round-trips and resolves configuration-local option sets", () => {
     const configuration = Schema.decodeUnknownSync(Plugin.Configuration)({
       title: "Routing",

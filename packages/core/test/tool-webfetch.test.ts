@@ -168,6 +168,7 @@ describe("WebFetchTool helpers", () => {
 
   it("defaults to the production byte budget with room for closing syntax", () => {
     const output = WebFetchTool.convertHTMLToMarkdown("x".repeat(WebFetchTool.MAX_RESPONSE_BYTES))
+    // The server-side cap on fetched page size; every other assertion is relative to it.
     expect(WebFetchTool.MAX_RESPONSE_BYTES).toBe(5 * 1024 * 1024)
     expect(output).toHaveLength(WebFetchTool.MAX_RESPONSE_BYTES - 64 * 1024)
   })

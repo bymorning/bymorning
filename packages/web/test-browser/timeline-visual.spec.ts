@@ -141,7 +141,7 @@ for (const size of sizes) {
       await settleDisclosures(page)
       await expect(page.getByRole("region", { name: "Tool output" })).toContainText("No errors found.")
       const shellTool = page.locator(
-        '[data-timeline-key="assistant-part:part:assistant-shell:shell-output"] [data-component="collapsible"]',
+        '[data-timeline-key="assistant-part:part:assistant-shell:shell-output"] [data-component="tool-collapsible"]',
       )
       await expect(shellTool).toHaveScreenshot(`visual-shell-open-${theme}-${size.name}.png`, {
         animations: "disabled",
