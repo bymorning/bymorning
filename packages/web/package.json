@@ -39,7 +39,7 @@
     "dompurify": "3.4.16",
     "effect": "catalog:",
     "fuzzysort": "3.1.0",
-    "katex": "0.17.0",
+    "katex": "0.18.2",
     "luxon": "3.6.1",
     "marked": "18.0.7",
     "marked-shiki": "1.2.1",
