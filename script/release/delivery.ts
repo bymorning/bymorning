@@ -3,10 +3,11 @@
  * delivers a release to a customer.
  * Each returns the problems it found; an empty list means deliverable. The
  * exports turn problems into a refusal unless the operator passes the matching
- * override (--allow-unsigned, --rotate-key).
+ * override (--allow-unsigned, --rotate-signer).
  *
  *   const problems = Delivery.signing(release, manifest, ["gateway"])
- *   const change = Delivery.rotation(join(target, "release/cosign.pub"), join(release, "cosign.pub"))
+ *   const unverified = Delivery.verification(release, manifest, ["gateway"])
+ *   const change = Delivery.rotation(join(target, "release"), release)
  *   const drift = Delivery.lineage(repository, manifest.revision)
  */
 import { spawnSync } from "node:child_process"
@@ -14,6 +15,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 // `.js` so the packages/server tests can import this module under their tsconfig; Bun resolves it to manifest.ts.
 import { Manifest } from "./manifest.js"
+import { Signing } from "./signing.js"
 
 export namespace Delivery {
   /** The marker an export writes into its SOURCE/README header when --allow-unsigned overrode the signing check. */
@@ -41,49 +43,115 @@ export namespace Delivery {
     }
   }
 
+  /** The signer a `signer.txt` file names, or undefined when it is missing or malformed. */
+  export const signer = (path: string) => {
+    if (!existsSync(path)) return undefined
+    return Signing.parse(readFileSync(path, "utf8"))
+  }
+
   /**
-   * Every delivered artifact is signed with the release key: `signing.kind` is
-   * `release`, every bundle sign.ts writes is present, and both the release
-   * directory's cosign.pub and the evidence folder's cosign.pub have the
-   * fingerprint the manifest records.
+   * Every delivered artifact is signed by a release signer: `signing.kind` is
+   * `keyless`, the recorded identity is this repository's full-gate.yml on a
+   * v* tag (`Signing.isRelease`), every bundle sign.ts writes is present, and
+   * both the release directory's and the evidence folder's signer.txt name the
+   * identity and issuer the manifest records. This checks what is recorded and
+   * shipped; `verification` checks the signatures themselves.
    */
   export const signing = (release: string, manifest: Manifest.Manifest, kinds: ReadonlyArray<Manifest.Kind>) => {
     const problems: Array<string> = []
-    const pub = join(release, "cosign.pub")
-    const delivered = key(pub)
-    if (delivered === undefined) problems.push(`${pub} is missing or is not a PEM public key`)
     for (const kind of kinds) {
       const artifact = manifest.artifacts[kind]
       const signing = artifact.signing
-      if (signing.kind !== "release") {
+      if (signing.kind !== "keyless") {
         problems.push(
           signing.kind === "unsigned"
             ? `${kind}: evidence is unsigned (or the manifest predates signing provenance)`
-            : `${kind}: evidence is signed with an ephemeral key ${signing.key}, not the release key`,
+            : `${kind}: evidence is signed with a throwaway key ${signing.key}, not by a release signer`,
         )
         continue
       }
+      if (!Signing.isRelease(signing.identity, signing.issuer))
+        problems.push(
+          `${kind}: signed by ${signing.identity} (${signing.issuer}), which is not full-gate.yml on a v* tag of bymorning/bymorning`,
+        )
       for (const bundle of bundles(release, artifact))
         if (!existsSync(bundle)) problems.push(`${kind}: ${bundle} is missing`)
-      if (delivered !== undefined && delivered !== signing.key)
-        problems.push(`${kind}: ${pub} is ${delivered}, but the evidence was signed by ${signing.key}`)
-      const evidence = join(release, artifact.evidence, "cosign.pub")
-      const own = key(evidence)
-      if (own !== signing.key) problems.push(`${kind}: ${evidence} is ${own ?? "missing"}, not ${signing.key}`)
+      for (const file of [join(release, "signer.txt"), join(release, artifact.evidence, "signer.txt")]) {
+        const named = signer(file)
+        if (named === undefined) problems.push(`${kind}: ${file} is missing or names no signer`)
+        else if (named.identity !== signing.identity || named.issuer !== signing.issuer)
+          problems.push(`${kind}: ${file} names ${named.identity}, but the evidence was signed by ${signing.identity}`)
+      }
     }
     return problems
   }
 
   /**
-   * Whether delivering `next` would replace the key at `current` (the
-   * cosign.pub already in the export target) with a different one. Returns
-   * both fingerprints when it would; undefined when the target has no key yet
-   * or the keys are the same.
+   * Verifies every signature with cosign: the tarball and each signed evidence
+   * file against the recorded identity and issuer, offline when the release
+   * carries a trusted_root.json. A bundle that does not verify, or no cosign
+   * on PATH, is a problem; evidence nobody checked is not delivered.
+   */
+  export const verification = (release: string, manifest: Manifest.Manifest, kinds: ReadonlyArray<Manifest.Kind>) => {
+    const problems: Array<string> = []
+    const cosign = spawnSync("cosign", ["version"], { encoding: "utf8" })
+    if (cosign.error || cosign.status !== 0) return ["cosign is not on PATH, so the signatures cannot be verified"]
+    const root = join(release, "trusted_root.json")
+    for (const kind of kinds) {
+      const artifact = manifest.artifacts[kind]
+      const signing = artifact.signing
+      if (signing.kind !== "keyless") continue
+      const evidence = join(release, artifact.evidence)
+      const signed = [
+        [join(release, artifact.tarball), join(evidence, `${artifact.tarball}.bundle`)],
+        ...["SHA256SUMS", "provenance.intoto.json", "openvex.json"]
+          .filter((file) => existsSync(join(evidence, file)))
+          .map((file) => [join(evidence, file), join(evidence, `${file}.bundle`)] as const),
+      ]
+      for (const [file, bundle] of signed) {
+        if (!existsSync(bundle)) continue // already reported by `signing`
+        const result = spawnSync(
+          "cosign",
+          [
+            "verify-blob",
+            "--bundle",
+            bundle,
+            "--certificate-identity",
+            signing.identity,
+            "--certificate-oidc-issuer",
+            signing.issuer,
+            ...(existsSync(root) ? ["--trusted-root", root] : []),
+            file,
+          ],
+          { encoding: "utf8" },
+        )
+        if (result.status !== 0)
+          problems.push(`${kind}: cosign could not verify ${file}: ${(result.stderr || "").trim().split("\n").at(-1)}`)
+      }
+    }
+    return problems
+  }
+
+  /** A short description of the signer a delivered release directory pins, or undefined when it pins none. */
+  export const pinned = (release: string) => {
+    const named = signer(join(release, "signer.txt"))
+    if (named !== undefined) return `keyless ${Signing.workflow(named.identity)} (${named.issuer})`
+    const fingerprint = key(join(release, "cosign.pub"))
+    return fingerprint === undefined ? undefined : `key ${fingerprint}`
+  }
+
+  /**
+   * Whether delivering the release in `next` would change the signer already
+   * pinned by the package in `current`. The ref is not part of the signer: one
+   * workflow signs every release from a different tag. Returns both
+   * descriptions when the signer changes (a different workflow or issuer, or a
+   * move between a key and keyless signing); undefined when the target pins
+   * nothing yet or the signer is the same.
    */
   export const rotation = (current: string, next: string) => {
-    if (!existsSync(current)) return undefined
-    const before = key(current) ?? "unreadable"
-    const after = key(next) ?? "none"
+    const before = pinned(current)
+    if (before === undefined) return undefined
+    const after = pinned(next) ?? "none"
     return before === after ? undefined : { before, after }
   }
 

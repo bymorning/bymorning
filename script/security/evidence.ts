@@ -15,21 +15,22 @@
  *   tools.txt                                           tool versions used
  *   provenance.intoto.json                              SLSA v1 statement
  *   SHA256SUMS                                          hashes of all of the above + the tarball
- *   <tarball>.bundle, SHA256SUMS.bundle, provenance...bundle, openvex.json.bundle, cosign.pub
- *                                                       (when BYMORNING_COSIGN_KEY is set)
+ *   <tarball>.bundle, SHA256SUMS.bundle, provenance...bundle, openvex.json.bundle, and the
+ *   signer record: signer.txt + trusted_root.json (keyless) or cosign.pub (a key)
+ *                                                       (when BYMORNING_SIGN_KEYLESS=1 or BYMORNING_COSIGN_KEY is set)
  *
  * --kind execution (the Code Interpreter execution image, app/host/Dockerfile.execution;
  * no first-party code, so only the image-level steps):
  *   sbom-image.cyclonedx.json / sbom-image.spdx.json, vulnerabilities-image-grype.json,
- *   vulnerabilities.md, tools.txt, SHA256SUMS, <tarball>.bundle, SHA256SUMS.bundle, cosign.pub
+ *   vulnerabilities.md, tools.txt, SHA256SUMS, <tarball>.bundle, SHA256SUMS.bundle, signer record
  *
  *   bun script/security/evidence.ts --kind gateway|execution --tarball <oci.tar> --digest sha256:<image> \
  *     --version <semver> --commit <short12> --out <dir> [--manifest <release dir>] [--allow-missing]
  *
  * --manifest names the release directory whose manifest.json lists this
  * artifact (script/release.ts passes it); after signing, the artifact's
- * `signing` entry is set to the key that signed (release, ephemeral) or
- * `unsigned`, with the cosign.pub fingerprint. The artifact is matched by
+ * `signing` entry is set to who signed (keyless identity, ephemeral key
+ * fingerprint) or `unsigned`. The artifact is matched by
  * --kind and must carry --digest.
  *
  * The evidence folder is release/<version>/<kind>/ and the tarball lives in
@@ -53,6 +54,9 @@ import { main as bunAudit } from "./bun-audit.ts"
 import { main as provenance } from "./provenance.ts"
 import { main as vex } from "./vex.ts"
 import { main as sign } from "./sign.ts"
+
+/** Files sign.ts writes beside the bundles; they describe the signature and are not content to checksum. */
+const SIGNING_FILES = new Set(["cosign.pub", "signer.txt", "trusted_root.json", "SHA256SUMS"])
 
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), "../..")
 const TOOLS = {
@@ -138,9 +142,7 @@ export const main = (argv: string[]) => {
   // and in every export) and every content artifact written so far. Signatures
   // are added afterwards and are verified with cosign, not listed here.
   const entries = readdirSync(out)
-    .filter(
-      (file) => !file.endsWith(".sig") && !file.endsWith(".bundle") && file !== "cosign.pub" && file !== "SHA256SUMS",
-    )
+    .filter((file) => !file.endsWith(".sig") && !file.endsWith(".bundle") && !SIGNING_FILES.has(file))
     .toSorted()
   const lines = [`${sha256File(tarball)}  ../../${tarball.split("/").at(-1)!}`]
   for (const entry of entries) lines.push(`${sha256File(join(out, entry))}  ${entry}`)
@@ -167,7 +169,7 @@ const record = (manifestDir: string, kind: Kind, digest: string, signing: Manife
     ...manifest,
     artifacts: { ...manifest.artifacts, [kind]: { ...artifact, signing } },
   })
-  console.log(`manifest: ${kind} signing ${signing.kind}${"key" in signing ? ` ${signing.key}` : ""}`)
+  console.log(`manifest: ${kind} signing ${Manifest.describe(signing)}`)
 }
 
 const usage = (): never => {

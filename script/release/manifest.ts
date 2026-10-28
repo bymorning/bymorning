@@ -2,17 +2,21 @@
  * The release manifest, release/manifest.json: one record per release naming
  * the version, the source commit, and both OCI tarballs with their digests.
  * script/release.ts writes it; the installer export (installers/azure/export.ts)
- * and the image tests read it. Each artifact's `evidence` is the folder under release/ holding its signed evidence, and its
- * `signing` records which key signed that evidence (script/security/sign.ts):
+ * and the image tests read it. Each artifact's `evidence` is the folder under
+ * release/ holding its signed evidence, and its `signing` records who signed
+ * that evidence (script/security/sign.ts, script/release/signing.ts):
  *
- *   release    the ByMorning release key (KMS alias or the dispatch-restored key)
- *   ephemeral  a throwaway or development key; never delivered to a customer
+ *   keyless    Sigstore keyless signing: `identity` is the certificate's
+ *              subject (the workflow run) and `issuer` the OIDC issuer. Only
+ *              full-gate.yml on a v* tag is a release signer; the installer
+ *              export enforces that, the build only records what signed.
+ *   ephemeral  a throwaway or development key, recorded by `key`, the SHA-256
+ *              fingerprint of its public key (the DER bytes of cosign.pub; see
+ *              `fingerprint`); never delivered to a customer
  *   unsigned   no signature
  *
- * `key` is the SHA-256 fingerprint of the signing public key (the DER bytes
- * of cosign.pub; see `fingerprint`). Manifests written before `schema: 1`
- * have neither field and read as `unsigned` with no key: their signing
- * provenance is unknown.
+ * Manifests written before `schema: 1` have no signing record and read as
+ * `unsigned`: their signing provenance is unknown.
  *
  *   const manifest = Manifest.read("release")
  *   Manifest.write("release", manifest)
@@ -37,15 +41,30 @@ export namespace Manifest {
   /** SHA-256 of a public key's DER bytes, `sha256:<hex>`. */
   export const Fingerprint = Schema.String.check(Schema.isPattern(/^sha256:[0-9a-f]{64}$/))
 
-  export const SigningKind = Schema.Literals(["release", "ephemeral", "unsigned"])
+  export const SigningKind = Schema.Literals(["keyless", "ephemeral", "unsigned"])
   export type SigningKind = typeof SigningKind.Type
 
-  /** Who signed an artifact's evidence: a key fingerprint for signed evidence, none for unsigned. */
+  /** Who signed an artifact's evidence: a keyless identity, a throwaway key fingerprint, or nobody. */
   export const Signing = Schema.Union([
-    Schema.Struct({ kind: Schema.Literals(["release", "ephemeral"]), key: Fingerprint }),
+    Schema.Struct({
+      kind: Schema.Literal("keyless"),
+      /** The signing certificate's subject, for example a workflow URL at a git ref. */
+      identity: Schema.NonEmptyString,
+      /** The OIDC issuer that vouched for the identity. */
+      issuer: Schema.NonEmptyString,
+    }),
+    Schema.Struct({ kind: Schema.Literal("ephemeral"), key: Fingerprint }),
     Schema.Struct({ kind: Schema.Literal("unsigned") }),
   ])
   export type Signing = typeof Signing.Type
+
+  /** One-line description of a signing record, for logs and refusals. */
+  export const describe = (signing: Signing) =>
+    signing.kind === "keyless"
+      ? `keyless ${signing.identity}`
+      : signing.kind === "ephemeral"
+        ? `ephemeral key ${signing.key}`
+        : "unsigned"
 
   export const Artifact = Schema.Struct({
     /** Tarball file name, relative to the release directory. */
@@ -57,7 +76,7 @@ export namespace Manifest {
     dockerfile: Schema.String,
     /** Evidence folder relative to the release directory, for example `1.2.0/gateway`. */
     evidence: Schema.String.check(Schema.isPattern(/^[A-Za-z0-9._-]+\/(?:gateway|execution)$/)),
-    /** The key that signed the evidence folder. */
+    /** Who signed the evidence folder. */
     signing: Signing,
   })
   export type Artifact = typeof Artifact.Type

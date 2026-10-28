@@ -8,7 +8,7 @@ Azure**. This package installs it with Terraform and Kubernetes manifests; see [
 | Gateway        | `release/bymorning-{{COMMIT}}.tar`                  | `{{GATEWAY_DIGEST}}`   |
 | Code execution | `release/bymorning-code-interpreter-{{COMMIT}}.tar` | `{{EXECUTION_DIGEST}}` |
 
-Both images are built from source commit `{{COMMIT}}` and signed with the ByMorning release key (`release/cosign.pub`).
+Both images are built from source commit `{{COMMIT}}` and signed keylessly by the ByMorning release workflow (`release/signer.txt`).
 SBOMs, vulnerability scans, the SLSA provenance statement, the OpenVEX statement, and the security triage are in
 `release/`; see the README's [Release evidence](README.md#release-evidence) section.
 

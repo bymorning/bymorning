@@ -78,56 +78,60 @@ AKS, Key Vault, Blob storage, PostgreSQL, and a digest-pinned image mirrored int
 
 A release is one Gateway image, delivered as a linux/amd64 OCI tarball pinned by digest, plus signed evidence (SBOMs,
 vulnerability and license reports, scans, SLSA provenance, `SHA256SUMS`). It is installer-neutral: every installer
-delivers the same tarball and verifies the same digest. Releases are cut on a maintainer machine.
+delivers the same tarball and verifies the same digest.
 
-Prerequisites: Docker with buildx; `syft grype cosign gitleaks semgrep` (`brew install ...`); and a cosign signing key.
-The maintainers keep the release key in AWS KMS (`script/release-key.sh` creates one and exports its public key to
-`release/cosign.pub`); any cosign key reference works for your own builds. Point cosign at it before building, for
-example:
+**Release signatures are keyless.** There is no signing key to store or rotate. The `full-gate` workflow signs the
+evidence with [Sigstore](https://www.sigstore.dev) using its own GitHub Actions identity: the signing certificate names
+the workflow run, and the signature is recorded in the public transparency log. A signature is a release signature only
+when that identity is `full-gate.yml` of this repository running on a `v*` tag (`script/release/signing.ts`); the
+installer export refuses anything else, and it verifies every signature with `cosign` before it packages a release.
+Anyone can check a release with the identity and issuer in `release/signer.txt`, and rebuild a release from its tag to
+compare digests: the build is reproducible.
 
-```bash
-export BYMORNING_COSIGN_KEY=awskms:///alias/<your-key-alias> AWS_REGION=<region>
-```
+Cutting a release:
 
-1. Set the version in the root `package.json` and date its section in `CHANGELOG.md`, then commit. The build refuses
-   a dirty tree.
-2. Build both images and their evidence:
+1. Set the version in the root `package.json` and date its section in `CHANGELOG.md`; merge to `dev`.
+2. Tag that commit `v<version>` and push the tag. The tag must match the `package.json` version.
+3. Dispatch the signed build on the tag, then download its `release` artifact:
 
    ```bash
-   bun script/release.ts
+   git tag v<version> && git push origin v<version>
+   gh workflow run full-gate.yml --ref v<version> -f sign=true
+   gh run download <run id> -n release -D release
    ```
 
-   This writes `release/bymorning-<commit>.tar` (the Gateway) and `release/bymorning-code-interpreter-<commit>.tar`
-   (the code execution image; both gitignored), records them in `release/manifest.json`, and writes the signed
-   evidence to `release/<version>/gateway/` and `release/<version>/execution/`. The build is reproducible: rebuilding
-   the same commit yields the same digests. `--skip-evidence` is for throwaway builds only; `--only gateway|execution`
-   rebuilds one image. Each artifact's `signing` in the manifest records which key signed its evidence: `release`
-   (the maintainers' release key), `ephemeral` (any other key), or `unsigned`, with the SHA-256 fingerprint of the
-   key's DER bytes.
+   The run builds both images, runs the image-security, image-boot, kind and browser suites, and signs the evidence.
+   The artifact holds `release/bymorning-<commit>.tar` (the Gateway) and `release/bymorning-code-interpreter-<commit>.tar`
+   (the code execution image; both gitignored), `release/manifest.json`, `release/signer.txt`,
+   `release/trusted_root.json` (the Sigstore trust root, for offline verification), and the evidence in
+   `release/<version>/gateway/` and `release/<version>/execution/`. Each artifact's `signing` in the manifest records who
+   signed: `keyless` (the identity and issuer), `ephemeral` (a throwaway key, every other run), or `unsigned`.
 
-3. Commit `release/manifest.json` and `release/<version>/`, tag, and publish the GitHub Release:
+4. Commit `release/manifest.json`, `release/signer.txt`, `release/trusted_root.json` and `release/<version>/`, and
+   publish the GitHub Release:
 
    ```bash
    git add release && git commit -m "release: <version>"
-   git tag v<version> && git push origin v<version>
    gh release create v<version> --notes-file <changelog excerpt> \
-     release/bymorning-*<commit>.tar release/manifest.json release/<version>/*/*   # the evidence includes cosign.pub
+     release/bymorning-*<commit>.tar release/manifest.json release/signer.txt release/<version>/*/*
    ```
 
-4. Package the Azure installer from the manifest:
+5. Package the Azure installer from the manifest:
    `bun installers/azure/export.ts --out <directory>` (`bymorning-azure-<version>.zip`). It runs from the release
    build or a descendant that changes only `release/`, `CHANGELOG.md`, `docs/security/evidence/`, and package
-   versions (`--force` overrides), refuses evidence that is not signed with the release key (`--allow-unsigned`
-   exports a marked "UNSIGNED REHEARSAL"), and refuses to replace a target's `release/cosign.pub` with another key
-   without `--rotate-key`.
+   versions (`--force` overrides), refuses evidence that was not signed by a release signer or whose signatures do not
+   verify (`--allow-unsigned` exports a marked "UNSIGNED REHEARSAL"), and refuses to change the signer a target
+   already pins (a different workflow or issuer) without `--rotate-signer`; a new release tag is not a change.
 
-`release/cosign.pub` pins the release signing public key; each signed evidence folder's `cosign.pub` must equal it.
-The `full-gate` workflow in GitHub Actions (`.github/workflows/full-gate.yml`) runs the same build and evidence
-pipeline on every merge to `dev` and nightly with an ephemeral signing key, then boots the tarball with the AWS and
-Azure environments, runs the Azure kind end-to-end, the browser suites, and the installer checks. Dispatching it with
-`sign=true` (and the `BYMORNING_COSIGN_KEY_ENABLED` repository variable set) signs with the real key and keeps the
-`release` artifact for 30 days as a release candidate. Only that path may set a `version`; every other run builds
-`<version>-ci.<run>` and records its evidence as `ephemeral`.
+For your own builds, `bun script/release.ts` needs Docker with buildx and `syft grype cosign gitleaks semgrep`
+(`brew install ...`). It leaves the evidence unsigned unless you point cosign at a development key
+(`BYMORNING_COSIGN_KEY=<cosign.key>`, recorded as `ephemeral`); such a build is never deliverable.
+
+The `full-gate` workflow (`.github/workflows/full-gate.yml`) runs the same build and evidence pipeline on every merge to
+`dev` and nightly with a throwaway key, then boots the tarball with the AWS and Azure environments, runs the Azure kind
+end-to-end, the browser suites, and the installer checks. Dispatched with `sign=true` on a `v*` tag it is the release
+build described above; on any other ref it signs keylessly but only to exercise the signing path, and the export will
+refuse the result. Every other run builds `<version>-ci.<run>` and records its evidence as `ephemeral`.
 
 ## SST authentication configuration
 

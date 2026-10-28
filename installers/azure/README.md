@@ -25,7 +25,7 @@ smoke.sh                post-deployment checks
 ```
 
 The release directory `release/` holds the two image tarballs, their records (`image-azure.txt`,
-`image-execution.txt`), the signing key `cosign.pub`, `mirror.sh`, and the signed evidence folders
+`image-execution.txt`), the pinned signer `signer.txt` (with `trusted_root.json` for offline checks), `mirror.sh`, and the signed evidence folders
 `gateway/evidence/` and `code-interpreter/evidence/` (see [Release evidence](#release-evidence)).
 
 Run every command from the directory that contains `installers/` and `release/`.
@@ -143,24 +143,30 @@ Other module settings are not variables in the example root. To change them, add
 
 3. **Verify and push the images.** ByMorning delivers the Gateway image tarball
    `release/bymorning-<commit>.tar` with its record `release/image-azure.txt`, the code execution image
-   `release/bymorning-code-interpreter-<commit>.tar` with `release/image-execution.txt`, the signing key
-   `release/cosign.pub`, and one signed evidence folder per image, `release/gateway/evidence/` and
+   `release/bymorning-code-interpreter-<commit>.tar` with `release/image-execution.txt`, the pinned signer
+   `release/signer.txt`, and one signed evidence folder per image, `release/gateway/evidence/` and
    `release/code-interpreter/evidence/`. Verify the Gateway image first (`SHA256SUMS` names the tarball as
-   `../../bymorning-<commit>.tar`, its place in `release/`):
+   `../../bymorning-<commit>.tar`, its place in `release/`). `signer.txt` names the identity and OIDC issuer of the
+   workflow run that signed the release (Sigstore keyless signing; there is no key to hold). The identity must be the
+   `full-gate.yml` workflow of <https://github.com/bymorning/bymorning> at `refs/tags/v<version>`:
 
    ```sh
    cd release/gateway/evidence
    sha256sum -c SHA256SUMS                    # macOS: shasum -a 256 -c SHA256SUMS
-   cmp cosign.pub ../../cosign.pub            # the evidence key must equal the pinned key
-   cosign verify-blob --key ../../cosign.pub --bundle bymorning-*.tar.bundle ../../bymorning-<commit>.tar
-   cosign verify-blob --key ../../cosign.pub --bundle SHA256SUMS.bundle SHA256SUMS
-   cosign verify-blob --key ../../cosign.pub --bundle provenance.intoto.json.bundle provenance.intoto.json
+   cmp signer.txt ../../signer.txt            # the evidence signer must equal the pinned signer
+   cat ../../signer.txt                       # check the identity is the one above
+   id=$(sed -n 's/^identity: *//p' ../../signer.txt); iss=$(sed -n 's/^issuer: *//p' ../../signer.txt)
+   v="--certificate-identity $id --certificate-oidc-issuer $iss"   # add: --trusted-root ../../trusted_root.json  (offline)
+   cosign verify-blob --bundle bymorning-*.tar.bundle $v ../../bymorning-<commit>.tar
+   cosign verify-blob --bundle SHA256SUMS.bundle $v SHA256SUMS
+   cosign verify-blob --bundle provenance.intoto.json.bundle $v provenance.intoto.json
    cd ../../..
    ```
 
    Each command prints `Verified OK` (or `OK` per file). Repeat in `release/code-interpreter/evidence/` with
    `bymorning-code-interpreter-*.tar.bundle` and `../../bymorning-code-interpreter-<commit>.tar`; that folder has no
-   provenance statement. Compare `release/cosign.pub` with the key published at <https://github.com/bymorning/releases>.
+   provenance statement. `release/trusted_root.json` is the Sigstore trust root the release was verified with; with
+   `--trusted-root` the checks need no network access. Without it, cosign fetches the current root over TUF.
 
    Sign in to your registry, then push both tarballs with `release/mirror.sh`. Before pushing, it verifies each
    tarball's signature with `cosign` when it is on `PATH` (and says so when it is not), and checks that the tarball
@@ -549,8 +555,9 @@ keys:
 
 ### Release evidence
 
-Both images are built from one source commit (the `# built from` line of `release/image-*.txt`) and signed with the
-ByMorning release key `release/cosign.pub` (ECDSA P-256, held in a hardware-backed KMS). Each evidence folder has a
+Both images are built from one source commit (the `# built from` line of `release/image-*.txt`) and signed
+keylessly by the release workflow (`release/signer.txt`): the signature certificate names the GitHub Actions run, and the
+signature is recorded in the public Sigstore transparency log. Each evidence folder has a
 signed `SHA256SUMS` covering its tarball (as `../../<tarball>`) and every report beside it.
 
 | Folder                               | Contents                                                                                                                                                                                                                                                                                                                              |

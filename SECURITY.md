@@ -21,3 +21,17 @@ Security fixes go to the latest release and the `dev` branch.
 The Gateway, web application, plugins, and the installers in this repository.
 Reports about a third-party dependency are best sent to that project; tell us
 too if ByMorning is affected.
+
+## Verifying a release
+
+Release images and their evidence are signed keylessly with [Sigstore](https://www.sigstore.dev): there is no key to
+trust. A signature is genuine when its certificate names the `full-gate.yml` workflow of this repository running on a
+`v*` tag, and the release's `signer.txt` records that identity. With `cosign`:
+
+```sh
+cosign verify-blob --bundle <file>.bundle \
+  --certificate-identity-regexp '^https://github\.com/bymorning/bymorning/\.github/workflows/full-gate\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com <file>
+```
+
+Builds are reproducible, so you can also rebuild a release from its tag and compare image digests.

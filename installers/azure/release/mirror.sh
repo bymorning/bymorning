@@ -21,9 +21,10 @@
 #
 # Before anything is pushed each tarball is checked: when cosign is on PATH, its
 # signature (release/gateway/evidence/<tarball>.bundle,
-# release/code-interpreter/evidence/<tarball>.bundle) is verified against
-# release/cosign.pub; then its OCI index must name exactly one linux/amd64 image
-# manifest whose digest is the recorded one, and every blob must hash to its digest.
+# release/code-interpreter/evidence/<tarball>.bundle) is verified against the
+# signer pinned in release/ (signer.txt, or cosign.pub for a rehearsal build);
+# then its OCI index must name exactly one linux/amd64 image manifest whose
+# digest is the recorded one, and every blob must hash to its digest.
 # Set BYMORNING_SKIP_COSIGN=1 only on a host where cosign cannot load its trust
 # root, after verifying the bundles elsewhere.
 set -eu
@@ -79,8 +80,28 @@ verify_layout() {
   done
 }
 
-# verify_signature <tarball> <bundle> <label>: cosign verify-blob against
-# release/cosign.pub when cosign is available and the bundle is present.
+# cosign_verify <file> <bundle>: cosign verify-blob against the signer this package pins. A keyless
+# release pins release/signer.txt (the identity and OIDC issuer of the signing workflow); a
+# release/trusted_root.json beside it lets the check run without network access. A rehearsal build
+# pins release/cosign.pub instead.
+cosign_verify() {
+  if [ -f "$here/signer.txt" ]; then
+    identity=$(sed -n 's/^identity: *//p' "$here/signer.txt" | head -1)
+    issuer=$(sed -n 's/^issuer: *//p' "$here/signer.txt" | head -1)
+    [ -n "$identity" ] && [ -n "$issuer" ] || fail "$here/signer.txt names no identity and issuer"
+    if [ -f "$here/trusted_root.json" ]; then
+      cosign verify-blob --bundle "$2" --certificate-identity "$identity" --certificate-oidc-issuer "$issuer" \
+        --trusted-root "$here/trusted_root.json" "$1" >/dev/null
+    else
+      cosign verify-blob --bundle "$2" --certificate-identity "$identity" --certificate-oidc-issuer "$issuer" "$1" >/dev/null
+    fi
+  else
+    cosign verify-blob --key "$here/cosign.pub" --bundle "$2" "$1" >/dev/null
+  fi
+}
+
+# verify_signature <tarball> <bundle> <label>: verify the tarball signature when cosign is available
+# and the bundle is present.
 verify_signature() {
   if [ "${BYMORNING_SKIP_COSIGN:-}" = 1 ]; then
     echo "$3: signature not verified (BYMORNING_SKIP_COSIGN=1)" >&2
@@ -89,12 +110,12 @@ verify_signature() {
     echo "$3: verify it as the README's 'Release evidence' section describes." >&2
   elif [ ! -f "$2" ]; then
     echo "$3: WARNING: signature bundle $2 is missing; the signature is not verified (an unsigned rehearsal export?)" >&2
-  elif [ ! -f "$here/cosign.pub" ]; then
-    fail "$3: $here/cosign.pub is missing; cannot verify the signature"
+  elif [ ! -f "$here/signer.txt" ] && [ ! -f "$here/cosign.pub" ]; then
+    fail "$3: $here has neither signer.txt nor cosign.pub; cannot verify the signature"
   else
-    cosign verify-blob --key "$here/cosign.pub" --bundle "$2" "$1" >/dev/null ||
-      fail "$3: cosign could not verify $1 against release/cosign.pub"
-    echo "$3: signature verified against release/cosign.pub" >&2
+    cosign_verify "$1" "$2" ||
+      fail "$3: cosign could not verify $1 against the signer pinned in release/"
+    echo "$3: signature verified against the pinned signer" >&2
   fi
 }
 
