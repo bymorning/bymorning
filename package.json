@@ -36,7 +36,7 @@
     "jsdom": "^26.1.0",
     "oxlint": "1.60.0",
     "oxlint-tsgolint": "0.21.0",
-    "prettier": "^3.6.2",
+    "prettier": "^3.9.10",
     "sst": "4.17.1",
     "solid-js": "^1.9.7",
     "vite": "^7.0.6",
