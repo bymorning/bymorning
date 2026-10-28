@@ -1,8 +1,10 @@
 # Dependency update automation. Actions are pinned by commit SHA; dependabot
 # keeps those pins current (it bumps the SHA and the version comment together).
 #
-# Each ecosystem opens at most one grouped pull request a week, and major
-# versions are left for a deliberate upgrade.
+# GitHub Actions updates arrive as one grouped weekly pull request. npm-style
+# version updates are off (limit 0): a grouped minor/patch bump of the whole tree
+# broke typecheck (solid-js props) and the OTLP export test, so dependencies move
+# in deliberate, reviewed batches. Security updates still open pull requests.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -18,7 +20,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 0
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
