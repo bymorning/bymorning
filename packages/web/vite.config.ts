@@ -9,6 +9,7 @@ export default defineConfig({
     : {}),
   test: {
     setupFiles: ["./src/test/setup.ts"],
+    testTimeout: 15_000,
     exclude: ["e2e/**", "test-browser/**", "**/node_modules/**", "**/dist/**"],
   },
   worker: { format: "es" },

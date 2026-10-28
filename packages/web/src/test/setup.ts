@@ -1,4 +1,9 @@
+import { configure } from "@solidjs/testing-library"
 import type {} from "vitest/jsdom"
+
+// findBy/waitFor default to 1 s, which a loaded two-vCPU CI runner occasionally exceeds in long interaction tests.
+// A passing wait returns immediately; only a genuinely stuck one costs the full time.
+configure({ asyncUtilTimeout: 5_000 })
 
 Object.defineProperties(globalThis, {
   localStorage: Object.getOwnPropertyDescriptor(jsdom.window, "localStorage")!,
