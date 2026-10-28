@@ -18,7 +18,7 @@
   "dependencies": {
     "@bymorning/client": "workspace:*",
     "@kobalte/core": "0.13.11",
-    "@shikijs/stream": "4.2.0",
+    "@shikijs/stream": "4.5.0",
     "@tanstack/solid-virtual": "3.13.37",
     "dompurify": "3.4.17",
     "katex": "0.17.0",
