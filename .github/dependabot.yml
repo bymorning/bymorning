@@ -1,22 +1,35 @@
 # Dependency update automation. Actions are pinned by commit SHA; dependabot
 # keeps those pins current (it bumps the SHA and the version comment together).
+#
+# Each ecosystem opens at most one grouped pull request a week, and major
+# versions are left for a deliberate upgrade.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
   # bun.lock is a Bun lockfile, which dependabot's npm ecosystem cannot update; the bun
   # ecosystem updates the manifests and the lockfile together (CI enforces --frozen-lockfile).
   - package-ecosystem: bun
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
     ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
       # Catalog versions are managed centrally in the root package.json;
       # effect-rc lines move in lockstep and are bumped deliberately.
       - dependency-name: "effect"
       - dependency-name: "@effect/*"
+      # Pinned to a prerelease build that patches/ is written against.
+      - dependency-name: "@opencode-ai/*"
       # packages/session-ui vendors KaTeX's CSS at this version (markdown-katex.css); the JS must move with it.
       - dependency-name: "katex"
