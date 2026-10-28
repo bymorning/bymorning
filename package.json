@@ -20,7 +20,7 @@
     "@effect/vitest": "4.0.0-rc.112",
     "@solidjs/testing-library": "^0.8.10",
     "@solidjs/router": "^0.15.1",
-    "@tanstack/solid-query": "5.91.4",
+    "@tanstack/solid-query": "5.104.5",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/user-event": "^14.6.1",
     "@tsconfig/node22": "^22",
