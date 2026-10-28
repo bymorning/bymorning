@@ -202,6 +202,8 @@ it("shows connected Providers without connection counts and manages them from ro
   await userEvent.type(screen.getByRole("combobox", { name: "Search providers" }), "missing")
   expect(screen.getByText("No providers match your search.")).toBeInTheDocument()
   await userEvent.clear(screen.getByRole("combobox", { name: "Search providers" }))
+  // Wait for the cleared list to render: an Escape sent mid-update closes the list instead of the dialog.
+  await screen.findByRole("option", { name: "Anthropic" })
   await userEvent.keyboard("{Escape}")
   await waitFor(() => expect(screen.queryByRole("dialog", { name: "Add provider" })).not.toBeInTheDocument())
   expect(add).toHaveFocus()
