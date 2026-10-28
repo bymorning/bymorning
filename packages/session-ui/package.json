@@ -20,7 +20,7 @@
     "@kobalte/core": "0.13.11",
     "@shikijs/stream": "4.2.0",
     "@tanstack/solid-virtual": "3.13.37",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.17",
     "katex": "0.17.0",
     "marked": "18.0.7",
     "marked-shiki": "1.2.1",
