@@ -19,3 +19,5 @@ updates:
       # effect-rc lines move in lockstep and are bumped deliberately.
       - dependency-name: "effect"
       - dependency-name: "@effect/*"
+      # packages/session-ui vendors KaTeX's CSS at this version (markdown-katex.css); the JS must move with it.
+      - dependency-name: "katex"
