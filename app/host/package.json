@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@azure/identity": "^4.13.3",
+    "@azure/identity": "^4.14.0",
     "@azure/storage-blob": "^12.34.0",
     "@bymorning/backend-aws": "workspace:*",
     "@bymorning/backend-azure": "workspace:*",
@@ -40,10 +40,10 @@
     "@bymorning/plugin-code-interpreter-docker": "workspace:*",
     "@bymorning/testing": "workspace:*",
     "@effect/vitest": "catalog:",
-    "@electric-sql/pglite": "0.5.4",
-    "@electric-sql/pglite-socket": "0.2.7",
+    "@electric-sql/pglite": "0.5.11",
+    "@electric-sql/pglite-socket": "0.2.14",
     "@types/node": "catalog:",
-    "concurrently": "^10.0.5",
+    "concurrently": "^10.0.6",
     "tsx": "catalog:",
     "vitest": "catalog:"
   }

@@ -19,7 +19,7 @@
     "@bymorning/protocol": "workspace:*",
     "@bymorning/schema": "workspace:*",
     "@bymorning/util": "workspace:*",
-    "@modelcontextprotocol/server": "2.3.1",
+    "@modelcontextprotocol/server": "2.4.0",
     "@opencode-ai/ai": "catalog:",
     "effect": "catalog:"
   },

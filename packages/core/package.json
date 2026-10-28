@@ -54,8 +54,8 @@
     "@bymorning/plugin": "workspace:*",
     "@bymorning/schema": "workspace:*",
     "@bymorning/util": "workspace:*",
-    "@modelcontextprotocol/client": "2.3.1",
-    "@modelcontextprotocol/core": "2.3.1",
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/core": "2.4.0",
     "@effect/platform-node": "catalog:",
     "@effect/sql-pg": "catalog:",
     "@opencode-ai/ai": "catalog:",
@@ -72,10 +72,10 @@
   "devDependencies": {
     "@bymorning/testing": "workspace:*",
     "@effect/vitest": "catalog:",
-    "@modelcontextprotocol/server": "2.3.1",
+    "@modelcontextprotocol/server": "2.4.0",
     "@types/node": "catalog:",
     "drizzle-kit": "catalog:",
-    "pg-connection-string": "^2.9.0",
+    "pg-connection-string": "^2.14.1",
     "tsx": "catalog:",
     "vitest": "catalog:"
   }

@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "sst": "4.17.1"
+    "sst": "4.17.2"
   },
   "scripts": {
     "shell": "sst shell tsx",

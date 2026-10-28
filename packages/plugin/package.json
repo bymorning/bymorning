@@ -16,7 +16,7 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@ai-sdk/provider": "3.0.8",
+    "@ai-sdk/provider": "3.0.19",
     "@bymorning/client": "workspace:*",
     "@bymorning/protocol": "workspace:*",
     "@bymorning/schema": "workspace:*",
