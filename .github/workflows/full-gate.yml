@@ -27,8 +27,9 @@
 #                  the Kubernetes Code Interpreter plugin's own kind suite.
 #     browser      Playwright suites with managed Chromium: packages/web and
 #                  packages/starter test:application (real Application, one
-#                  PostgreSQL per run), packages/ui and packages/session-ui
-#                  test:browser.
+#                  PostgreSQL per run), packages/web test:browser:timeline
+#                  (transcript geometry and visual snapshots), packages/ui and
+#                  packages/session-ui test:browser.
 #     installers   offline installer checks: the Azure installer's terraform
 #                  validate/test, kustomize, kubeconform, policy and
 #                  create-secret checks.
@@ -288,7 +289,7 @@ jobs:
         # with its own Vite server and browser; on a 2-vCPU runner two workers
         # push the first page load past the 20 s expectation, so it runs one
         # worker per runner across three shards instead.
-        suite: [web-1/3, web-2/3, web-3/3, starter, ui, session-ui]
+        suite: [web-1/3, web-2/3, web-3/3, timeline, starter, ui, session-ui]
     env:
       # No /usr/bin/chromium on the runner: use Playwright's managed Chromium.
       PLAYWRIGHT_MANAGED_CHROMIUM: "1"
@@ -317,6 +318,9 @@ jobs:
         run: bun run --cwd packages/web test:application --workers=1 --shard="${SUITE#web-}"
         env:
           SUITE: ${{ matrix.suite }}
+      - if: matrix.suite == 'timeline'
+        name: packages/web test:browser:timeline (transcript geometry, virtualization, visual snapshots)
+        run: bun run --cwd packages/web test:browser:timeline
       - if: matrix.suite == 'starter'
         name: packages/starter test:application
         run: bun run --cwd packages/starter test:application

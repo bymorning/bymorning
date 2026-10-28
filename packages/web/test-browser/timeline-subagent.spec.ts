@@ -41,7 +41,7 @@ test("navigates from retained failure metadata and ends the spinner with child a
 test("preserves native modifier and middle-click behavior", async ({ page, context }) => {
   const progress = page.getByRole("link", { name: "Explorer progress-subagent task Running" })
   const ctrlPage = context.waitForEvent("page")
-  await progress.click({ modifiers: ["Control"] })
+  await progress.click({ modifiers: ["ControlOrMeta"] })
   await (await ctrlPage).close()
   await expect(page.locator("[data-opened-session]")).toHaveText("")
 

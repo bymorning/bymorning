@@ -766,7 +766,7 @@ test("pinned streaming does not reverse a stable row", async ({ page }) => {
 test("tool disclosure survives virtual unmount and remount", async ({ page }) => {
   await open(page)
   const trigger = page.locator(
-    '[data-timeline-key="assistant-part:part:assistant-358:tool-latest"] [data-slot="collapsible-trigger"]',
+    '[data-timeline-key="assistant-part:part:assistant-358:tool-latest"] [data-slot="tool-collapsible-trigger"]',
   )
   await trigger.press("Enter")
   await expect(trigger).toHaveAttribute("aria-expanded", "true")

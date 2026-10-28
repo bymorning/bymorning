@@ -16,9 +16,9 @@
 # Not run here but in full-gate.yml (merge to dev, nightly, release dispatch):
 # the release build with its image-security and image-boot checks (AWS and
 # Azure legs), the Azure kind end-to-end run, the browser suites (packages/web
-# and starter test:application; ui and session-ui test:browser), and the
-# installer offline checks. packages/web test:e2e and test:browser:timeline run
-# in neither.
+# test:application and test:browser:timeline; starter test:application; ui and
+# session-ui test:browser), and the installer offline checks. packages/web
+# test:e2e runs in neither.
 #
 # Typecheck shards partition the workspace. Bun 1.3.11 unions multiple --filter
 # patterns and cannot combine a positive glob with a negation, so
