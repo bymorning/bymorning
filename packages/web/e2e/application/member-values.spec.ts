@@ -37,8 +37,15 @@ test("an administrator adds a header-authenticated MCP server and a member conne
   await expect(row.getByText("Authentication required", { exact: true })).toBeVisible()
   expect(upstream.initializations).toBe(0)
 
-  await integrations.getByRole("button", { name: "Actions for river", exact: true }).click()
-  await page.getByRole("menuitem", { name: "Authenticate", exact: true }).click()
+  // The row re-renders as the server's status settles, which closes a menu opened a moment too early. Open it,
+  // and open it again only while it is not open (an idempotent check, so a slow runner cannot toggle it shut).
+  const actions = integrations.getByRole("button", { name: "Actions for river", exact: true })
+  const authenticate = page.getByRole("menuitem", { name: "Authenticate", exact: true })
+  await expect(async () => {
+    if ((await actions.getAttribute("aria-expanded")) !== "true") await actions.click()
+    await expect(authenticate).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await authenticate.click()
   const connect = page.getByRole("dialog", { name: "Connect river", exact: true })
   const token = connect.getByLabel(/^TOKEN/)
   await expect(token).toHaveAttribute("type", "password")
