@@ -7,6 +7,23 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-10-29
+
+The first release of the open-source repository, under the MIT License. It differs from 1.3.0 by the removals and
+renames below, a new release-signing model, and fixes for advisories found when the build was re-scanned. The Gateway
+image is rebuilt from the public tree, so its digest differs from 1.3.0.
+
+### Security
+
+- Re-scanning the release candidate found Critical and High advisories that the 1.3.0 triage did not cover. Fixed:
+  `dompurify` 3.4.17 everywhere (GHSA-cg2g-xh64-v4q7 Critical and GHSA-mrv2-3pqr-j5jr High, on copies nested under
+  `mermaid`, which the web UI ships); `body-parser` 2.4.0 (GHSA-27r3-jxmh-p828); `zod` 4.6.6 (GHSA-mrhx-c7xc-m3w5);
+  and the base image re-pinned to the UBI9 Node 22 build of 2026-10-27, which fixes the Critical `ca-certificates`
+  advisory CVE-2026-114406 and the High `libbrotli` advisory CVE-2026-111497. The Gateway image has 0 Critical and 41
+  High advisories (1.3.0: 50 High). Three advisories remain with a recorded disposition: `@azure/msal-node` and a Node
+  DNS advisory are not affected, and a Node TLS hostname-check advisory (CVE-2026-106069, no vendor fix) is on the
+  POA&M. See `docs/security/evidence/vulnerability-triage.md` and `openvex.json`.
+
 ### Changed
 
 - Release evidence is signed keylessly (Sigstore) by the `full-gate` workflow's own GitHub identity instead of a
@@ -17,38 +34,23 @@ application carries the version from the root `package.json`
   end-to-end check verify against that identity. The Azure export now refuses a signer other than `full-gate.yml` on a
   `v*` tag, verifies every signature with `cosign` before packaging, and `--rotate-key` became `--rotate-signer`
   (a new release tag is not a signer change). Gate runs still sign with a throwaway key (`ephemeral`).
+- ByMorning is released under the MIT License, and the source moved to
+  <https://github.com/bymorning/bymorning>.
+- The theme IDs are now `bymorning`, `ink`, and `paper`. A stored preference for a retired ID falls back to the
+  default theme.
 
 ### Removed
 
+- The Installation License. Every Installation is fully functional with no trial period, no read-only mode, and no
+  signed artifact: the `License` domain, its endpoints and Console page, the write gate, the trusted-signer
+  configuration, and the signing scripts are gone. A migration drops the `installation_license` table. Existing
+  `license.activate` audit entries still decode.
+- The Terraform installer for AWS GovCloud and its customer-specific documentation. `installers/azure` remains the
+  shipped Terraform installer.
+- The ABC Monument Grotesk and ABC Monument Grotesk Mono fonts. The Paper theme now uses Inter and JetBrains Mono.
 - The managed release key: `script/release-key.sh`, the `BYMORNING_COSIGN_KEY` and `COSIGN_PASSWORD` secrets, the
   `BYMORNING_COSIGN_KEY_ENABLED` variable, the `release` signing kind, and `BYMORNING_RELEASE_KEY` /
   `BYMORNING_SIGNING_KIND`. The `version` input of `full-gate` is gone; a release version comes from its tag.
-
-## [1.3.1] — 2026-10-23
-
-The first release of the open-source repository. It differs from 1.3.0 only by the
-removals and renames below; the Gateway image is rebuilt from the public tree, so
-its digest differs from 1.3.0.
-
-### Removed
-
-- The Installation License. Every Installation is fully functional with no
-  trial period, no read-only mode, and no signed artifact: the `License` domain,
-  its endpoints and Console page, the write gate, the trusted-signer
-  configuration, and the signing scripts are gone. A migration drops the
-  `installation_license` table. Existing `license.activate` audit entries still
-  decode.
-- The Terraform installer for AWS GovCloud and its customer-specific
-  documentation. `installers/azure` remains the shipped Terraform installer.
-- The ABC Monument Grotesk and ABC Monument Grotesk Mono fonts. The Paper theme
-  now uses Inter and JetBrains Mono.
-
-### Changed
-
-- ByMorning is released under the MIT License, and the source moved to
-  <https://github.com/bymorning/bymorning>.
-- The theme IDs are now `bymorning`, `ink`, and `paper`. A stored preference
-  for a retired ID falls back to the default theme.
 
 ## [1.3.0] — 2026-10-22
 
