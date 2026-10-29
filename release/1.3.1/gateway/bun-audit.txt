@@ -1,0 +1,91 @@
+qs  >=6.7.0 <=6.16.0
+  workspace:docs › blume
+  moderate: qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS) - https://github.com/advisories/GHSA-6pq8-jhm2-2vcw
+
+@hono/node-server  >=1.19.10 <2.1.3
+  workspace:docs › blume
+  moderate: @hono/node-server: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths - https://github.com/advisories/GHSA-rmxm-3fg6-px4f
+
+vite  >=7.0.0 <=7.3.6
+  workspace:@bymorning/session-ui › vite
+  workspace:@bymorning/starter › vite
+  workspace:@bymorning/ui › vite
+  workspace:@bymorning/web › vite
+  workspace:@bymorning/web › solid-devtools
+  workspace:@bymorning/session-ui › vite-plugin-solid
+  workspace:@bymorning/host › vitest
+  workspace:docs › blume
+  low: Vite: Cross origin script execution through Vite custom middleware - https://github.com/advisories/GHSA-9jrq-w75r-8gcw
+  low: Vite: Cross origin script execution through Vite custom middleware - https://github.com/advisories/GHSA-9jrq-w75r-8gcw
+  moderate: Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine - https://github.com/advisories/GHSA-rq7h-c2jc-7f22
+  moderate: Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine - https://github.com/advisories/GHSA-rq7h-c2jc-7f22
+  high: launch-editor: `fs.existsSync()` existence check can be bypassed on Windows - https://github.com/advisories/GHSA-587h-7wmj-h5pm
+  moderate: launch-editor: escapeCmdArgs() omits % escaping on Windows - https://github.com/advisories/GHSA-698v-4r3x-3vcv
+  moderate: launch-editor: escapeCmdArgs() omits % escaping on Windows - https://github.com/advisories/GHSA-698v-4r3x-3vcv
+  moderate: launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors - https://github.com/advisories/GHSA-r825-w8mm-5pxw
+  moderate: launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors - https://github.com/advisories/GHSA-r825-w8mm-5pxw
+  high: launch-editor: `fs.existsSync()` existence check can be bypassed on Windows - https://github.com/advisories/GHSA-587h-7wmj-h5pm
+  moderate: Vite: First 4 bytes of files outside of `server.fs` setting is exposed by `?vite-wasm-instance` - https://github.com/advisories/GHSA-vfpm-58rq-9qcg
+
+@vitest/mocker  >=2.1.0-beta.7 <4.1.12
+  workspace:@bymorning/host › vitest
+  moderate: Vitest: Code injection via unauthenticated manual mock registration - https://github.com/advisories/GHSA-qxg6-89mg-rqv8
+  moderate: Vitest: Windows backslash traversal bypasses the @vitest/mocker redirect allowlist fix - https://github.com/advisories/GHSA-xp26-3454-mjgp
+
+postcss-selector-parser  <6.1.5
+  workspace:docs › blume
+  moderate: PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion - https://github.com/advisories/GHSA-rj75-hqrm-r3gf
+
+undici  >=7.0.0 <7.30.1
+  workspace:@bymorning/host › @effect/platform-node
+  workspace:docs › blume
+  moderate: undici vulnerable to Denial of Service via unbounded memory in the EventSource parser - https://github.com/advisories/GHSA-4qv8-2p9j-2685
+  moderate: undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens - https://github.com/advisories/GHSA-f72v-6w45-q472
+  high: undici vulnerable to Denial of Service via unhandled error on excessive content-encodings - https://github.com/advisories/GHSA-xjj6-f33q-929c
+  high: undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects - https://github.com/advisories/GHSA-4w7w-5xrc-9h26
+  high: undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent - https://github.com/advisories/GHSA-2m5v-pch6-74hx
+  high: undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation - https://github.com/advisories/GHSA-qrxm-fqhp-jwvm
+  moderate: undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering - https://github.com/advisories/GHSA-9fm3-97px-rjf6
+  moderate: undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor - https://github.com/advisories/GHSA-55wc-3pg8-jfw6
+
+seroval  >=1.6.0 <1.6.11
+  workspace:@bymorning/client › solid-js
+  moderate: Seroval: Code injection through a typed array's own constructor property - https://github.com/advisories/GHSA-f86p-h4j2-7qgj
+  moderate: Seroval: Script injection through RegExp sources in serialized output - https://github.com/advisories/GHSA-9wx9-5pv9-3349
+
+katex  >=0.11.0 <0.18.2
+  workspace:@bymorning/session-ui › katex
+  workspace:@bymorning/web › katex
+  workspace:docs › blume
+  workspace:@bymorning/session-ui › mermaid
+  low: KaTeX: Existing prototype pollution can bypass trust restrictions - https://github.com/advisories/GHSA-238p-pmpm-9mq7
+
+@azure/msal-node  >=5.0.0-beta.0 <7.1.0
+  workspace:@bymorning/host › @azure/identity
+  high: MSAL Node authorization code flow may disclose parameters to an attacker-controlled endpoint - https://github.com/advisories/GHSA-xcx6-jx8p-x3h5
+
+ip-address  <=10.7.3
+  workspace:docs › blume
+  moderate: ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process - https://github.com/advisories/GHSA-rxp7-6hxx-x8q5
+
+fast-uri  >=3.0.0 <3.1.9
+  workspace:docs › blume
+  moderate: fast-uri vulnerable to URI scheme spoofing via percent-encoded scheme decoding - https://github.com/advisories/GHSA-w74x-v6f9-j3xg
+  low: fast-uri vulnerable to improper path equivalence in relative reference normalization - https://github.com/advisories/GHSA-xhq7-xmqj-769h
+  moderate: fast-uri vulnerable to host confusion via unchecked WHATWG host canonicalization - https://github.com/advisories/GHSA-wjr9-j795-jxcr
+  low: fast-uri vulnerable to scheme injection via an unescaped first-segment colon in suffix references - https://github.com/advisories/GHSA-333x-w4r6-6crp
+
+path-to-regexp  >=4.0.0 <6.3.0
+  workspace:docs › blume
+  high: path-to-regexp outputs backtracking regular expressions - https://github.com/advisories/GHSA-9wv6-86v2-598j
+
+34 vulnerabilities (8 high, 21 moderate, 5 low)
+
+To update all dependencies to the latest compatible versions:
+  bun update
+
+To update all dependencies to the latest versions (including breaking changes):
+  bun update --latest
+
+
+[0m[1mbun audit [0m[2mv1.3.11 (af24e281)[0m
