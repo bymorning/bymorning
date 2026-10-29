@@ -112,9 +112,13 @@ Cutting a release:
 
    ```bash
    git add release && git commit -m "release: <version>"
+   tar -czf bymorning-<version>-evidence.tar.gz release     # tarballs are gitignored; the archive keeps release/'s layout
    gh release create v<version> --notes-file <changelog excerpt> \
-     release/bymorning-*<commit>.tar release/manifest.json release/signer.txt release/<version>/*/*
+     release/bymorning-*<commit>.tar bymorning-<version>-evidence.tar.gz release/manifest.json release/signer.txt
    ```
+
+   The two evidence folders hold files with the same names (`SHA256SUMS`, `signer.txt`, ...), and release assets must
+   have unique names, so the evidence ships as one archive. The release notes of v1.3.1 show the verification steps.
 
 5. Package the Azure installer from the manifest:
    `bun installers/azure/export.ts --out <directory>` (`bymorning-azure-<version>.zip`). It runs from the release
