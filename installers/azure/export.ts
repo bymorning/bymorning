@@ -10,23 +10,26 @@
  *     installers/azure/         modules/, environments/example/, k8s/, scripts/, smoke.sh
  *     sandbox/                  plugins/code-interpreter-kubernetes/deploy plus its customer README
  *     release/                  both tarballs, image-azure.txt and image-execution.txt (materialized
- *                               from manifest.json), cosign.pub, mirror.sh,
+ *                               from manifest.json), signer.txt + trusted_root.json (keyless) or
+ *                               cosign.pub (a rehearsal key), mirror.sh,
  *                               gateway/evidence/ and code-interpreter/evidence/ (the signed evidence
  *                               folders; SHA256SUMS names each tarball as ../../<tarball>), and
  *                               gateway/vulnerability-triage.md
  *   bymorning-azure-<version>.zip   the directory, zipped; its sha256 is printed
  *
  * Usage: bun installers/azure/export.ts --out <directory> [--release <directory>] [--notes <file>] [--force]
- *                                      [--allow-unsigned] [--rotate-key]
+ *                                      [--allow-unsigned] [--rotate-signer]
  *
  * --release is the release directory holding manifest.json, the tarballs, the
- * evidence folders, and cosign.pub (default: the repository's release/).
- * The export refuses evidence not signed with the release key: both artifacts'
- * `signing.kind` must be `release`, every cosign bundle must be present, and
- * cosign.pub must have the fingerprint the manifest records. --allow-unsigned
- * overrides that for a rehearsal and heads README.md "UNSIGNED REHEARSAL". An
- * existing package's release/cosign.pub is never replaced by a different key
- * without --rotate-key.
+ * evidence folders, and signer.txt (default: the repository's release/).
+ * The export refuses evidence that was not signed by a release signer: both
+ * artifacts' `signing.kind` must be `keyless` with the identity of this
+ * repository's full-gate.yml on a v* tag, every cosign bundle must be present,
+ * signer.txt must name that identity, and cosign must verify every bundle
+ * against it. --allow-unsigned overrides that for a rehearsal and heads
+ * README.md "UNSIGNED REHEARSAL". An existing package's pinned signer (a
+ * different workflow or issuer, or a move between a key and keyless) is never
+ * replaced without --rotate-signer; a new release tag alone is not a change.
  *
  * The checkout must hold the release build: the manifest's revision is an
  * ancestor of HEAD and nothing changed since except release/, CHANGELOG.md,
@@ -84,26 +87,28 @@ for (const kind of ["gateway", "execution"] as const) {
   if (!existsSync(join(release, artifact.evidence, "SHA256SUMS")))
     fail(`${join(release, artifact.evidence)} has no SHA256SUMS; run bun script/release.ts`)
 }
-// Only release-signed evidence is delivered; --allow-unsigned is for rehearsals.
+// Only release-signed evidence is delivered, and only evidence whose signatures actually verify;
+// --allow-unsigned is for rehearsals.
 const unsigned = Delivery.signing(release, manifest, ["gateway", "execution"])
+if (unsigned.length === 0) unsigned.push(...Delivery.verification(release, manifest, ["gateway", "execution"]))
 const rehearsal = unsigned.length > 0
 if (rehearsal) {
   const list = unsigned.map((problem) => `  - ${problem}`).join("\n")
   if (!args.includes("--allow-unsigned"))
     fail(
-      `refusing to export: the release is not signed with the release key\n${list}\npass --allow-unsigned for a rehearsal`,
+      `refusing to export: the release is not signed by a release signer\n${list}\npass --allow-unsigned for a rehearsal`,
     )
   console.warn(`${Delivery.REHEARSAL}: exporting despite\n${list}`)
 }
-// The customer pins release/cosign.pub; replacing it with another key is a key rotation.
-const rotation = Delivery.rotation(join(out, name, "release", "cosign.pub"), join(release, "cosign.pub"))
+// The customer pins the signer in release/signer.txt; a different signer is a rotation.
+const rotation = Delivery.rotation(join(out, name, "release"), release)
 if (rotation) {
-  const fingerprints = `  in ${join(out, name)}: ${rotation.before}\n  this release:  ${rotation.after}`
-  if (!args.includes("--rotate-key"))
+  const signers = `  in ${join(out, name)}: ${rotation.before}\n  this release:  ${rotation.after}`
+  if (!args.includes("--rotate-signer"))
     fail(
-      `refusing to replace ${join(out, name, "release", "cosign.pub")} with a different key\n${fingerprints}\npass --rotate-key to rotate it`,
+      `refusing to change the signer pinned by ${join(out, name, "release")}\n${signers}\npass --rotate-signer to change it`,
     )
-  console.warn(`rotating the release signing key\n${fingerprints}`)
+  console.warn(`changing the release signer\n${signers}`)
 }
 
 const staged = mkdtempSync(join(tmpdir(), "bymorning-azure-export-"))
@@ -153,8 +158,9 @@ try {
   mkdirSync(join(rel, "code-interpreter"), { recursive: true })
   cpSync(join(release, gateway.tarball), join(rel, gateway.tarball))
   cpSync(join(release, execution.tarball), join(rel, execution.tarball))
-  // Only an unsigned rehearsal gets this far without a cosign.pub.
-  if (existsSync(join(release, "cosign.pub"))) cpSync(join(release, "cosign.pub"), join(rel, "cosign.pub"))
+  // The pinned signer: signer.txt and the trust root (keyless), or cosign.pub (a rehearsal key).
+  for (const file of ["signer.txt", "trusted_root.json", "cosign.pub"])
+    if (existsSync(join(release, file))) cpSync(join(release, file), join(rel, file))
   cpSync(join(installer, "release/mirror.sh"), join(rel, "mirror.sh"))
   cpSync(join(release, gateway.evidence), join(rel, "gateway/evidence"), { recursive: true })
   cpSync(join(release, execution.evidence), join(rel, "code-interpreter/evidence"), { recursive: true })
@@ -234,7 +240,7 @@ function readme(text: string) {
     "",
     ...(rehearsal
       ? [
-          `> **${Delivery.REHEARSAL}: the release evidence is not signed with the ByMorning release key. Do not deploy.**`,
+          `> **${Delivery.REHEARSAL}: the release evidence is not signed by a ByMorning release signer. Do not deploy.**`,
           "",
         ]
       : []),
@@ -247,7 +253,10 @@ function readme(text: string) {
         ["`RELEASE-NOTES.md`", `What ${version} is, sign-in requirements, known limits`],
         ["`installers/azure/`", "Terraform module and example root, Kubernetes manifests, scripts, and `smoke.sh`"],
         ["`sandbox/`", "Code execution sandbox manifests and their [README](sandbox/README.md)"],
-        ["`release/`", "Image tarballs, digests, signing key, `mirror.sh`, and signed evidence (SBOMs, scans, triage)"],
+        [
+          "`release/`",
+          "Image tarballs, digests, pinned signer, `mirror.sh`, and signed evidence (SBOMs, scans, triage)",
+        ],
         ["`licenses.md`", "Third-party license report for the Gateway image"],
       ],
     ),
@@ -261,9 +270,9 @@ function readme(text: string) {
     ),
     "",
     `Both images were built from source commit \`${commit}\`. Evidence: \`release/gateway/evidence/\` (Gateway) and`,
-    "`release/code-interpreter/evidence/` (code execution), signed with the key `release/cosign.pub`; see",
-    "[Release evidence](#release-evidence). Compare `release/cosign.pub` with the key published at",
-    "<https://github.com/bymorning/releases>.",
+    "`release/code-interpreter/evidence/` (code execution), signed by the identity pinned in `release/signer.txt`;",
+    "see [Release evidence](#release-evidence). That identity must be the `full-gate.yml` workflow of",
+    "<https://github.com/bymorning/bymorning> running on a `v*` tag.",
     "",
     "## Overview",
     "",
@@ -295,7 +304,7 @@ function git(argv: string[]) {
 
 function usage(): never {
   fail(
-    "usage: bun installers/azure/export.ts --out <directory> [--release <directory>] [--notes <file>] [--force] [--allow-unsigned] [--rotate-key]",
+    "usage: bun installers/azure/export.ts --out <directory> [--release <directory>] [--notes <file>] [--force] [--allow-unsigned] [--rotate-signer]",
   )
 }
 

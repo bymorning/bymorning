@@ -5,7 +5,8 @@
  * OCI tarballs, records both in release/manifest.json, and produces each
  * image's evidence folder (release/<version>/gateway/ and
  * release/<version>/execution/: SBOMs, vulnerability reports, SHA256SUMS,
- * cosign signatures when BYMORNING_COSIGN_KEY is set; the Gateway additionally
+ * cosign signatures when BYMORNING_SIGN_KEYLESS=1 (CI) or BYMORNING_COSIGN_KEY
+ * is set; the Gateway additionally
  * gets license, secret, static-analysis and audit reports, SLSA provenance and
  * the OpenVEX statement). One release command; every installer export reads
  * the manifest.
@@ -24,9 +25,10 @@
  * every deployment.
  *
  * Each artifact's `signing` in the manifest starts `unsigned` and is set by the
- * evidence pipeline to the key that signed its evidence (release, ephemeral;
- * see script/security/sign.ts). --skip-evidence leaves it unsigned. Installer
- * exports refuse anything but release-signed evidence.
+ * evidence pipeline to who signed its evidence (keyless identity, ephemeral
+ * key; see script/security/sign.ts). --skip-evidence leaves it unsigned.
+ * Installer exports refuse anything but keyless evidence signed by this
+ * repository's full-gate.yml on a v* tag (script/release/signing.ts).
  *
  * Builds run from a clean tree without provenance or SBOM attestations so each
  * tarball holds one manifest whose digest is the image digest. The build is
@@ -161,7 +163,7 @@ if (skipEvidence) {
   const signed = Manifest.read(out)
   for (const kind of ["gateway", "execution"] as const) {
     const signing = signed.artifacts[kind].signing
-    console.log(`${kind}: ${signing.kind}${"key" in signing ? ` (${signing.key})` : ""}`)
+    console.log(`${kind}: ${Manifest.describe(signing)}`)
   }
 }
 

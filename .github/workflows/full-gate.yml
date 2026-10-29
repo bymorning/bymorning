@@ -37,21 +37,20 @@
 # Signing model: push and schedule runs sign the evidence with an EPHEMERAL
 # cosign key generated in the job (so kind-e2e's signature verification runs
 # for real, against a key nobody keeps). The release path is a manual dispatch
-# with sign=true: when the repository variable BYMORNING_COSIGN_KEY_ENABLED is
-# "true", the real key is restored from the BYMORNING_COSIGN_KEY (PEM) and
-# COSIGN_PASSWORD secrets and the `release` artifact (kept 30 days) is the
-# signed release: download it, verify, commit manifest.json and release/<version>/,
-# and deliver through the installer exports as README.md describes. Only that path
-# sets BYMORNING_SIGNING_KIND=release, so the manifest records the evidence as
-# release-signed (script/release/signing.ts); every other run records it as
-# ephemeral and the installer exports refuse it. Without the variable, sign=true
-# falls back to an ephemeral key and says so. This replaces the former
-# release-evidence.yml drill.
+# with sign=true: the evidence is signed KEYLESSLY with this workflow run's
+# GitHub OIDC identity (Sigstore; no key, KMS, or secret exists) and the `release`
+# artifact (kept 30 days) is the signed release: download it, verify, commit
+# manifest.json and release/<version>/, and deliver through the installer exports
+# as README.md describes. The certificate names this workflow at the dispatched
+# ref, and the manifest records it as `keyless`. Only a dispatch ON A v* TAG is a
+# release signer (script/release/signing.ts); the installer exports refuse a
+# signature from a branch run, which exists so the signing path can be tested
+# without cutting a tag. This replaces the former release-evidence.yml drill.
 #
-# Versions: a dispatch on the real-key path may pass `version`; every other run
-# uses the root package.json version with a `-ci.<run number>` prerelease suffix
-# so the tarballs, labels, manifest, and evidence folder of a gate run can never
-# be mistaken for a release. A `version` without the real key is refused.
+# Versions: a sign=true dispatch on tag vX.Y.Z builds version X.Y.Z, which must
+# equal the root package.json version; every other run uses that version with a
+# `-ci.<run number>` prerelease suffix so the tarballs, labels, manifest, and
+# evidence folder of a gate run can never be mistaken for a release.
 #
 # Runners: ubuntu-24.04 everywhere. The kind and browser jobs benefit from a
 # 4-core larger runner; the organization's runner groups could not be listed
@@ -66,12 +65,8 @@ on:
     - cron: "17 6 * * *"
   workflow_dispatch:
     inputs:
-      version:
-        description: "Release version (semver, prerelease allowed). Default: package.json version with a -ci.<run> suffix."
-        required: false
-        type: string
       sign:
-        description: "Sign with the real release key (requires BYMORNING_COSIGN_KEY_ENABLED=true). Default: ephemeral key."
+        description: "Sign keylessly with this run's GitHub identity. On a v* tag this is the release; elsewhere it only tests the signing path. Default: ephemeral key."
         required: false
         type: boolean
         default: false
@@ -94,6 +89,9 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    permissions:
+      contents: read
+      id-token: write # keyless signing: the OIDC token Sigstore's Fulcio exchanges for a signing certificate
     outputs:
       version: ${{ steps.version.outputs.version }}
       tarball: ${{ steps.release.outputs.tarball }}
@@ -119,41 +117,34 @@ jobs:
       - name: Resolve the version
         id: version
         run: |
-          if [ -n "${INPUT_VERSION}" ]; then
-            # A release version is only built with the real key; anything else would
-            # produce release-looking artifacts signed by a key nobody keeps.
-            if [ "${REAL_KEY}" != "true" ]; then
-              echo "::error::version=${INPUT_VERSION} needs the real release key (dispatch with sign=true and BYMORNING_COSIGN_KEY_ENABLED=true); leave version empty for a -ci.<run> build"
+          package=$(jq -r .version package.json)
+          if [ "${SIGN}" = "true" ] && [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            if [ "$version" != "$package" ]; then
+              echo "::error::tag ${GITHUB_REF_NAME} does not match package.json version ${package}"
               exit 1
             fi
-            version="${INPUT_VERSION}"
           else
-            version="$(jq -r .version package.json)-ci.${GITHUB_RUN_NUMBER}"
+            version="${package}-ci.${GITHUB_RUN_NUMBER}"
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
           echo "RELEASE_DIR=$RUNNER_TEMP/release" >> "$GITHUB_ENV"
           echo "version: $version"
         env:
-          INPUT_VERSION: ${{ inputs.version }}
-          REAL_KEY: ${{ github.event_name == 'workflow_dispatch' && inputs.sign && vars.BYMORNING_COSIGN_KEY_ENABLED == 'true' }}
-      - name: Restore the release signing key (dispatch with sign=true and the key configured)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sign && vars.BYMORNING_COSIGN_KEY_ENABLED == 'true' }}
+          SIGN: ${{ github.event_name == 'workflow_dispatch' && inputs.sign }}
+      - name: Sign keylessly with this run's GitHub identity (dispatch with sign=true)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.sign }}
         run: |
-          printf '%s\n' "$BYMORNING_COSIGN_KEY" > "$RUNNER_TEMP/cosign.key"
-          chmod 600 "$RUNNER_TEMP/cosign.key"
-          echo "BYMORNING_COSIGN_KEY=$RUNNER_TEMP/cosign.key" >> "$GITHUB_ENV"
-          # The only place a PEM key is recorded as the release key in the manifest.
-          echo "BYMORNING_SIGNING_KIND=release" >> "$GITHUB_ENV"
-          echo "signing: RELEASE key (BYMORNING_COSIGN_KEY secret)"
-        env:
-          BYMORNING_COSIGN_KEY: ${{ secrets.BYMORNING_COSIGN_KEY }}
-      - name: Generate an ephemeral signing key (every other run)
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.sign && vars.BYMORNING_COSIGN_KEY_ENABLED == 'true') }}
-        run: |
-          if [ "${INPUT_SIGN}" = "true" ]; then
-            echo "::warning::sign=true was requested but BYMORNING_COSIGN_KEY_ENABLED is not 'true'; signing with an ephemeral key instead"
+          echo "BYMORNING_SIGN_KEYLESS=1" >> "$GITHUB_ENV"
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "signing: KEYLESS as the release signer (${GITHUB_WORKFLOW_REF})"
+          else
+            echo "::warning::sign=true on ${GITHUB_REF}, which is not a v* tag: the evidence is signed keylessly but is not a release signature and the installer exports will refuse it"
           fi
+      - name: Generate an ephemeral signing key (every other run)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.sign) }}
+        run: |
           mkdir -p "$RUNNER_TEMP/ephemeral"
           password=$(openssl rand -hex 32)
           echo "::add-mask::$password"
@@ -161,8 +152,6 @@ jobs:
           echo "COSIGN_PASSWORD=$password" >> "$GITHUB_ENV"
           echo "BYMORNING_COSIGN_KEY=$RUNNER_TEMP/ephemeral/cosign.key" >> "$GITHUB_ENV"
           echo "signing: EPHEMERAL key (discarded with the runner)"
-        env:
-          INPUT_SIGN: ${{ inputs.sign }}
       # The runner's default `docker` driver cannot export an OCI layout; a
       # docker-container builder can (same BuildKit the release machine uses).
       - name: Create a buildx builder that supports the OCI exporter
@@ -171,19 +160,30 @@ jobs:
         id: release
         run: |
           bun script/release.ts --version "$RELEASE_VERSION" --out "$RELEASE_DIR" --evidence-out "$RELEASE_DIR/$RELEASE_VERSION" --force
-          # kind-e2e.sh reads the release public key at the release root; every evidence folder carries the same one.
-          cp "$RELEASE_DIR/$RELEASE_VERSION/gateway/cosign.pub" "$RELEASE_DIR/cosign.pub"
-          cmp "$RELEASE_DIR/cosign.pub" "$RELEASE_DIR/$RELEASE_VERSION/execution/cosign.pub"
-          # The manifest must record what signed: release only on the real-key path.
-          expected=ephemeral; [ "${BYMORNING_SIGNING_KIND:-}" = release ] && expected=release
+          # kind-e2e.sh reads the pinned signer at the release root; every evidence folder carries the same one.
+          evidence="$RELEASE_DIR/$RELEASE_VERSION"
+          if [ "${BYMORNING_SIGN_KEYLESS:-}" = 1 ]; then
+            expected=keyless
+            cp "$evidence/gateway/signer.txt" "$RELEASE_DIR/signer.txt"
+            cmp "$RELEASE_DIR/signer.txt" "$evidence/execution/signer.txt"
+            [ -f "$evidence/gateway/trusted_root.json" ] || { echo "::error::the keyless build shipped no trusted_root.json"; exit 1; }
+            cp "$evidence/gateway/trusted_root.json" "$RELEASE_DIR/trusted_root.json"
+            # The shipped trust root must be enough on its own: verify with the network blocked and no TUF cache.
+            id=$(sed -n 's/^identity: *//p' "$RELEASE_DIR/signer.txt"); iss=$(sed -n 's/^issuer: *//p' "$RELEASE_DIR/signer.txt")
+            HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9 TUF_ROOT="$RUNNER_TEMP/no-tuf" \
+              cosign verify-blob --bundle "$evidence/gateway/SHA256SUMS.bundle" --certificate-identity "$id" --certificate-oidc-issuer "$iss" \
+              --trusted-root "$RELEASE_DIR/trusted_root.json" "$evidence/gateway/SHA256SUMS"
+          else
+            expected=ephemeral
+            cp "$evidence/gateway/cosign.pub" "$RELEASE_DIR/cosign.pub"
+            cmp "$RELEASE_DIR/cosign.pub" "$evidence/execution/cosign.pub"
+          fi
+          # The manifest must record what signed.
           recorded=$(jq -r '[.artifacts[].signing.kind] | unique | join(",")' "$RELEASE_DIR/manifest.json")
           [ "$recorded" = "$expected" ] || { echo "::error::manifest records signing $recorded, expected $expected"; exit 1; }
-          echo "signing recorded: $recorded $(jq -r .artifacts.gateway.signing.key "$RELEASE_DIR/manifest.json")"
+          echo "signing recorded: $(jq -c .artifacts.gateway.signing "$RELEASE_DIR/manifest.json")"
           echo "tarball=$(jq -r .artifacts.gateway.tarball "$RELEASE_DIR/manifest.json")" >> "$GITHUB_OUTPUT"
           ls -la "$RELEASE_DIR" "$RELEASE_DIR/$RELEASE_VERSION"/*
-        env:
-          # The real key path when restored; the ephemeral one otherwise (both set through GITHUB_ENV above).
-          COSIGN_PASSWORD: ${{ env.COSIGN_PASSWORD || secrets.COSIGN_PASSWORD }}
       - name: Image security gate on the built Gateway tarball
         run: sh packages/server/test/image-security.sh
         env:

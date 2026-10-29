@@ -162,6 +162,38 @@ script=$(azure az-arm64 image arm64 arm64)
 expect "azure: another platform is refused" 1 "not linux/amd64" \
   "$registry/arm64/bymorning-code-interpreter:9.9.9" -- env PATH="$with_cosign" sh "$script" "$registry/arm64" 9.9.9
 
+# --- Azure, keyless pin: release/signer.txt names the signing workflow instead of a key. Keyless
+# signatures cannot be produced offline, so a cosign stand-in accepts verify-blob only when asked for
+# exactly the identity and issuer in signer.txt; what is checked is that mirror.sh asks for them.
+keyless_identity="https://github.com/bymorning/bymorning/.github/workflows/full-gate.yml@refs/tags/v9.9.9"
+keyless_issuer="https://token.actions.githubusercontent.com"
+mkdir -p "$work/pin"
+cat > "$work/pin/cosign" <<EOF
+#!/bin/sh
+case "\$*" in
+  verify-blob*"--certificate-identity $keyless_identity --certificate-oidc-issuer $keyless_issuer"*) exit 0 ;;
+esac
+echo "unexpected cosign arguments: \$*" >&2
+exit 1
+EOF
+chmod +x "$work/pin/cosign"
+cp "$work/bin/crane" "$work/bin/aws" "$work/pin/"
+with_pin="$work/pin:/usr/bin:/bin"
+pin() { # directory identity: a keyless package: signer.txt in place of cosign.pub
+  script=$(azure "$1" image image)
+  rm "$(dirname "$script")/cosign.pub"
+  printf 'identity: %s\nissuer: %s\n' "$2" "$keyless_issuer" > "$(dirname "$script")/signer.txt"
+}
+pin az-keyless "$keyless_identity"
+expect "azure keyless: verification asks for the identity and issuer in signer.txt" 0 "signature verified against the pinned signer" \
+  "$registry/keyless/bymorning:9.9.9" -- env PATH="$with_pin" sh "$script" "$registry/keyless" 9.9.9
+pin az-keyless-other "https://github.com/someone-else/fork/.github/workflows/full-gate.yml@refs/tags/v9.9.9"
+expect "azure keyless: a different signing identity is refused" 1 "cosign could not verify" \
+  "$registry/keyless2/bymorning:9.9.9" -- env PATH="$with_pin" sh "$script" "$registry/keyless2" 9.9.9
+pin az-keyless-empty ""
+expect "azure keyless: an empty signer.txt is refused" 1 "names no identity and issuer" \
+  "$registry/keyless3/bymorning:9.9.9" -- env PATH="$with_pin" sh "$script" "$registry/keyless3" 9.9.9
+
 if [ "$failures" -gt 0 ]; then
   echo "$failures mirror check(s) failed" >&2
   exit 1

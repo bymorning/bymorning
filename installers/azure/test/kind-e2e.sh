@@ -6,7 +6,7 @@
 #
 # Needs: docker (amd64 emulation on arm64 hosts), kind >= 0.33, kubectl, jq, openssl, bun, cosign.
 # Without KIND_INTEGRATION=1 it prints a notice and exits 0 (gate shared with the other kind tests).
-#   RELEASE_DIR   directory with manifest.json (script/release.ts), cosign.pub, both tarballs, and the
+#   RELEASE_DIR   directory with manifest.json (script/release.ts), signer.txt or cosign.pub, both tarballs, and the
 #                 evidence folders the manifest names (<version>/gateway/ and <version>/execution/,
 #                 holding the .bundle signatures and SHA256SUMS). Default: <repo>/release.
 #   KIND_CLUSTER  cluster name (default bymorning-azure-e2e); the script refuses to reuse one.
@@ -78,7 +78,18 @@ kind get clusters 2>/dev/null | grep -qx "$cluster" && die "kind cluster $cluste
 # 1. The artifacts: digest and signature, before anything is loaded.
 # ---------------------------------------------------------------------------------------------
 manifest="$release/manifest.json"
-[ -f "$manifest" ] && [ -f "$release/cosign.pub" ] || die "$release lacks manifest.json or cosign.pub"
+[ -f "$manifest" ] || die "$release lacks manifest.json"
+[ -f "$release/signer.txt" ] || [ -f "$release/cosign.pub" ] || die "$release lacks signer.txt (keyless) or cosign.pub (a key)"
+# cosign_verify <file> <bundle>: against the signer the release pins: signer.txt (keyless identity + issuer) or cosign.pub.
+cosign_verify() {
+  if [ -f "$release/signer.txt" ]; then
+    identity=$(sed -n 's/^identity: *//p' "$release/signer.txt" | head -1)
+    issuer=$(sed -n 's/^issuer: *//p' "$release/signer.txt" | head -1)
+    cosign verify-blob --bundle "$2" --certificate-identity "$identity" --certificate-oidc-issuer "$issuer" "$1" >/dev/null 2>&1
+  else
+    cosign verify-blob --key "$release/cosign.pub" --bundle "$2" "$1" >/dev/null 2>&1
+  fi
+}
 field() { jq -er "$1" "$manifest" || die "manifest.json lacks $1"; }
 version=$(field .version)
 gateway_commit=$(field .commit)
@@ -96,8 +107,8 @@ verify_tarball() { # tarball digest bundle label
   found=$(printf '%s' "$index" | jq -r '.manifests[0].digest')
   platform=$(printf '%s' "$index" | jq -r '.manifests[0].platform | "\(.os)/\(.architecture)"')
   [ "$count" = 1 ] && [ "$found" = "$2" ] || { echo "$4: archive holds $found ($count manifests), record says $2" >&2; return 1; }
-  cosign verify-blob --key "$release/cosign.pub" --bundle "$3" "$1" >/dev/null 2>&1 || { echo "$4: cosign signature invalid" >&2; return 1; }
-  cosign verify-blob --key "$release/cosign.pub" --bundle "$(dirname "$3")/SHA256SUMS.bundle" "$(dirname "$3")/SHA256SUMS" >/dev/null 2>&1 || { echo "$4: SHA256SUMS signature invalid" >&2; return 1; }
+  cosign_verify "$1" "$3" || { echo "$4: cosign signature invalid" >&2; return 1; }
+  cosign_verify "$(dirname "$3")/SHA256SUMS" "$(dirname "$3")/SHA256SUMS.bundle" || { echo "$4: SHA256SUMS signature invalid" >&2; return 1; }
   sum=$(shasum -a 256 "$1" | cut -d' ' -f1)
   grep -q "^$sum  " "$(dirname "$3")/SHA256SUMS" || { echo "$4: tarball sha256 is not in the signed SHA256SUMS" >&2; return 1; }
   echo "$found $platform"

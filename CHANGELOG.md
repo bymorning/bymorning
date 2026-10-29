@@ -7,6 +7,23 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+### Changed
+
+- Release evidence is signed keylessly (Sigstore) by the `full-gate` workflow's own GitHub identity instead of a
+  long-lived key in AWS KMS. A release is `full-gate.yml` dispatched with `sign=true` on a `v*` tag; the signing
+  certificate names the run, and the signature is in the public transparency log. The manifest records
+  `signing: { kind: "keyless", identity, issuer }`, the package pins `release/signer.txt` (with
+  `release/trusted_root.json` for offline checks) in place of `release/cosign.pub`, and `mirror.sh` and the kind
+  end-to-end check verify against that identity. The Azure export now refuses a signer other than `full-gate.yml` on a
+  `v*` tag, verifies every signature with `cosign` before packaging, and `--rotate-key` became `--rotate-signer`
+  (a new release tag is not a signer change). Gate runs still sign with a throwaway key (`ephemeral`).
+
+### Removed
+
+- The managed release key: `script/release-key.sh`, the `BYMORNING_COSIGN_KEY` and `COSIGN_PASSWORD` secrets, the
+  `BYMORNING_COSIGN_KEY_ENABLED` variable, the `release` signing kind, and `BYMORNING_RELEASE_KEY` /
+  `BYMORNING_SIGNING_KIND`. The `version` input of `full-gate` is gone; a release version comes from its tag.
+
 ## [1.3.1] — 2026-10-23
 
 The first release of the open-source repository. It differs from 1.3.0 only by the
