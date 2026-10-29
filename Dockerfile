@@ -37,8 +37,9 @@ RUN cat /certs/commercial.pem /certs/govcloud.pem > /certs/rds-global-bundle.pem
 # crypto operation runs on a validated module once the provider is activated.
 # RHEL's Node build refuses --enable-fips/--force-fips; OPENSSL_CONF activation
 # is the supported mechanism and fails closed when the module cannot load.
-# registry.access.redhat.com/ubi9/nodejs-22-minimal:latest (manifest-list digest, 2026-09-26)
-FROM registry.access.redhat.com/ubi9/nodejs-22-minimal@sha256:9823eba78a979ab9b4346a91678d74518bdeb1fc762752689bf1354cbc492b54 AS base
+# registry.access.redhat.com/ubi9/nodejs-22-minimal:latest (manifest-list digest, 2026-10-27; re-pinned for 1.3.1:
+# the 2026-09-26 pin carried a Critical ca-certificates advisory that this image fixes)
+FROM registry.access.redhat.com/ubi9/nodejs-22-minimal@sha256:dcbe5b45a3e7591a52fe4ae0092a39910924092feee749c040424a7a4519ffd2 AS base
 
 # Release identity, stamped by script/release.ts from the root
 # package.json version and the source commit. SOURCE_DATE_EPOCH is consumed by
@@ -90,6 +91,6 @@ LABEL org.opencontainers.image.title="ByMorning Gateway" \
       org.opencontainers.image.revision="$REVISION" \
       org.opencontainers.image.created="$CREATED" \
       org.opencontainers.image.base.name="registry.access.redhat.com/ubi9/nodejs-22-minimal" \
-      org.opencontainers.image.base.digest="sha256:9823eba78a979ab9b4346a91678d74518bdeb1fc762752689bf1354cbc492b54"
+      org.opencontainers.image.base.digest="sha256:dcbe5b45a3e7591a52fe4ae0092a39910924092feee749c040424a7a4519ffd2"
 
 CMD ["node", "/app/bymorning.mjs"]

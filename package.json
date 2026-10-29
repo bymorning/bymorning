@@ -110,7 +110,10 @@
     "proxy-addr": "^2.0.8",
     "source-map-js": "^1.2.2",
     "shell-quote": "^1.11.0",
-    "@modelcontextprotocol/sdk": "^1.31.0"
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "dompurify": "3.4.17",
+    "body-parser": "2.4.0",
+    "zod": "4.6.6"
   },
   "patchedDependencies": {
     "@tanstack/virtual-core@3.17.8": "patches/@tanstack%2Fvirtual-core@3.17.8.patch",

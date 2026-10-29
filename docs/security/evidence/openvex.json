@@ -2,9 +2,9 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/bymorning/enterprise/security/1.2.0/openvex",
   "author": "ByMorning Security",
-  "timestamp": "2026-10-22T00:00:00Z",
-  "last_updated": "2026-10-22T00:00:00Z",
-  "version": 5,
+  "timestamp": "2026-10-29T00:00:00Z",
+  "last_updated": "2026-10-29T00:00:00Z",
+  "version": 6,
   "statements": [
     {
       "vulnerability": {
@@ -12,7 +12,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -25,7 +25,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -38,7 +38,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -51,7 +51,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -64,7 +64,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -77,7 +77,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -90,7 +90,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -103,7 +103,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -116,7 +116,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -129,7 +129,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -142,7 +142,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -155,7 +155,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -168,7 +168,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -181,7 +181,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -194,7 +194,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -206,7 +206,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -218,7 +218,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -230,7 +230,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -242,7 +242,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -254,7 +254,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -266,7 +266,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -278,7 +278,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -290,7 +290,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -302,7 +302,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -314,7 +314,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "fixed",
@@ -326,7 +326,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -339,7 +339,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -352,7 +352,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -365,7 +365,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -378,7 +378,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -391,7 +391,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -404,7 +404,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -417,7 +417,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -430,7 +430,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
@@ -443,7 +443,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -456,7 +456,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -469,7 +469,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -482,7 +482,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -495,7 +495,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -508,7 +508,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -521,7 +521,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -534,7 +534,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -547,7 +547,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -560,7 +560,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -573,7 +573,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -586,7 +586,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -599,7 +599,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -612,7 +612,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -625,7 +625,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "affected",
@@ -638,12 +638,122 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.0"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
         }
       ],
       "status": "not_affected",
       "justification": "component_not_present",
       "impact_statement": "launch-editor (bundled by vite 7.3.6 and 8.2.0) is reached only through the Vite development server's open-in-editor middleware, and the flaw (an fs.existsSync() check that can be bypassed on Windows) applies to Windows only. Vite is workspace build tooling: the Gateway image ships the built UI assets and no development server. A search of all 8 layers of the 1.3.0 Gateway image finds no launch-editor or vite file, and the bundle contains neither name. Fixed upstream in vite 7.3.7 and 8.2.4; the lockfile versions are not moved in this release."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-105482"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The Node.js DNS resolver APIs (dns.resolve*, backed by c-ares) truncate a hostname containing an embedded NUL. Neither first-party code nor any bundled dependency calls them: the shipped bundle imports node:dns once, for dns.lookup (getaddrinfo, not c-ares) in the web-fetch egress screen, and no resolve4/resolve6/resolveAny/resolveCname/resolveMx/resolveNs/resolveSrv/resolveTxt/resolvePtr/resolveSoa/resolveNaptr/resolveCaa reference exists in any of the image's 64 application chunks. No vendor fix exists yet for Node 22.23.2; revisit with the first base-image update that carries one."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-106069"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "Node 22.23.2's TLS stack: checkServerIdentity can accept a certificate that does not identify the peer when a non-canonical numeric hostname (for example 0x7f.1 or 2130706433) is connected to, allowing server impersonation by an attacker who is already positioned on the network path. Exposure is narrow: outbound destinations (model providers, the OIDC issuer, admin-registered remote MCP servers, web fetch) are parsed as URLs, and the WHATWG URL parser rewrites every numeric form to a canonical dotted quad before the hostname reaches TLS (verified for 0x7f.1, 2130706433, 0177.0.0.1 and 127.1); the only first-party tls.connect calls that take a raw hostname string are test fixtures, and the database host comes from the operator's DATABASE_URL. Not audited: every third-party client's handling of a hostname string it is given directly. No vendor fix exists yet; remediated by the first base-image update whose Node RPM carries one. Tracked on the POA&M in the vulnerability triage."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-xcx6-jx8p-x3h5"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "@azure/msal-node 6.0.1 (via @azure/identity 4.13.3) can disclose authorization-code-flow parameters to an attacker-controlled endpoint. The code path is MsalClient.getTokenByAuthorizationCode, whose only caller in @azure/identity is AuthorizationCodeCredential. The Gateway constructs only DefaultAzureCredential (backends/azure and app/host/src/azure.ts), whose chain is VS Code, Azure CLI, Azure PowerShell, azd, broker, environment, workload identity and managed identity: none uses the authorization-code flow. The fix is 7.1.0, a major version that @azure/identity 4.13.3 (^6) does not accept; move with the next @azure/identity release."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-cg2g-xh64-v4q7"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "DOMPurify 3.4.16 (nested under mermaid and blume) is replaced by 3.4.17 through a root override. Found in the 1.3.1 release candidate's source scan; never in a shipped image."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-mrv2-3pqr-j5jr"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "DOMPurify 3.4.16 is replaced by 3.4.17 through a root override. Found in the 1.3.1 release candidate's source scan; never in a shipped image."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-27r3-jxmh-p828"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "body-parser 2.3.0 is replaced by 2.4.0 through a root override (inside express's ^2.2.1 range). Found in the 1.3.1 release candidate's source scan."
+    },
+    {
+      "vulnerability": {
+        "name": "GHSA-mrhx-c7xc-m3w5"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "zod 4.1.11 and 4.6.5 are replaced by 4.6.6 through a root override. Found in the 1.3.1 release candidate's source scan."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-114406"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "The base image is re-pinned to ubi9/nodejs-22-minimal built 2026-10-27, whose ca-certificates carries the fix (the 2026-09-26 pin carried this Critical). Found in the 1.3.1 release candidate's image scan."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-111497"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "The re-pinned base image carries libbrotli 1.0.9-10.el9_8.1. Found in the 1.3.1 release candidate's image scan."
     }
   ]
 }
