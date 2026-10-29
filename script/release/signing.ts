@@ -20,6 +20,8 @@
  *   Signing.mode(process.env) // "ephemeral"
  */
 import { X509Certificate } from "node:crypto"
+import { existsSync, readdirSync } from "node:fs"
+import { join } from "node:path"
 
 export namespace Signing {
   /** The OIDC issuer of GitHub Actions identities. */
@@ -78,5 +80,28 @@ export namespace Signing {
     const uri = /(?:^|,\s*)URI:([^,\s]+)/.exec(san)?.[1]
     if (uri === undefined) throw new Error(`the signing certificate has no URI subject alternative name (${san})`)
     return uri
+  }
+
+  /**
+   * The Sigstore trust root cosign has cached, as `<tuf root>/<mirror>/targets/trusted_root.json`
+   * (cosign v3 keeps one directory per TUF mirror; the public-good mirror comes first). Undefined
+   * when none of `roots` holds one. Shipped with a release, it lets `cosign verify-blob
+   * --trusted-root` run with no network access.
+   */
+  export const trustedRoot = (roots: ReadonlyArray<string>) => {
+    for (const root of roots) {
+      if (!existsSync(root)) continue
+      const mirrors = [
+        "tuf-repo-cdn.sigstore.dev",
+        ...readdirSync(root, { withFileTypes: true })
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => entry.name),
+      ]
+      for (const mirror of mirrors) {
+        const file = join(root, mirror, "targets", "trusted_root.json")
+        if (existsSync(file)) return file
+      }
+    }
+    return undefined
   }
 }

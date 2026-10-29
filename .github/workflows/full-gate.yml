@@ -166,7 +166,13 @@ jobs:
             expected=keyless
             cp "$evidence/gateway/signer.txt" "$RELEASE_DIR/signer.txt"
             cmp "$RELEASE_DIR/signer.txt" "$evidence/execution/signer.txt"
-            [ ! -f "$evidence/gateway/trusted_root.json" ] || cp "$evidence/gateway/trusted_root.json" "$RELEASE_DIR/trusted_root.json"
+            [ -f "$evidence/gateway/trusted_root.json" ] || { echo "::error::the keyless build shipped no trusted_root.json"; exit 1; }
+            cp "$evidence/gateway/trusted_root.json" "$RELEASE_DIR/trusted_root.json"
+            # The shipped trust root must be enough on its own: verify with the network blocked and no TUF cache.
+            id=$(sed -n 's/^identity: *//p' "$RELEASE_DIR/signer.txt"); iss=$(sed -n 's/^issuer: *//p' "$RELEASE_DIR/signer.txt")
+            HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9 TUF_ROOT="$RUNNER_TEMP/no-tuf" \
+              cosign verify-blob --bundle "$evidence/gateway/SHA256SUMS.bundle" --certificate-identity "$id" --certificate-oidc-issuer "$iss" \
+              --trusted-root "$RELEASE_DIR/trusted_root.json" "$evidence/gateway/SHA256SUMS"
           else
             expected=ephemeral
             cp "$evidence/gateway/cosign.pub" "$RELEASE_DIR/cosign.pub"

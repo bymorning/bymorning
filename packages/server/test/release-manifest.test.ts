@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync } from "node:fs"
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { afterAll, describe, expect, test } from "vitest"
@@ -196,6 +196,42 @@ describe("release signing", () => {
     expect(Signing.parse("identity: only-this\n")).toBeUndefined()
     expect(Signing.parse(`identity: \nissuer: ${Signing.ISSUER}\n`)).toBeUndefined()
     expect(Signing.parse("")).toBeUndefined()
+  })
+})
+
+describe("sigstore trust root", () => {
+  const cache = (...parts: Array<string>) => {
+    const dir = mkdtempSync(join(scratch, "tuf-"))
+    if (parts.length > 0) {
+      mkdirSync(join(dir, ...parts.slice(0, -1)), { recursive: true })
+      writeFileSync(join(dir, ...parts), "{}")
+    }
+    return dir
+  }
+  const publicGood = ["tuf-repo-cdn.sigstore.dev", "targets", "trusted_root.json"]
+
+  test("finds the public-good root in a cosign v3 TUF cache", () => {
+    const dir = cache(...publicGood)
+    expect(Signing.trustedRoot([dir])).toBe(join(dir, ...publicGood))
+  })
+
+  test("prefers the public-good mirror over another one", () => {
+    const dir = cache("other-mirror.example", "targets", "trusted_root.json")
+    mkdirSync(join(dir, "tuf-repo-cdn.sigstore.dev", "targets"), { recursive: true })
+    writeFileSync(join(dir, ...publicGood), "{}")
+    expect(Signing.trustedRoot([dir])).toBe(join(dir, ...publicGood))
+  })
+
+  test("falls back to any mirror, and to the next cache directory", () => {
+    const only = cache("private-mirror.example", "targets", "trusted_root.json")
+    expect(Signing.trustedRoot([only])).toBe(join(only, "private-mirror.example", "targets", "trusted_root.json"))
+    const later = cache(...publicGood)
+    expect(Signing.trustedRoot([cache(), join(scratch, "absent"), later])).toBe(join(later, ...publicGood))
+  })
+
+  test("is undefined when no cache holds a root", () => {
+    expect(Signing.trustedRoot([cache(), join(scratch, "absent")])).toBeUndefined()
+    expect(Signing.trustedRoot([])).toBeUndefined()
   })
 })
 

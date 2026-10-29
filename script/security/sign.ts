@@ -44,10 +44,10 @@ export const SIGN_HINT = [
 ].join("\n")
 
 /** The trust root cosign verified against, when its TUF cache holds one. */
-const cachedTrustedRoot = () => {
-  const roots = [process.env.TUF_ROOT, join(homedir(), ".sigstore", "root")].filter((dir): dir is string => !!dir)
-  return roots.map((dir) => join(dir, "targets", "trusted_root.json")).find((file) => existsSync(file))
-}
+const cachedTrustedRoot = () =>
+  Signing.trustedRoot(
+    [process.env.TUF_ROOT, join(homedir(), ".sigstore", "root")].filter((dir): dir is string => !!dir),
+  )
 
 const targetsOf = (tarball: string, out: string) =>
   [tarball, join(out, "SHA256SUMS"), join(out, "provenance.intoto.json"), join(out, "openvex.json")]
