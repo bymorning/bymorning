@@ -102,9 +102,9 @@ wi_subject=system:serviceaccount:bymorning:bymorning-gateway
 
 checks=0
 failures=0
-# AWS leg: 29 startup, serving, and dependency checks. Azure leg: 5 shared
+# AWS leg: 32 startup, serving, evaluation, and dependency checks. Azure leg: 5 shared
 # startup checks plus 9 wiring checks. Plus SMK-00 in tarball mode.
-if [ "$leg" = aws ]; then expected_checks=29; else expected_checks=14; fi
+if [ "$leg" = aws ]; then expected_checks=32; else expected_checks=14; fi
 [ -z "${TARBALL:-}" ] || expected_checks=$((expected_checks + 1))
 
 report() { # id outcome detail
@@ -406,6 +406,37 @@ ENV
   expect_failure SMK-21 "absent STORAGE_PROVIDER" "STORAGE_PROVIDER" STORAGE_PROVIDER
   expect_failure SMK-22 "absent CIPHER_BACKEND" "CIPHER_BACKEND" CIPHER_BACKEND
   expect_failure SMK-23 "development-only STORAGE_PROVIDER=filesystem" "s3, azure-blob" STORAGE_PROVIDER -e STORAGE_PROVIDER=filesystem
+  # BYMORNING_EVALUATION=true unlocks filesystem storage, the local key, and Local Login, but
+  # refuses the CUI profile (the leg's default document) and never generates the key.
+  evaluation_args="-e BYMORNING_EVALUATION=true -e STORAGE_PROVIDER=filesystem -e CIPHER_BACKEND=local -e BYMORNING_DATA_DIR=/tmp/evaluation"
+  # shellcheck disable=SC2086
+  expect_failure SMK-24 "evaluation with the CUI profile" "CUI profile" "" $evaluation_args
+  # shellcheck disable=SC2086
+  expect_failure SMK-25 "evaluation without CIPHER_KEY" "CIPHER_KEY" "" $evaluation_args -e BYMORNING_CONFIG=/app/bymorning.jsonc
+
+  # [SMK-26] An evaluation installation boots on its own database with filesystem storage, the
+  # operator-supplied local key, and Local Login on a loopback APP_ORIGIN, and warns that it is not production.
+  docker exec "boot-db-$suffix" psql -U bymorning -d bymorning -qc "create database evaluation" >/dev/null
+  evaluation_url=$(database /smoke/ca.pem | sed 's#/bymorning?#/evaluation?#')
+  evaluation_key=$(node_run --entrypoint node "$image" -p 'require("node:crypto").randomBytes(32).toString("base64url")')
+  node_run --network "$network" -v "$volume:/smoke:ro" -e DATABASE_URL="$evaluation_url" "$image" node /app/bymorning.mjs migrate >/dev/null 2>&1 \
+    || diagnose "migrate on the evaluation database failed"
+  docker run -d --name "boot-evaluation-$suffix" --label "bymorning.boot=$suffix" --platform "$platform" --network "$network" \
+    -v "$volume:/smoke:ro" -e DATABASE_URL="$evaluation_url" -e BYMORNING_EVALUATION=true -e STORAGE_PROVIDER=filesystem \
+    -e CIPHER_BACKEND=local -e CIPHER_KEY="$evaluation_key" -e WEB_COOKIE_KEY="$cookie_key" -e APP_ORIGIN=http://localhost:3210 \
+    -e BYMORNING_DATA_DIR=/tmp/evaluation -e BYMORNING_CONFIG=/app/bymorning.azure.jsonc "$image" >/dev/null
+  wait_for_log "boot-evaluation-$suffix" "Listening on" "the evaluation Gateway"
+  evaluated=$(docker exec "boot-evaluation-$suffix" node -e '
+    const get = (path) => fetch("http://127.0.0.1:3210" + path).then((response) => response.text())
+    Promise.all([get("/system/health"), get("/auth/method")]).then(([health, method]) => console.log(health, JSON.parse(method).local))' 2>&1 || true)
+  evaluation_log=$(docker logs "boot-evaluation-$suffix" 2>&1)
+  docker rm -f "boot-evaluation-$suffix" >/dev/null 2>&1 || true
+  if [ "$evaluated" = "ok true" ] && echo "$evaluation_log" | grep -q "evaluation installation, not a production one" \
+    && echo "$evaluation_log" | grep -q "mode=evaluation" && ! echo "$evaluation_log" | grep -q "$evaluation_key"; then
+    report SMK-26 ok "evaluation boots: health ok, Local Login offered, warning and mode=evaluation logged, key not logged"
+  else
+    report SMK-26 fail "probe='$evaluated'; log: $(echo "$evaluation_log" | tail -5 | tr '\n' ' ')"
+  fi
 
   # --- The serving Gateway --------------------------------------------------
   gateway "boot-gateway-$suffix" --network-alias smoke.test

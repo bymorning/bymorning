@@ -23,6 +23,7 @@ import { WebCookie } from "../../../packages/server/src/web-cookie.js"
 import * as Dev from "../src/dev.js"
 import { Host } from "../src/host.js"
 import * as Index from "../src/index.js"
+import * as Production from "../src/production.js"
 import { selection as production } from "../src/production.js"
 import { KMSClient } from "./aws-sdk-kms.js"
 import { S3Client } from "./aws-sdk-s3.js"
@@ -809,6 +810,173 @@ describe("the development selection", () => {
         ),
       )
       expect(withCA).toMatchObject({ _tag: "Host.ConfigError", setting: "DATABASE_CA" })
+    }),
+  )
+})
+
+describe("the evaluation selection", () => {
+  const key = Buffer.alloc(32, 7).toString("base64url")
+  const evaluate = async () => {
+    const data = await scratch("host-evaluation-")
+    return {
+      ...common,
+      APP_ORIGIN: "http://localhost:3210",
+      BYMORNING_EVALUATION: "true",
+      STORAGE_PROVIDER: "filesystem",
+      CIPHER_BACKEND: "local",
+      CIPHER_KEY: key,
+      BYMORNING_DATA_DIR: data,
+      BYMORNING_CONFIG: document("bymorning.azure.jsonc"),
+    }
+  }
+  const resolveEvaluation = (environment: Environment) =>
+    Production.choose.pipe(
+      Effect.flatMap((chosen) => Host.resolve<never>(chosen)),
+      provide(environment),
+    )
+
+  it.effect("BYMORNING_EVALUATION is exactly true or false, and only true selects evaluation", () =>
+    Effect.gen(function* () {
+      expect(yield* Production.choose.pipe(provide({}))).toBe(Production.selection)
+      expect(yield* Production.choose.pipe(provide({ BYMORNING_EVALUATION: "false" }))).toBe(Production.selection)
+      expect(yield* Production.choose.pipe(provide({ BYMORNING_EVALUATION: "true" }))).toBe(Production.evaluation)
+      // Empty is unset, as for every other setting: production.
+      expect(yield* Production.choose.pipe(provide({ BYMORNING_EVALUATION: "" }))).toBe(Production.selection)
+      for (const value of ["yes", "1", "TRUE"]) {
+        const error = yield* Production.choose.pipe(provide({ BYMORNING_EVALUATION: value }), Effect.flip)
+        expect(error).toMatchObject({ _tag: "Host.ConfigError", setting: "BYMORNING_EVALUATION" })
+        expect(String(error)).not.toContain(`${value} `)
+      }
+    }),
+  )
+
+  it.live("without the flag the image still refuses filesystem storage and the local key", () =>
+    Effect.gen(function* () {
+      const environment = { ...(yield* Effect.promise(evaluate)), BYMORNING_EVALUATION: undefined }
+      const storage = yield* resolveEvaluation(environment).pipe(Effect.flip)
+      expect(storage).toMatchObject({ _tag: "Host.ConfigError", setting: "STORAGE_PROVIDER" })
+      expect(String(storage)).toContain("is not one of s3, azure-blob")
+      const cipher = yield* resolveEvaluation({ ...aws, CIPHER_BACKEND: "local", CIPHER_KEY: key }).pipe(Effect.flip)
+      expect(String(cipher)).toContain("is not one of kms, keyvault")
+    }),
+  )
+
+  it.live("filesystem + local resolves an evaluation installation that otherwise behaves as production", () =>
+    Effect.gen(function* () {
+      const environment = yield* Effect.promise(evaluate)
+      const input = yield* resolveEvaluation(environment)
+      const { settings } = input
+      expect(settings.appOrigin.href).toBe("http://localhost:3210/")
+      expect(settings.cookiePolicy).toBe(WebCookie.local)
+      expect(settings.local).toEqual(Production.identity)
+      expect(settings.allowedEmailDomains).toEqual(["local.test"])
+      // Not development: no package installs, and the Plugin cache stays under the temporary directory.
+      expect(settings.installPackage).toBe(false)
+      expect(settings.directory).toBe(path.join(tmpdir(), "bymorning"))
+      expect(settings.cipher.keyID).toBe("local")
+      expect(settings.host).toBe("0.0.0.0")
+      expect((yield* openStorage(input)).selected).toEqual({ id: "filesystem", name: "Filesystem" })
+      // The same CIPHER_KEY reads what an earlier start wrote; a different key cannot.
+      const generated = yield* settings.cipher.generate
+      const again = yield* resolveEvaluation(environment)
+      const unwrapped = yield* again.settings.cipher.unwrap(generated.dataKey, "local")
+      expect(Buffer.from(unwrapped).equals(Buffer.from(generated.key))).toBe(true)
+      const other = yield* resolveEvaluation({ ...environment, CIPHER_KEY: Buffer.alloc(32, 9).toString("base64url") })
+      expect(yield* other.settings.cipher.unwrap(generated.dataKey, "local").pipe(Effect.flip)).toMatchObject({
+        _tag: "Cipher.UnavailableError",
+      })
+      expect(() => LayerNode.compile(Application.node(input))).not.toThrow()
+    }),
+  )
+
+  it.live("the local key is never generated: CIPHER_KEY is required and validated", () =>
+    Effect.gen(function* () {
+      const environment = yield* Effect.promise(evaluate)
+      for (const value of [undefined, ""]) {
+        const missing = yield* resolveEvaluation({ ...environment, CIPHER_KEY: value }).pipe(Effect.flip)
+        expect(String(missing)).toContain("CIPHER_KEY")
+      }
+      const malformed = yield* resolveEvaluation({ ...environment, CIPHER_KEY: "private-marker" }).pipe(Effect.flip)
+      expect(malformed).toMatchObject({ _tag: "Host.ConfigError", setting: "CIPHER_KEY" })
+      expect(String(malformed)).not.toContain("private-marker")
+      const short = yield* resolveEvaluation({
+        ...environment,
+        CIPHER_KEY: Buffer.alloc(16).toString("base64url"),
+      }).pipe(Effect.flip)
+      expect(short).toMatchObject({ _tag: "Host.ConfigError", setting: "CIPHER_KEY" })
+    }),
+  )
+
+  it.live("filesystem storage requires BYMORNING_DATA_DIR", () =>
+    Effect.gen(function* () {
+      const environment = yield* Effect.promise(evaluate)
+      const error = yield* resolveEvaluation({ ...environment, BYMORNING_DATA_DIR: undefined }).pipe(Effect.flip)
+      expect(String(error)).toContain("BYMORNING_DATA_DIR")
+    }),
+  )
+
+  it.live("a non-loopback origin must be https, and https keeps the Secure cookie policy", () =>
+    Effect.gen(function* () {
+      const environment = yield* Effect.promise(evaluate)
+      const error = yield* resolveEvaluation({ ...environment, APP_ORIGIN: "http://eval.example.com" }).pipe(
+        Effect.flip,
+      )
+      expect(error).toMatchObject({ _tag: "Host.ConfigError", setting: "APP_ORIGIN" })
+      expect(String(error)).toContain("unless loopback")
+      const secure = yield* resolveEvaluation({ ...environment, APP_ORIGIN: "https://eval.example.com" })
+      expect(secure.settings.cookiePolicy).toBe(WebCookie.secure)
+    }),
+  )
+
+  it.live("the CUI profile is refused before any backend is constructed", () =>
+    Effect.gen(function* () {
+      const environment = yield* Effect.promise(evaluate)
+      const error = yield* resolveEvaluation({
+        ...environment,
+        BYMORNING_CONFIG: document("bymorning.cui.jsonc"),
+      }).pipe(Effect.flip)
+      expect(error).toMatchObject({ _tag: "Host.ConfigError", setting: "BYMORNING_CONFIG" })
+      expect(String(error)).toContain("CUI profile")
+      // The same document is accepted by a production selection.
+      const accepted = yield* resolve({ ...aws, BYMORNING_CONFIG: document("bymorning.cui.jsonc") })
+      expect(accepted.settings.cipher.keyID).toBe(kmsARN)
+    }),
+  )
+
+  it.live("every start warns that this is an evaluation installation and names the mode", () =>
+    Effect.gen(function* () {
+      const environment = yield* Effect.promise(evaluate)
+      const logs = captureLogs()
+      yield* resolveEvaluation(environment).pipe(Effect.provide(logs.layer))
+      const warning = logs.entries.filter(
+        (entry) => entry.level === "Warn" && String(entry.message[0]).includes("evaluation installation"),
+      )
+      expect(warning).toHaveLength(1)
+      expect(logs.entries.find((entry) => entry.message[0] === "Host resolved")?.message[1]).toMatchObject({
+        storage: "filesystem",
+        cipher: "local",
+        mode: "evaluation",
+      })
+      for (const entry of logs.entries) expect(JSON.stringify(entry.message)).not.toContain(key)
+      // A production start names no mode and does not warn.
+      const quiet = captureLogs()
+      yield* resolve(aws).pipe(Effect.provide(quiet.layer))
+      expect(quiet.entries.find((entry) => entry.message[0] === "Host resolved")?.message[1]).not.toHaveProperty("mode")
+      expect(quiet.entries.some((entry) => String(entry.message[0]).includes("evaluation"))).toBe(false)
+    }),
+  )
+
+  it.live("boots against PostgreSQL and offers Local Login on the loopback origin", () =>
+    Effect.gen(function* () {
+      const database = yield* TestDatabase.shared
+      const url = yield* database.create()
+      const environment = { ...(yield* Effect.promise(evaluate)), DATABASE_URL: Redacted.value(url), HOST: "127.0.0.1" }
+      const input = yield* resolveEvaluation(environment)
+      const context = yield* Layer.build(Application.layer(Application.node(input), { ...input.settings, port: 0 }))
+      const origin = HttpServer.formatAddress(Context.get(context, HttpServer.HttpServer).address)
+      expect((yield* Effect.promise(() => fetch(new URL("/system/health", origin)))).status).toBe(200)
+      const method = yield* Effect.promise(() => fetch(new URL("/auth/method", origin)).then((r) => r.json()))
+      expect(method).toMatchObject({ local: true })
     }),
   )
 })

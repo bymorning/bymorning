@@ -14,11 +14,15 @@ A storage implementation identified by the kind of storage it supplies. Storage 
 
 ## Local Login
 
-A development-only sign-in using the stable identity declared by the local installation owner. Local Login requires no external identity verification or delivery service and resolves to a persisted Account through the normal account and membership rules.
+A sign-in using the stable identity declared by the local installation owner, offered only in development and evaluation installations and only on a loopback origin. Local Login requires no external identity verification or delivery service and resolves to a persisted Account through the normal account and membership rules. Anyone who can reach a Local Login origin signs in as that identity.
 
 ## Installation
 
 One deployed ByMorning. It owns settings no Workspace owns: its Auth Providers, the Setup state, its Installation Admins, and its Installation Policy.
+
+## Evaluation Installation
+
+An Installation its operator has explicitly declared to be for evaluation, not production. It may keep stored content on local disk, protect secrets with an operator-supplied local master key, and offer Local Login. It makes no production key-management or data-at-rest claim, refuses the CUI profile, and cannot become a production Installation in place: changing its key backend or storage leaves existing secrets unreadable and stored content orphaned.
 
 ## Installation Admin
 
@@ -246,7 +250,7 @@ A Credential serves either application setup or an account Connection. OAuth app
 
 ## Cipher
 
-The Core-internal capability that encrypts persisted secret columns at rest with versioned envelopes, and decrypts envelopes and legacy plaintext. The host selects the key backend at composition: an AWS KMS symmetric key in deployed installations, or a local master key held beside the host's other key files in development. Writes always encrypt; reads accept legacy plaintext only until the boot-time migration re-encrypts it, and a backend that cannot serve a decryption fails closed rather than substituting plaintext. Cipher is never exposed through the SDK and never logs secret material.
+The Core-internal capability that encrypts persisted secret columns at rest with versioned envelopes, and decrypts envelopes and legacy plaintext. The host selects the key backend at composition: an AWS KMS or Azure Key Vault key in production installations, or a local master key in development and evaluation installations. Development may generate the local key beside the host's other key files; an evaluation installation requires the operator to supply it. Writes always encrypt; reads accept legacy plaintext only until the boot-time migration re-encrypts it, and a backend that cannot serve a decryption fails closed rather than substituting plaintext. Cipher is never exposed through the SDK and never logs secret material.
 
 ## Tool
 
