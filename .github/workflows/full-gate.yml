@@ -32,7 +32,8 @@
 #                  packages/session-ui test:browser.
 #     installers   offline installer checks: the Azure installer's terraform
 #                  validate/test, kustomize, kubeconform, policy and
-#                  create-secret checks.
+#                  create-secret checks; the AWS installer's terraform fmt,
+#                  validate, and mocked-provider tests.
 #     publish      release only (sign=true on a v* tag, after every job above
 #                  passed): script/release/publish.sh pushes both images to
 #                  ghcr.io/<owner> under the version tag, checks each digest
@@ -385,6 +386,8 @@ jobs:
           kubeconform -v
       - name: Azure installer offline checks (validate, test, kustomize, kubeconform, policy, create-secret)
         run: sh installers/azure/test.sh
+      - name: AWS installer offline checks (fmt, validate, terraform test with a mocked provider)
+        run: sh installers/aws/test.sh
 
   publish:
     # Release only: a sign=true dispatch on a v* tag, after every gate job passed.
