@@ -45,6 +45,7 @@ module "bymorning" {
 
   bedrock_model_arns = var.bedrock_model_arns
   code_interpreter   = var.code_interpreter
+  cui_profile        = var.cui_profile
   setup_token        = var.setup_token
   login_banner       = var.login_banner
   database           = var.database

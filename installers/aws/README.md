@@ -103,18 +103,19 @@ the provider. The first person to sign in becomes the Installation Admin. See
 
 The example's `terraform.tfvars.example` lists every setting. The ones you are most likely to change:
 
-| Variable                       | Default        | Effect                                                                   |
-| ------------------------------ | -------------- | ------------------------------------------------------------------------ |
-| `internal`                     | `true`         | `false` makes the load balancer internet-facing; give it public subnets. |
-| `allowed_cidrs`                | required       | Who may reach the load balancer on 80 and 443.                           |
-| `bedrock_model_arns`           | `[]`           | Models and inference profiles the task may invoke. No wildcards.         |
-| `code_interpreter`             | `false`        | Adds an AgentCore Code Interpreter with no network access.               |
-| `database.multi_az`            | `false`        | A standby in a second Availability Zone.                                 |
-| `database.instance_class`      | `db.t4g.small` | The RDS instance size.                                                   |
-| `database.deletion_protection` | `true`         | Set `false` and apply before destroying.                                 |
-| `task.cpu`, `task.memory`      | `1024`, `2048` | The Fargate task size.                                                   |
-| `login_banner`                 | none           | A system use notification acknowledged before sign-in.                   |
-| `setup_token`                  | generated      | Your own Setup token instead of the generated one.                       |
+| Variable                       | Default        | Effect                                                                     |
+| ------------------------------ | -------------- | -------------------------------------------------------------------------- |
+| `internal`                     | `true`         | `false` makes the load balancer internet-facing; give it public subnets.   |
+| `allowed_cidrs`                | required       | Who may reach the load balancer on 80 and 443.                             |
+| `bedrock_model_arns`           | `[]`           | Models and inference profiles the task may invoke. No wildcards.           |
+| `code_interpreter`             | `false`        | Adds an AgentCore Code Interpreter with no network access.                 |
+| `cui_profile`                  | `false`        | The CUI profile: AgentCore only, no public Session links or Google plugin. |
+| `database.multi_az`            | `false`        | A standby in a second Availability Zone.                                   |
+| `database.instance_class`      | `db.t4g.small` | The RDS instance size.                                                     |
+| `database.deletion_protection` | `true`         | Set `false` and apply before destroying.                                   |
+| `task.cpu`, `task.memory`      | `1024`, `2048` | The Fargate task size.                                                     |
+| `login_banner`                 | none           | A system use notification acknowledged before sign-in.                     |
+| `setup_token`                  | generated      | Your own Setup token instead of the generated one.                         |
 
 ## Upgrade
 

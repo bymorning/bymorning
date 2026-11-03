@@ -97,6 +97,16 @@ variable "code_interpreter" {
   default     = false
 }
 
+variable "cui_profile" {
+  description = "Load the CUI profile: only the AgentCore Code Interpreter, with no public Session links and no Google plugin. Requires code_interpreter. Pair it with an Installation Policy that admits only Amazon Bedrock."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.cui_profile || var.code_interpreter
+    error_message = "cui_profile requires code_interpreter = true: the CUI profile loads the AgentCore Code Interpreter."
+  }
+}
+
 variable "fips_endpoints" {
   description = "Route S3, KMS, and Bedrock calls to FIPS endpoints. Always on in AWS GovCloud; on by default in US commercial Regions; FIPS endpoints don't exist outside the US."
   type        = bool

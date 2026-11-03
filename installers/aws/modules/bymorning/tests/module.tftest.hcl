@@ -213,6 +213,26 @@ run "code_interpreter" {
   }
 }
 
+run "cui_profile" {
+  command = plan
+  variables {
+    code_interpreter = true
+    cui_profile      = true
+  }
+  assert {
+    condition     = local.environment.BYMORNING_CONFIG == "/app/bymorning.cui.jsonc"
+    error_message = "The CUI profile selects the image's CUI installation document."
+  }
+}
+
+run "cui_profile_needs_the_code_interpreter" {
+  command = plan
+  variables {
+    cui_profile = true
+  }
+  expect_failures = [var.cui_profile]
+}
+
 run "tag_only_image_refused" {
   command = plan
   variables {

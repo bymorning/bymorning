@@ -21,8 +21,9 @@ locals {
   fips   = local.govcloud ? true : coalesce(var.fips_endpoints, startswith(local.region, "us-"))
   port   = 3210
   origin = "https://${var.hostname}"
-  # The image ships the installation documents: the default one adds the AgentCore
-  # Code Interpreter; the other is the same set of plugins without it.
-  config_file      = var.code_interpreter ? "/app/bymorning.jsonc" : "/app/bymorning.azure.jsonc"
+  # The image ships the installation documents: the CUI profile (AgentCore only, no
+  # public Session links, no Google plugin), the default one (adds AgentCore), and
+  # the same set of plugins without AgentCore.
+  config_file      = var.cui_profile ? "/app/bymorning.cui.jsonc" : var.code_interpreter ? "/app/bymorning.jsonc" : "/app/bymorning.azure.jsonc"
   database_subnets = coalesce(var.database_subnet_ids, var.service_subnet_ids)
 }

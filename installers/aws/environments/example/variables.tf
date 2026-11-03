@@ -60,6 +60,11 @@ variable "code_interpreter" {
   default = false
 }
 
+variable "cui_profile" {
+  type    = bool
+  default = false
+}
+
 variable "setup_token" {
   type      = string
   default   = null
