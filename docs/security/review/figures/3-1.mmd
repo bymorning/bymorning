@@ -1,0 +1,39 @@
+%%{init: {"flowchart": {"wrappingWidth": 260}}}%%
+flowchart TD
+    subgraph Entry["CUI entry — authenticated channels"]
+        E1["Member prompts and<br/>conversation (browser)"]
+        E2["Project file uploads<br/>(≤20 MiB per request)"]
+        E3["Tool results (Code Interpreter,<br/>authorized integrations)"]
+        E4["API callers<br/>(/inference, /mcp)"]
+    end
+    subgraph Processing["Processing — Gateway memory (ephemeral)"]
+        P1["Session Runs<br/>(agent loop)"]
+        P2["Code Interpreter sandbox<br/>(AgentCore or Kubernetes) —<br/>code + output, no network"]
+        P3["Routing judge<br/>(participant turns only)"]
+    end
+    subgraph Stored["Stored — customer account or subscription (encrypted)"]
+        S1["PostgreSQL 17<br/>(RDS or Flexible Server)"]
+        S2["S3 bucket or Blob container;<br/>tool-output/ expires 7 days"]
+        S3["CloudWatch or Azure logs;<br/>incidental request context"]
+        S4["Database backups<br/>and snapshots"]
+    end
+    E1 --> P1
+    E2 --> P1
+    E3 --> P1
+    E4 --> P1
+    P1 --> P2
+    P1 --> P3
+    P1 --> S1
+    P1 --> S2
+    P2 --> S2
+    P1 --> S3
+    S1 --> S4
+    S2 --> S4
+    E1 ~~~ E3
+    E2 ~~~ E4
+    P2 ~~~ S1
+    S2 ~~~ S3
+    P2 ~~~ S3
+    class E1,E2,E4 cust
+    class E3,P1,P3 bym
+    class P2,S1,S2,S3,S4 aws

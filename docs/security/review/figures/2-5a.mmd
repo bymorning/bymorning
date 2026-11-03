@@ -1,0 +1,25 @@
+%%{init: {"flowchart": {"rankSpacing": 28}}}%%
+flowchart TD
+    subgraph EXT["External (untrusted)"]
+        Browser["Member browser"]
+        Clients["API / MCP clients<br/>(OAuth + PKCE, B7)"]
+        Public["Anonymous Share viewer<br/>(not loaded in the CUI profile)"]
+        IdP["Customer identity provider<br/>(OIDC) sign-in only, no CUI"]
+    end
+    subgraph NET["Customer VPC (AWS) or VNet (Azure)"]
+        LB["Load balancer or ingress :443<br/>(ALB: FIPS TLS, 80 → 301)"]
+        GW["Gateway :3210 (ECS task or AKS pod);<br/>migrate runs first; plugins in-process (B6);<br/>admin vs member Role (B9)"]
+    end
+    OPT["Optional integrations (B5): LLM providers,<br/>MCP servers, plugin APIs; admin-authorized,<br/>outside the CUI boundary"]
+    Browser -->|"B1 · TLS 1.2+"| LB
+    Clients --> LB
+    Public -.->|"B8 · Share token"| LB
+    IdP -->|"OIDC"| GW
+    LB -->|"B1 · TLS on AWS"| GW
+    GW -.-> OPT
+    Browser ~~~ IdP
+    Clients ~~~ Public
+    class Browser,Clients cust
+    class Public,IdP,OPT ext
+    class GW bym
+    class LB aws

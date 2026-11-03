@@ -1,0 +1,14 @@
+%%{init: {"flowchart": {"rankSpacing": 28}}}%%
+flowchart TD
+    subgraph NET["Customer VPC (AWS) or VNet (Azure)"]
+        GW["Gateway :3210 (ECS task or AKS pod);<br/>migrate runs first; plugins in-process (B6);<br/>admin vs member Role (B9)"]
+        DP["Data plane (B2): PostgreSQL 17,<br/>object storage, installation key,<br/>runtime secrets, logs; encrypted, TLS"]
+        CI["Code Interpreter sandbox<br/>(AgentCore with no-rule SG, or<br/>pods under deny-all NetworkPolicy)"]
+    end
+    Bedrock["Amazon Bedrock / Mantle<br/>(customer AWS account)"]
+    GW -->|"B2 · TLS"| DP
+    GW -->|"B3 · SigV4"| Bedrock
+    GW -->|"B4 · session or pod"| CI
+    CI ~~~ Bedrock
+    class GW bym
+    class DP,CI,Bedrock aws
