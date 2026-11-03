@@ -1,6 +1,9 @@
 # ByMorning
 
-With Bun and Node 22+, run from the repository root:
+To try the release image without a cloud account or identity provider, use the
+[Docker Compose evaluation](installers/docker/README.md). It is not for production.
+
+To develop, with Bun and Node 22+, run from the repository root:
 
 ```bash
 bun install --frozen-lockfile
@@ -106,6 +109,12 @@ Cutting a release:
    `release/trusted_root.json` (the Sigstore trust root, for offline verification), and the evidence in
    `release/<version>/gateway/` and `release/<version>/execution/`. Each artifact's `signing` in the manifest records who
    signed: `keyless` (the identity and issuer), `ephemeral` (a throwaway key, every other run), or `unsigned`.
+
+   On a `v*` tag the run's last job, `publish`, then pushes both images to `ghcr.io/bymorning/bymorning` and
+   `ghcr.io/bymorning/bymorning-code-interpreter` under the version tag, checks each pushed digest against the
+   manifest, signs them keylessly with the same identity, and attaches the SBOM and provenance
+   (`script/release/publish.sh`). The first push creates the packages as private: make each one public once under the
+   organization's **Packages** settings.
 
 4. Commit `release/manifest.json`, `release/signer.txt`, `release/trusted_root.json` and `release/<version>/`, and
    publish the GitHub Release:

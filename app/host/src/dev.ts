@@ -7,11 +7,8 @@
  * deployment under `.bymorning/local` so `bun run dev` needs nothing set.
  */
 import type { Auth as CoreAuth } from "@bymorning/core/auth"
-import { Cipher } from "@bymorning/core/cipher"
-import { Storage } from "@bymorning/core/storage"
 import { Auth } from "@bymorning/schema/auth"
-import { NodeCrypto } from "@effect/platform-node"
-import { Config, Effect, Option, Redacted, Schema, type Scope } from "effect"
+import { Config, Effect, Option, Redacted, type Scope } from "effect"
 import { randomBytes } from "node:crypto"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
@@ -21,6 +18,7 @@ import { LocalWebProvider } from "../../../packages/server/src/application/adapt
 import { kms, s3 } from "./aws.js"
 import { blob, keyvault } from "./azure.js"
 import { Host } from "./host.js"
+import { cipher, decodeKey, directory, filesystem } from "./local.js"
 import { migrate as runMigrate } from "./migrate.js"
 import { open } from "./pglite.js"
 
@@ -38,16 +36,6 @@ export const identity: CoreAuth.Local = {
   email: Auth.Email.make("developer@local.test"),
 }
 
-const directory = Config.schema(Schema.NonEmptyString, "BYMORNING_DATA_DIR")
-
-/** Validate one base64url-encoded 32-byte key from a file or a secret variable. */
-const decodeKey = (key: string, setting: string) => {
-  const trimmed = key.trim()
-  return /^[A-Za-z0-9_-]+$/.test(trimmed) && Buffer.from(trimmed, "base64url").length === 32
-    ? Effect.succeed(Redacted.make(trimmed))
-    : Effect.fail(new Host.ConfigError({ setting, reason: "must contain 32 base64url-encoded bytes" }))
-}
-
 /** Read a persisted key, generating it owner-read-only on first use. */
 const loadKey = (file: string, setting: string) =>
   Effect.tryPromise({
@@ -63,10 +51,7 @@ const loadKey = (file: string, setting: string) =>
     catch: (cause) => new Host.ConfigError({ setting, reason: `key file ${file} is unusable: ${String(cause)}` }),
   }).pipe(Effect.flatMap((key) => decodeKey(key, setting)))
 
-/** Filesystem storage under `$BYMORNING_DATA_DIR/storage`. */
-export const filesystem: Host.StorageFactory = Effect.map(directory, (data) =>
-  Storage.filesystem({ directory: path.join(data, "storage") }),
-)
+export { filesystem }
 
 /** Local cipher backend keyed by CIPHER_KEY or the generated `$BYMORNING_DATA_DIR/cipher.key`. */
 export const local: Host.CipherFactory = Effect.gen(function* () {
@@ -74,7 +59,7 @@ export const local: Host.CipherFactory = Effect.gen(function* () {
   const key = Option.isSome(supplied)
     ? yield* decodeKey(Redacted.value(supplied.value), "CIPHER_KEY")
     : yield* loadKey(path.join(yield* directory, "cipher.key"), "CIPHER_KEY")
-  return yield* Cipher.localBackend(key).pipe(Effect.provide(NodeCrypto.layer))
+  return yield* cipher(key)
 })
 
 /**

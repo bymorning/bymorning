@@ -7,6 +7,21 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+### Added
+
+- Evaluation installations. `BYMORNING_EVALUATION=true` lets the release image run with filesystem storage
+  (`STORAGE_PROVIDER=filesystem`, under `BYMORNING_DATA_DIR`), the local key (`CIPHER_BACKEND=local`, keyed by a
+  required, operator-supplied `CIPHER_KEY` that is never generated), and Local Login as `evaluator@local.test` on a
+  loopback `APP_ORIGIN`. Every start warns that the installation is not production, the `Host resolved` line adds
+  `mode=evaluation`, and the CUI profile is refused. Without the flag the image refuses those values exactly as
+  before. An evaluation installation keeps secrets under an exportable key, stores files unencrypted, signs in anyone
+  who can reach its port, and cannot be converted to production; see `app/host/README.md`.
+- `installers/docker`: a Docker Compose evaluation (PostgreSQL, migrate, the Gateway on `127.0.0.1:3210`).
+- Release images are published to `ghcr.io/bymorning/bymorning` and `ghcr.io/bymorning/bymorning-code-interpreter`
+  under the version tag. The release workflow pushes them only after every gate job passes, checks each pushed
+  digest against the manifest, signs them keylessly with the same identity as the evidence, and attaches the image
+  SBOM and (for the Gateway) the SLSA provenance as cosign attestations (`script/release/publish.sh`).
+
 ## [1.3.1] — 2026-10-29
 
 The first release of the open-source repository, under the MIT License. It differs from 1.3.0 by the removals and

@@ -1,0 +1,74 @@
+# ByMorning evaluation installation. NOT FOR PRODUCTION: see README.md for what it gives up.
+#
+#   1. Write .env beside this file (README.md shows the three lines).
+#   2. docker compose up -d
+#   3. Open http://localhost:3210. Local Login signs you in as evaluator@local.test.
+#
+# The port is published on 127.0.0.1 only. Local Login signs in anyone who can reach it,
+# so never publish it on another interface.
+name: bymorning-evaluation
+
+x-bymorning: &bymorning
+  image: ${BYMORNING_IMAGE:?set BYMORNING_IMAGE in .env}
+  # The release image is linux/amd64; Docker emulates it on Apple silicon.
+  platform: linux/amd64
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: bymorning
+      POSTGRES_USER: bymorning
+      POSTGRES_PASSWORD: bymorning
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bymorning -d bymorning"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  # The image runs as uid 65532; give it the data volume.
+  volume:
+    <<: *bymorning
+    user: "0:0"
+    entrypoint: ["sh", "-c", "chown 65532:65532 /data"]
+    volumes:
+      - data:/data
+
+  migrate:
+    <<: *bymorning
+    command: ["node", "/app/bymorning.mjs", "migrate"]
+    environment:
+      DATABASE_URL: postgresql://bymorning:bymorning@postgres:5432/bymorning
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  bymorning:
+    <<: *bymorning
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3210:3210"
+    environment:
+      BYMORNING_EVALUATION: "true"
+      STORAGE_PROVIDER: filesystem
+      CIPHER_BACKEND: local
+      CIPHER_KEY: ${CIPHER_KEY:?set CIPHER_KEY in .env}
+      WEB_COOKIE_KEY: ${WEB_COOKIE_KEY:?set WEB_COOKIE_KEY in .env}
+      APP_ORIGIN: http://localhost:3210
+      DATABASE_URL: postgresql://bymorning:bymorning@postgres:5432/bymorning
+      BYMORNING_DATA_DIR: /data
+      # No Code Interpreter: the default document's AgentCore needs AWS.
+      BYMORNING_CONFIG: /app/bymorning.azure.jsonc
+    volumes:
+      - data:/data
+    depends_on:
+      volume:
+        condition: service_completed_successfully
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres:
+  data:

@@ -68,6 +68,13 @@ export interface Selection<R = never> {
    * BYMORNING_DATA_DIR and Plugin packages may be installed.
    */
   readonly local?: Auth.Local
+  /**
+   * Marks the image's evaluation selection (BYMORNING_EVALUATION=true): it
+   * keeps Local Login and the loopback origin of `local` but otherwise behaves
+   * as production (Plugin cache under the temporary directory, no package
+   * installs), warns at every start, and refuses the CUI profile.
+   */
+  readonly evaluation?: boolean
   /** Settings read when the process environment does not supply them. */
   readonly defaults?: Record<string, string>
 }
@@ -307,26 +314,36 @@ export const resolve = <R = never>(selection: Selection<R>) =>
         // there is no fallback.
         configFile: Config.option(Config.schema(Schema.NonEmptyString, "BYMORNING_CONFIG")),
       })
-      const development = selection.local !== undefined
-      // Only the development selection serves a plain-HTTP loopback origin; the
+      const evaluation = selection.evaluation === true
+      const local = selection.local !== undefined
+      const development = local && !evaluation
+      // Only a selection offering Local Login (development, or the image's
+      // evaluation selection) serves a plain-HTTP loopback origin; a production
       // image is always behind TLS (its own listener or the ingress) and keeps
       // the Secure cookie policy.
-      const loopback = development && isLoopback(appOrigin)
+      const loopback = local && isLoopback(appOrigin)
       if (appOrigin.protocol !== "https:" && !loopback)
         return yield* new ConfigError({
           setting: "APP_ORIGIN",
-          reason: development ? "must be an https origin unless loopback" : "must be an https origin",
+          reason: local ? "must be an https origin unless loopback" : "must be an https origin",
         })
       const fips = yield* checkFIPS(common.fips, common.region)
       if (seed !== undefined) yield* checkIssuer(seed, common.cloud)
-      const connection = yield* selection.database ?? database
-      const provider = yield* storage
-      const backend = yield* cipher
       const file = Option.isSome(common.configFile)
         ? common.configFile.value
         : import.meta.bundled
           ? fileURLToPath(new URL("./bymorning.jsonc", import.meta.url))
           : fileURLToPath(new URL("../bymorning.jsonc", import.meta.url))
+      // The shipped CUI profile asserts a production posture an evaluation
+      // installation does not have (local key, local disk, Local Login).
+      if (evaluation && path.basename(file) === "bymorning.cui.jsonc")
+        return yield* new ConfigError({
+          setting: "BYMORNING_CONFIG",
+          reason: "the CUI profile is refused in an evaluation installation",
+        })
+      const connection = yield* selection.database ?? database
+      const provider = yield* storage
+      const backend = yield* cipher
       // Installation documents reference non-secret settings by name; resolve
       // them from the same configuration source as every other setting.
       const text = yield* Configuration.read(file)
@@ -346,6 +363,12 @@ export const resolve = <R = never>(selection: Selection<R>) =>
             "Bedrock Mantle has no FIPS-designated endpoint and continues to use bedrock-mantle.<region>.api.aws",
         )
       }
+      if (evaluation)
+        yield* Effect.logWarning(
+          "BYMORNING_EVALUATION=true: this is an evaluation installation, not a production one. " +
+            "Stored secrets are protected only by CIPHER_KEY, stored files are not encrypted by ByMorning, " +
+            "and Local Login signs in anyone who can reach a loopback APP_ORIGIN",
+        )
       // One line naming the live backends. The key identity is the configured
       // KMS ARN, the versioned Key Vault URL, or "local": a public identifier,
       // not a secret.
@@ -355,6 +378,7 @@ export const resolve = <R = never>(selection: Selection<R>) =>
         cloud: Option.getOrElse(common.cloud, () => "-"),
         region: Option.getOrElse(common.region, () => "-"),
         fips,
+        ...(evaluation ? { mode: "evaluation" } : {}),
       })
       const settings: Application.Settings = {
         appOrigin,

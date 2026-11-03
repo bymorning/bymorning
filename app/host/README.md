@@ -73,12 +73,43 @@ Effect `ConfigError` naming the variable instead.
 - `PORT` is 1–65535 (default 3210).
 - `TLS_CERT` and `TLS_KEY` are set together or not at all.
 - `BYMORNING_DATA_DIR` is ignored in production: the Plugin cache lives under the system temporary directory.
+- `BYMORNING_EVALUATION`, when set, is exactly `true` or `false`. Anything else refuses startup. See
+  [Evaluation installations](#evaluation-installations).
 
 After the rules pass the host logs one `Host resolved` line naming the storage provider, the key identity (the KMS ARN,
 the versioned Key Vault URL, or `local`), `AZURE_CLOUD`, `AWS_REGION`, and the FIPS flag.
 
 `AWS_USE_FIPS_ENDPOINT=true` routes S3, KMS, and Bedrock Converse to FIPS-designated endpoints; Bedrock Mantle has no
 FIPS endpoint and keeps its standard hostname, announced once at startup.
+
+### Evaluation installations
+
+`BYMORNING_EVALUATION=true` declares an evaluation installation. It is for trying ByMorning, never for production.
+It adds three things to what the image offers and changes nothing else:
+
+| Variable           | Adds                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `STORAGE_PROVIDER` | `filesystem`: objects under `$BYMORNING_DATA_DIR/storage` (`BYMORNING_DATA_DIR` required)                            |
+| `CIPHER_BACKEND`   | `local`: AES-256-GCM envelopes under `CIPHER_KEY`, 32 base64url bytes, required and never generated                  |
+| Sign-in            | Local Login as `evaluator@local.test` when `APP_ORIGIN` is `http://localhost`, `http://127.0.0.1`, or `http://[::1]` |
+
+Without the flag the image refuses `filesystem` and `local` exactly as before. With it, every start logs a warning and
+the `Host resolved` line adds `mode=evaluation`. The CUI profile (`bymorning.cui.jsonc`) is refused. Plugin packages
+are still never installed, and the Plugin cache stays under the temporary directory.
+
+What an evaluation installation gives up, compared with the cloud backends:
+
+- **Key custody.** `CIPHER_KEY` is an exportable secret held by the process. Anyone who can read the container's
+  environment can decrypt every stored Credential, OAuth token, and Auth Provider client secret. Key use is not
+  logged, and there is no revocation or rotation. The cryptography itself is unchanged: AES-256-GCM on the image's
+  FIPS 140-3 validated OpenSSL provider.
+- **Stored files.** Project Files and Tool output are written unencrypted under `BYMORNING_DATA_DIR`. Protect the volume
+  yourself. There is no versioning or backup.
+- **Sign-in.** Local Login checks the configured origin, not the client: anyone who can reach the published port is
+  signed in as the evaluator, with that account's Workspaces and data. Publish the port on loopback only
+  (`127.0.0.1:3210:3210`). A non-loopback `APP_ORIGIN` must still be `https:`, and then Local Login is refused.
+- **No path to production.** Changing `CIPHER_BACKEND` later makes every stored secret unreadable (503), and changing
+  `STORAGE_PROVIDER` orphans every stored object. Start production as a new installation.
 
 ### `migrate`
 

@@ -33,6 +33,12 @@
 #     installers   offline installer checks: the Azure installer's terraform
 #                  validate/test, kustomize, kubeconform, policy and
 #                  create-secret checks.
+#     publish      release only (sign=true on a v* tag, after every job above
+#                  passed): script/release/publish.sh pushes both images to
+#                  ghcr.io/<owner> under the version tag, checks each digest
+#                  against the manifest, signs it keylessly with the same
+#                  identity as the evidence, and attaches the SBOM and SLSA
+#                  provenance as cosign attestations.
 #
 # Signing model: push and schedule runs sign the evidence with an EPHEMERAL
 # cosign key generated in the job (so kind-e2e's signature verification runs
@@ -379,3 +385,40 @@ jobs:
           kubeconform -v
       - name: Azure installer offline checks (validate, test, kustomize, kubeconform, policy, create-secret)
         run: sh installers/azure/test.sh
+
+  publish:
+    # Release only: a sign=true dispatch on a v* tag, after every gate job passed.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.sign && startsWith(github.ref, 'refs/tags/v') }}
+    needs: [build, image-boot, kind, browser, installers]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write # push to ghcr.io/<owner>
+      id-token: write # keyless registry signature and attestations: the same identity that signed the evidence
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install cosign and crane (checksum-verified)
+        run: |
+          set -eu
+          sh script/security/tools-ci.sh
+          cd "$RUNNER_TEMP"
+          curl -fsSLo crane.tar.gz https://github.com/google/go-containerregistry/releases/download/v0.22.1/go-containerregistry_Linux_x86_64.tar.gz
+          echo "0ab7a1d6932a213aed964ce97666c3077fe691c8606413674a8b3e0b9ec4cda0  crane.tar.gz" | sha256sum -c -
+          tar -xzf crane.tar.gz crane
+          sudo mv crane /usr/local/bin/
+          crane version
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: ${{ runner.temp }}/release
+      - name: Push, sign, and attest both images on ghcr.io
+        run: |
+          set -eu
+          expected="https://github.com/${GITHUB_REPOSITORY}/.github/workflows/full-gate.yml@${GITHUB_REF}"
+          recorded=$(sed -n 's/^identity: *//p' "$RUNNER_TEMP/release/signer.txt")
+          [ "$recorded" = "$expected" ] || { echo "::error::signer.txt names $recorded, expected $expected"; exit 1; }
+          echo "$GITHUB_TOKEN" | crane auth login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          sh script/release/publish.sh "$RUNNER_TEMP/release" "ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
