@@ -1,0 +1,25 @@
+region = "us-gov-west-1"
+
+# The Gateway image by digest: ghcr.io/bymorning/bymorning@sha256:..., or your ECR mirror.
+image = "ghcr.io/bymorning/bymorning@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+
+hostname        = "bymorning.example.com"
+certificate_arn = "arn:aws-us-gov:acm:us-gov-west-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
+
+vpc_id                   = "vpc-0123456789abcdef0"
+service_subnet_ids       = ["subnet-0aaaaaaaaaaaaaaa1", "subnet-0aaaaaaaaaaaaaaa2"]
+load_balancer_subnet_ids = ["subnet-0aaaaaaaaaaaaaaa1", "subnet-0aaaaaaaaaaaaaaa2"]
+allowed_cidrs            = ["10.0.0.0/8"]
+
+# Models the task may call, by ARN. A cross-Region inference profile needs its own
+# ARN and the foundation-model ARN in every Region it routes to.
+# bedrock_model_arns = [
+#   "arn:aws-us-gov:bedrock:us-gov-west-1:123456789012:inference-profile/us-gov.anthropic.claude-sonnet-4-5-20250929-v1:0",
+#   "arn:aws-us-gov:bedrock:us-gov-west-1::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0",
+#   "arn:aws-us-gov:bedrock:us-gov-east-1::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0",
+# ]
+
+# internal         = false            # an internet-facing load balancer (use public subnets above)
+# code_interpreter = true             # check AgentCore availability in your Region first
+# cui_profile      = true             # the CUI profile; needs code_interpreter
+# database         = { multi_az = true, instance_class = "db.t4g.medium" }

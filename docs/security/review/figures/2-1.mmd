@@ -1,0 +1,30 @@
+%%{init: {"flowchart": {"wrappingWidth": 150}}}%%
+flowchart TB
+    subgraph CustomerNetwork["Customer network (CUI boundary)"]
+        direction LR
+        UA["Workspace member<br/>(browser)"]
+        SA["Customer automation<br/>(API keys, MCP clients)"]
+        IDP["Customer identity provider<br/>(OIDC issuer)"]
+    end
+    subgraph Account["Customer cloud account (AWS or Azure)"]
+        direction LR
+        CI["Code Interpreter sandbox<br/>(no network access)"]
+        APP["ByMorning Installation"]
+        BR["Amazon Bedrock / Mantle<br/>(customer AWS account)"]
+    end
+    subgraph Outside["Outside the CUI boundary unless authorized"]
+        direction LR
+        MP["Other model providers"]
+        SAAS["SaaS integrations, MCP servers, web search"]
+    end
+    UA -->|"443 HTTPS"| APP
+    SA -->|"443 HTTPS"| APP
+    APP -->|"OIDC"| IDP
+    APP -->|"inference"| BR
+    APP -->|"sessions"| CI
+    APP -.->|"admin-enabled"| MP
+    APP -.->|"admin-enabled"| SAAS
+    class APP bym
+    class BR,CI aws
+    class UA,SA,IDP cust
+    class MP,SAAS ext

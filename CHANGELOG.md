@@ -17,6 +17,18 @@ application carries the version from the root `package.json`
   before. An evaluation installation keeps secrets under an exportable key, stores files unencrypted, signs in anyone
   who can reach its port, and cannot be converted to production; see `app/host/README.md`.
 - `installers/docker`: a Docker Compose evaluation (PostgreSQL, migrate, the Gateway on `127.0.0.1:3210`).
+- `installers/aws`: a Terraform installer for commercial AWS and AWS GovCloud (US) that deploys into an existing VPC:
+  one ECS Fargate task (`migrate`, then the Gateway) behind an Application Load Balancer, RDS PostgreSQL 17, an S3
+  bucket, and one KMS key, with the image pinned by digest from `ghcr.io` or an ECR mirror. GovCloud always uses FIPS
+  endpoints and the FIPS TLS policy. `cui_profile` selects the image's CUI installation document. The module
+  generates the Setup token and outputs it as a sensitive value. ECS Exec is disabled. WAF, access logs, alarms, and
+  GuardDuty are left to the customer. Offline checks run in the full gate; `installers/aws/test/sandbox.md` is the
+  real-account checklist.
+- The security review package (`docs/security/review/`): sixteen chapters covering architecture, data flows, a NIST
+  SP 800-171 / CMMC Level 2 control mapping, customer responsibilities, the secure configuration guide, cryptography,
+  supply chain, external services, threat model, test report, POA&M, support, runbooks, and the release manifest,
+  for both installers. `bun run security:render` renders it to a PDF for each release from the release's manifest and
+  evidence; `bun run security:lint` runs in CI.
 - Release images are published to `ghcr.io/bymorning/bymorning` and `ghcr.io/bymorning/bymorning-code-interpreter`
   under the version tag. The release workflow pushes them only after every gate job passes, checks each pushed
   digest against the manifest, signs them keylessly with the same identity as the evidence, and attaches the image
