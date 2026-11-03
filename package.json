@@ -82,7 +82,9 @@
     "test:web:timeline": "bun run --cwd packages/web test:browser:timeline",
     "check": "bun run format:check && bun run test:lint-rules && bun run lint && bun run typecheck && bun run check:models && bun run --cwd packages/protocol check:generated && bun run --cwd packages/client check:generated && bun run test:codegen && bun run test:core && bun run test:protocol && bun run test:server && bun run test:host && bun run test:application && bun run test:observability && bun run test:schema && bun run test:web && bun run test:web:e2e && bun run test:web:timeline",
     "local": "bun run --cwd app/host start",
-    "test:solid": "bun run --cwd packages/client test:solid"
+    "test:solid": "bun run --cwd packages/client test:solid",
+    "security:render": "bun script/security/render.ts",
+    "security:lint": "bun script/security/render.ts --lint"
   },
   "devDependencies": {
     "@ast-grep/cli": "catalog:",

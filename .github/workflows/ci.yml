@@ -70,6 +70,8 @@ jobs:
       - if: matrix.typecheck == 'packages'
         run: bun run test:lint-rules
       - if: matrix.typecheck == 'packages'
+        run: bun run security:lint
+      - if: matrix.typecheck == 'packages'
         run: bun run check:models
       - if: matrix.typecheck == 'packages'
         run: bun run --cwd packages/protocol check:generated

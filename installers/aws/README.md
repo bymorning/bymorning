@@ -143,5 +143,5 @@ deleted. Keep the key until you no longer need that snapshot.
 - The task connects to PostgreSQL as the database's administrator.
 - Secrets are also in Terraform state.
 
-The [security review package](../../docs/security/review/README.md) covers the controls and shared responsibilities in
-detail.
+The security review package, a PDF attached to each [GitHub release](https://github.com/bymorning/bymorning/releases),
+covers the controls and the shared responsibilities in detail.
