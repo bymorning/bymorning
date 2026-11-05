@@ -7,6 +7,15 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+### Added
+
+- A Helm chart (`charts/bymorning`): one Gateway pod with its migrations in an init container, pinned by image digest,
+  with the same pod hardening as the Azure manifests. It takes your database, object storage, and key, supports IRSA and
+  workload identity, listener TLS, an ingress, and an evaluation mode. Its offline checks run in the full gate's
+  installers job, and `charts/bymorning/test/kind.sh` installs the signed release image into a kind cluster. From the
+  first release after 1.3.2, the `publish` job pushes the chart to `oci://ghcr.io/bymorning/charts/bymorning` and signs
+  it keylessly.
+
 ## [1.3.2] — 2026-11-04
 
 Adds evaluation installations, the Docker Compose evaluation, an AWS installer, the security review package, and

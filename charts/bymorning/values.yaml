@@ -1,0 +1,91 @@
+# ByMorning on Kubernetes. One Gateway pod, one replica, never two versions at once: OAuth
+# callback state and the scheduler live in one process, so the Deployment uses the Recreate
+# strategy and the chart does not offer replicas. Migrations run in an init container first.
+
+image:
+  repository: ghcr.io/bymorning/bymorning
+  # Required. Pin by digest, never by tag alone: sha256:<64 hex>. Verify it first (cosign verify;
+  # see the download page), then use the digest the release notes list.
+  digest: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# Required. The public origin people open, with no path. https unless evaluation.enabled and the
+# origin is loopback (http://localhost).
+appOrigin: ""
+
+# Non-secret environment, passed as one ConfigMap. Choose the backends here; each needs its
+# companion variables. Examples:
+#   AWS:   STORAGE_PROVIDER=s3, STORAGE_BUCKET, CIPHER_BACKEND=kms, CREDENTIAL_KMS_KEY, AWS_REGION
+#   Azure: STORAGE_PROVIDER=azure-blob, STORAGE_ACCOUNT_URL, STORAGE_CONTAINER,
+#          CIPHER_BACKEND=keyvault, KEY_VAULT_KEY, AZURE_CLOUD
+# See https://bymorning.ai/docs/deploy/environment for every variable and rule.
+config: {}
+
+# Secret values. Prefer existingSecret: a Secret you manage (sealed, external-secrets, ...) holding
+# DATABASE_URL and WEB_COOKIE_KEY (32 base64url bytes), plus CIPHER_KEY in evaluation mode,
+# DATABASE_CA, TLS_KEY, SETUP_TOKEN, AUTH_CLIENT_SECRET, AWS_BEARER_TOKEN_BEDROCK as needed.
+existingSecret: ""
+# Convenience only: the chart creates a Secret from these. They end up in the Helm release
+# (a Secret in the cluster), so use existingSecret for anything real.
+secrets: {}
+
+# The installation document the Gateway loads. The image ships three; the default has no
+# Code Interpreter. /app/bymorning.jsonc needs CODE_INTERPRETER_ID (AgentCore, AWS), and
+# /app/bymorning.cui.jsonc is the CUI profile. Or supply your own with installationConfig.
+installationDocument: /app/bymorning.azure.jsonc
+installationConfig: ""
+
+# Listener TLS inside the pod. Leave off when the ingress or a mesh terminates TLS and the
+# cluster network is trusted; then TRUSTED_PROXIES should list the ingress controller's addresses.
+tls:
+  enabled: false
+  # Secret with tls.crt and tls.key (a kubernetes.io/tls Secret works).
+  secretName: ""
+trustedProxies: ""
+
+# An evaluation installation: filesystem storage on a volume, a local key from CIPHER_KEY, and
+# Local Login on a loopback origin. NEVER for production. See the README.
+evaluation:
+  enabled: false
+  persistence:
+    size: 5Gi
+    storageClassName: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  # IRSA (eks.amazonaws.com/role-arn) or workload identity (azure.workload.identity/client-id).
+  annotations: {}
+automountServiceAccountToken: false
+podLabels: {}
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  host: ""
+  tlsSecretName: ""
+
+resources:
+  gateway:
+    requests: { cpu: 500m, memory: 1Gi }
+    limits: { memory: 2Gi }
+  # The migrator loads the whole Gateway bundle (about 490 MB resident, and it was OOMKilled at
+  # 512Mi under emulation), so give it headroom.
+  migrate:
+    requests: { cpu: 100m, memory: 512Mi }
+    limits: { memory: 1Gi }
+
+extraEnv: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

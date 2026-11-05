@@ -1,0 +1,158 @@
+# One replica, never two versions at once: OAuth callback state and the scheduler are
+# process-local. Recreate stops the old pod before the new one starts.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bymorning.fullname" . }}
+  labels: {{- include "bymorning.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: {{- include "bymorning.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "bymorning.selector" . | nindent 8 }}
+        {{- with .Values.podLabels }}{{ toYaml . | nindent 8 }}{{ end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if and (not .Values.existingSecret) .Values.secrets }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.installationConfig }}
+        checksum/installation: {{ .Values.installationConfig | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}{{ toYaml . | nindent 8 }}{{ end }}
+    spec:
+      serviceAccountName: {{ include "bymorning.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Applies migrations to completion before the Gateway starts.
+        - name: migrate
+          image: {{ include "bymorning.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["node", "/app/bymorning.mjs", "migrate"]
+          envFrom: {{- include "bymorning.envFrom" . | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources: {{- toYaml .Values.resources.migrate | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.installationConfig }}
+            - name: installation
+              mountPath: /config
+              readOnly: true
+            {{- end }}
+      containers:
+        - name: gateway
+          image: {{ include "bymorning.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3210
+          envFrom: {{- include "bymorning.envFrom" . | nindent 12 }}
+          {{- if or .Values.tls.enabled .Values.extraEnv }}
+          env:
+            {{- if .Values.tls.enabled }}
+            - name: TLS_CERT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tls.secretName }}
+                  key: tls.crt
+            - name: TLS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tls.secretName }}
+                  key: tls.key
+            {{- end }}
+            {{- with .Values.extraEnv }}{{ toYaml . | nindent 12 }}{{ end }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources: {{- toYaml .Values.resources.gateway | nindent 12 }}
+          startupProbe:
+            httpGet:
+              path: /system/health
+              port: http
+              {{- if .Values.tls.enabled }}
+              scheme: HTTPS
+              {{- end }}
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            httpGet:
+              path: /system/health
+              port: http
+              {{- if .Values.tls.enabled }}
+              scheme: HTTPS
+              {{- end }}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /system/health
+              port: http
+              {{- if .Values.tls.enabled }}
+              scheme: HTTPS
+              {{- end }}
+            periodSeconds: 20
+            failureThreshold: 3
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.installationConfig }}
+            - name: installation
+              mountPath: /config
+              readOnly: true
+            {{- end }}
+            {{- if .Values.evaluation.enabled }}
+            - name: data
+              mountPath: /data
+            {{- end }}
+      volumes:
+        # HOME is /tmp; the migrator and the generated Setup token use it.
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+        {{- if .Values.installationConfig }}
+        - name: installation
+          configMap:
+            name: {{ include "bymorning.fullname" . }}-installation
+        {{- end }}
+        {{- if .Values.evaluation.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "bymorning.fullname" . }}-data
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,22 @@
+{{- include "bymorning.validate" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bymorning.fullname" . }}
+  labels: {{- include "bymorning.labels" . | nindent 4 }}
+data:
+  APP_ORIGIN: {{ .Values.appOrigin | quote }}
+  PORT: "3210"
+  BYMORNING_CONFIG: {{ if .Values.installationConfig }}/config/bymorning.jsonc{{ else }}{{ .Values.installationDocument | quote }}{{ end }}
+  {{- if .Values.trustedProxies }}
+  TRUSTED_PROXIES: {{ .Values.trustedProxies | quote }}
+  {{- end }}
+  {{- if .Values.evaluation.enabled }}
+  BYMORNING_EVALUATION: "true"
+  STORAGE_PROVIDER: filesystem
+  CIPHER_BACKEND: local
+  BYMORNING_DATA_DIR: /data
+  {{- end }}
+  {{- range $key, $value := .Values.config }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

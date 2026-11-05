@@ -8,6 +8,8 @@
 To try the release image without a cloud account or identity provider, use the
 [Docker Compose evaluation](installers/docker/README.md). It is not for production.
 
+To run it on Kubernetes, use the [Helm chart](charts/bymorning/README.md).
+
 To develop, with Bun and Node 22+, run from the repository root:
 
 ```bash
@@ -98,7 +100,9 @@ compare digests: the build is reproducible.
 
 Cutting a release:
 
-1. Set the version in the root `package.json` and date its section in `CHANGELOG.md`; merge to `dev`.
+1. Set the version in the root `package.json`, `app/host/package.json`, and `charts/bymorning/Chart.yaml` (both
+   `version` and `appVersion`, and the image in its Artifact Hub annotation; `sh charts/bymorning/test.sh` checks they
+   agree), and date its section in `CHANGELOG.md`; merge to `dev`.
 2. Tag that commit `v<version>` and push the tag. The tag must match the `package.json` version.
 3. Dispatch the signed build on the tag, then download its `release` artifact:
 
