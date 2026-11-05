@@ -1,5 +1,10 @@
 # ByMorning
 
+> **Project status.** ByMorning is provided as-is under the [MIT License](LICENSE). The company that built it has
+> closed, so there is no vendor, support, SLA, or maintenance commitment, and no one is obliged to review issues or
+> publish releases. The project is community maintained: fork it, open pull requests, and run your own builds. Read
+> [SECURITY.md](SECURITY.md) before reporting a vulnerability.
+
 To try the release image without a cloud account or identity provider, use the
 [Docker Compose evaluation](installers/docker/README.md). It is not for production.
 
@@ -140,7 +145,7 @@ Cutting a release:
 
 6. Package the Azure installer from the manifest:
    `bun installers/azure/export.ts --out <directory>` (`bymorning-azure-<version>.zip`). It runs from the release
-   build or a descendant that changes only `release/`, `CHANGELOG.md`, `docs/security/evidence/`, and package
+   build or a descendant that changes only `release/`, `CHANGELOG.md`, `docs/security/evidence/`, `docs/security/review/release.json`, and package
    versions (`--force` overrides), refuses evidence that was not signed by a release signer or whose signatures do not
    verify (`--allow-unsigned` exports a marked "UNSIGNED REHEARSAL"), and refuses to change the signer a target
    already pins (a different workflow or issuer) without `--rotate-signer`; a new release tag is not a change.

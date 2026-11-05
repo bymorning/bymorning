@@ -21,6 +21,9 @@ done
 echo "== terraform test (mock azurerm)"
 terraform -chdir="$here/modules/bymorning" test
 
+echo "== release notes carry no license or trial language"
+! grep -qiE 'activate a license|30-day trial|request a license' "$here/export/RELEASE-NOTES.md"
+
 echo "== shell syntax"
 for f in "$here"/smoke.sh "$here"/scripts/*.sh "$here"/release/mirror.sh "$here"/test.sh "$here"/test/kind-e2e.sh; do sh -n "$f"; done
 node --check "$here/test/e2e/emulators.mjs"

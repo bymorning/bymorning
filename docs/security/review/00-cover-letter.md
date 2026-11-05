@@ -5,7 +5,7 @@ title: Cover Letter
 # Cover Letter
 
 To: The customer's security team\
-From: The ByMorning team\
+From: The ByMorning project\
 Date: {{RELEASE_DATE}}\
 Re: Security review package for ByMorning {{VERSION}}
 
@@ -50,8 +50,9 @@ procedure deploys the image by the digest printed when it is mirrored.
 This package is public. It carries no proprietary marking, requires no
 non-disclosure agreement, and contains no CUI.
 
-Support, including security patches and vulnerability notifications (§13), is
-best-effort through GitHub and security@bymorning.ai. Vulnerabilities can also
-be reported privately through GitHub Security, Report a vulnerability. An
-Enterprise arrangement with installation help is available by agreement.
-Questions and requests for further evidence go to security@bymorning.ai.
+ByMorning is provided as-is and is community maintained: the company that
+built it has closed, and there is no vendor, support commitment, or service
+level (§13). Security patches and vulnerability notifications depend on the
+maintainers of the public repository. Vulnerabilities are reported privately
+through GitHub Security, Report a vulnerability. Questions and requests for
+further evidence go to the issue tracker.

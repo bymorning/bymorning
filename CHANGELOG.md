@@ -7,6 +7,16 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+## [1.3.2] — 2026-11-04
+
+Adds evaluation installations, the Docker Compose evaluation, an AWS installer, the security review package, and
+ghcr.io image publishing. No database migrations and no dependency changes. The Gateway image differs from 1.3.1 only
+in the host's evaluation mode.
+
+**Project status.** ByMorning is provided as-is and is community maintained: the company that built it has closed, so
+there is no vendor, support commitment, or service level. `SECURITY.md` and the security review package say so, and
+GitHub private vulnerability reporting is the only security contact.
+
 ### Added
 
 - Evaluation installations. `BYMORNING_EVALUATION=true` lets the release image run with filesystem storage
@@ -33,6 +43,25 @@ application carries the version from the root `package.json`
   under the version tag. The release workflow pushes them only after every gate job passes, checks each pushed
   digest against the manifest, signs them keylessly with the same identity as the evidence, and attaches the image
   SBOM and (for the Gateway) the SLSA provenance as cosign attestations (`script/release/publish.sh`).
+
+### Changed
+
+- The Azure export's `RELEASE-NOTES.md` no longer describes a 30-day trial and license activation, which 1.3.1 removed.
+  The installer checks fail if that text returns.
+- The example AWS environment passes `assign_public_ip` through, so a default VPC with no NAT gateway works. The first
+  real-account test of the AWS installer (`installers/aws/test/sandbox.md`) also showed that the Code Interpreter opens
+  no network connections but still resolves DNS names and answers on the microVM metadata service; the security review
+  package now says so.
+- `docs/security/review/release.json` may change in a release commit, so the package's scan summaries can follow the
+  signed evidence.
+
+### Security
+
+- The execution image's Python base is re-pinned to 3.12.16, which fixes the Critical CVE-2026-115557 (the `ssl`
+  compromised-certificate denylist). Re-scanning found six new High advisories with no vendor fix: three SQLite and one
+  glibc in the execution image, and SQLite in Node plus `json-glib` in the Gateway base. Each has an OpenVEX statement
+  (66 in total) and a disposition in `docs/security/evidence/vulnerability-triage.md`. The Gateway image has 0 Critical
+  and 50 High findings by the 2026-11-04 database.
 
 ## [1.3.1] — 2026-10-29
 

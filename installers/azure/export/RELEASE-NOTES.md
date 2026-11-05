@@ -12,11 +12,11 @@ Both images are built from source commit `{{COMMIT}}` and signed keylessly by th
 SBOMs, vulnerability scans, the SLSA provenance statement, the OpenVEX statement, and the security triage are in
 `release/`; see the README's [Release evidence](README.md#release-evidence) section.
 
-## Licensing
+## Licensing and support
 
-Every installation starts a 30-day trial with every capability enabled. An Installation Admin activates a license on
-the **License** page before the trial ends; otherwise the installation becomes read-only until one is activated.
-Request a license at <https://bymorning.ai>.
+ByMorning is free and open source under the MIT License (<https://github.com/bymorning/bymorning>). Every
+installation has every capability, with no license key, trial period, or expiry. The software is provided as-is and is
+community maintained: there is no vendor, support commitment, or service level.
 
 ## Sign-in with Microsoft Entra
 

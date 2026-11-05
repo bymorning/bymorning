@@ -33,7 +33,7 @@
  *
  * The checkout must hold the release build: the manifest's revision is an
  * ancestor of HEAD and nothing changed since except release/, CHANGELOG.md,
- * docs/security/evidence/, and the version line of package.json and
+ * docs/security/evidence/, docs/security/review/release.json, and the version line of package.json and
  * app/host/package.json (script/release/delivery.ts). --force overrides that,
  * the uncommitted-changes check, and an existing package.
  * Everything that is not a tracked installer file stays out: .terraform/,
