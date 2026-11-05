@@ -45,7 +45,10 @@ estimate-versus-settle overshoot as the residual.
 
 B4, Gateway to the Code Interpreter (execution plane): on AWS, malicious
 generated code is contained by AgentCore VPC mode with a no-rule security
-group and a task role scoped to the one interpreter ARN. On Azure, each call
+group and a task role scoped to the one interpreter ARN. Public DNS names still
+resolve from the sandbox, a residual exfiltration channel the customer can
+close with DNS firewalling (§6.1.1), and the microVM metadata service issues
+credentials for an execution role that has no permissions (§2.9). On Azure, each call
 runs in a short-lived sandbox pod under a deny-all NetworkPolicy, optionally
 with Kata VM isolation. Sessions share no filesystem, and all output is treated
 as untrusted.

@@ -20,6 +20,7 @@ allowed_cidrs            = ["10.0.0.0/8"]
 # ]
 
 # internal         = false            # an internet-facing load balancer (use public subnets above)
+# assign_public_ip = true             # task subnets with an internet gateway and no NAT (such as a default VPC)
 # code_interpreter = true             # check AgentCore availability in your Region first
 # cui_profile      = true             # the CUI profile; needs code_interpreter
 # database         = { multi_az = true, instance_class = "db.t4g.medium" }

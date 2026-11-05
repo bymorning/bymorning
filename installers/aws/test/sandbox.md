@@ -29,3 +29,27 @@ Run it in commercial AWS and, when possible, in AWS GovCloud.
 
 Record the account partition, Region, Terraform and provider versions, the image digest, and the outcome of each
 check.
+
+## Results
+
+Run 1 on 2026-11-04 in a commercial AWS account (us-east-2, a default VPC with no NAT gateway, so
+`assign_public_ip = true`), with the signed 1.3.1 release image mirrored into ECR by digest, a self-signed ACM
+certificate, and a small test OIDC provider (Amazon Cognito cannot be used: its login page is on a different origin
+than its issuer, which the Gateway refuses). AWS GovCloud was not tested.
+
+| #   | Result  | Notes                                                                                                                                                                                                        |
+| --- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Pass    | The apply took 26 minutes, almost all of it RDS. The service reached a steady state.                                                                                                                         |
+| 2   | Pass    | `/system/health` returned `ok` through the load balancer, and port 80 redirected to 443.                                                                                                                     |
+| 3   | Pass    | `Host resolved` showed `storage=s3`, the KMS key ARN, and `fips=true`.                                                                                                                                       |
+| 4   | Pass    | The generated Setup token was accepted, the test provider registered, and a browser sign-in landed in the Default Workspace.                                                                                 |
+| 5   | Pass    | A Project File round-tripped byte for byte. The S3 object was SSE-KMS under the installation key with the bucket key on, and the bucket policy denied non-TLS requests.                                      |
+| 6   | Pass    | A stored credential, the session, and the file all survived a forced task replacement. A listing proves the record, not decryption on use: the test key was fake.                                            |
+| 7   | Blocked | Bedrock was reached through the task role and the allowed ARNs, but the account has no token quota for Haiku 4.5 and no access to Haiku 5.5. Retry in an account with Bedrock model access.                  |
+| 8   | Partial | Run against the interpreter directly, because there was no working model. Code ran, and outbound HTTPS, TCP, and VPC addresses timed out. DNS names still resolve, and the microVM metadata service answers. |
+| 9   | Pass    | An in-place apply (new task definition, a task-role policy change) ran `migrate` to exit 0, replaced the task, and left the data intact.                                                                     |
+| 10  | Partial | The load balancer, task, database, bucket, and key were removed. The Code Interpreter's security group stayed because AgentCore held its network interfaces for more than 40 minutes.                        |
+
+Findings fixed from this run: the example environment now passes `assign_public_ip` through, the README gives the real
+database creation and destroy times, and the security review package states that the sandbox resolves DNS names and
+that its metadata service answers (§2.9).

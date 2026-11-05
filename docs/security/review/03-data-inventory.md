@@ -78,7 +78,7 @@ the customer's endpoint policy.
 | ---- | ----------- | ------- | ------- |
 | OIDC | The customer's identity provider | Client ID, redirect URIs, code exchange, ID token | Required for authentication; carries no application data |
 | Inference | Amazon Bedrock and Bedrock Mantle in the configured Region | Prompts, context, Tool content, routing-judge inputs | Task role limited to the listed model ARNs; the Installation Policy admits only `amazon-bedrock` in the CUI profile (§6.2) |
-| Code execution | AgentCore Code Interpreter in the same account, or Kubernetes sandbox pods in the same cluster | Code and its output | Sandbox has no network access (§2.9) |
+| Code execution | AgentCore Code Interpreter in the same account, or Kubernetes sandbox pods in the same cluster | Code and its output | Sandbox has no network connections; on AWS DNS names still resolve (§2.9) |
 | Share | Any holder of the link who can reach the load balancer | Live Session transcript | Not loaded in the CUI profile; where enabled, an unguessable revocable token |
 | Downloads | Member's workstation | Whatever the member exports | Customer endpoint controls |
 | Optional integrations | Third-party Model Providers, web search, MCP servers, and SaaS plugins (§9.3) | Whatever the configured Tool or Provider sends | Off in the CUI profile; must not be enabled for CUI unless authorized |

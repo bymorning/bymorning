@@ -41,6 +41,12 @@ variable "database_subnet_ids" {
   default = null
 }
 
+variable "assign_public_ip" {
+  description = "Give the task a public IP. Only for task subnets that reach the internet through an internet gateway instead of a NAT gateway, such as a default VPC."
+  type        = bool
+  default     = false
+}
+
 variable "internal" {
   type    = bool
   default = true

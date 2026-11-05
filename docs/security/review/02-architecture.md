@@ -24,7 +24,7 @@ reference installers: AWS (ECS Fargate) and Azure (Azure Kubernetes Service).
 | Auth Provider | An OIDC login target: issuer, client credentials, admitted email domains. |
 | Tool, Permission rules | A Tool is one registered callable operation (built-in, Plugin-contributed, or MCP-supplied). Permission rules allow, deny, or ask before a Tool executes. |
 | Plugin | An in-process extension with full process privileges. The image ships seven bundled plugins; runtime installs fail closed. |
-| Code Interpreter | Isolated execution of commands and programs in a sandbox with no network access: an AWS Bedrock AgentCore Code Interpreter on AWS, or per-call Kubernetes pods on Azure. |
+| Code Interpreter | Isolated execution of commands and programs in a sandbox with no network connections (public DNS names still resolve on AWS, §2.9): an AWS Bedrock AgentCore Code Interpreter on AWS, or per-call Kubernetes pods on Azure. |
 | MCP, Tool Gateway, LLM Gateway | Outbound MCP connects admin-enabled external servers as Tool sources. The Tool Gateway exposes ByMorning Tools to authorized external MCP callers; the LLM Gateway offers OpenAI-, Anthropic-, and Google-compatible inference endpoints. |
 | Provider, Model routing | A Provider is a named inference endpoint such as `amazon-bedrock`, admitted per Workspace through `providers.allow`. Routing rules choose which Model serves a request; Auto models resolve only through routing, and a routing judge is an administrator-chosen Model that classifies a request to pick a Tier. |
 | Share | A revocable public read grant on one Session transcript, identified by an unguessable token. Not loaded in the CUI profile. |
@@ -249,6 +249,18 @@ On AWS, the Code Interpreter runs commands and programs in the AWS Bedrock
 AgentCore Code Interpreter: a per-session sandbox in VPC mode whose security
 group has no rules at all, with sessions bounded at 900 seconds. The sandbox
 boundary is enforced by AWS rather than by the application.
+
+A test against a deployed AWS installer (its sandbox checklist) shows what
+"no network" means in practice. Outbound connections of any kind time out, and
+code in the sandbox cannot reach the customer's VPC addresses. Two things still
+work. The sandbox resolves public DNS names through the VPC resolver, which a
+security group does not govern, so DNS can carry data out one query at a time.
+And the microVM's own metadata service answers on `169.254.169.254` and issues
+temporary credentials for the Code Interpreter's execution role. The AWS
+installer attaches no permissions to that role, so those credentials grant
+nothing. A customer who attaches permissions to it exposes them to any code the
+sandbox runs. Customers who must close the DNS channel need DNS firewalling on
+the subnets the interpreter uses (§6.1.1).
 
 On Azure, each call runs in a short-lived pod in a dedicated namespace, from a
 digest-pinned execution image; the Gateway refuses to start with a tag-only

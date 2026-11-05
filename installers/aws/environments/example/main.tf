@@ -41,6 +41,7 @@ module "bymorning" {
   load_balancer_subnet_ids = var.load_balancer_subnet_ids
   database_subnet_ids      = var.database_subnet_ids
   internal                 = var.internal
+  assign_public_ip         = var.assign_public_ip
   allowed_cidrs            = var.allowed_cidrs
 
   bedrock_model_arns = var.bedrock_model_arns

@@ -11,7 +11,7 @@ Browser ─► Application Load Balancer (HTTPS, your ACM certificate; internal 
                    ├─► KMS key                   database, bucket, secrets, logs, and stored Credentials
                    ├─► Secrets Manager           database URL, cookie key, listener key, Setup token
                    ├─► Amazon Bedrock            only the model ARNs you list (optional)
-                   └─► AgentCore Code Interpreter no network access (optional)
+                   └─► AgentCore Code Interpreter no network connections (optional)
 ```
 
 The Region selects the partition. In AWS GovCloud the task always uses FIPS endpoints and the load balancer a FIPS TLS
@@ -76,7 +76,7 @@ terraform init
 terraform apply
 ```
 
-The first apply takes about 15 minutes, most of it for the database. Terraform waits until the task is healthy behind
+The first apply takes 15 to 30 minutes, almost all of it for the database. Terraform waits until the task is healthy behind
 the load balancer. Terraform state holds the generated secrets, so use a private, encrypted backend (`main.tf` shows
 an S3 example).
 
@@ -103,19 +103,19 @@ the provider. The first person to sign in becomes the Installation Admin. See
 
 The example's `terraform.tfvars.example` lists every setting. The ones you are most likely to change:
 
-| Variable                       | Default        | Effect                                                                     |
-| ------------------------------ | -------------- | -------------------------------------------------------------------------- |
-| `internal`                     | `true`         | `false` makes the load balancer internet-facing; give it public subnets.   |
-| `allowed_cidrs`                | required       | Who may reach the load balancer on 80 and 443.                             |
-| `bedrock_model_arns`           | `[]`           | Models and inference profiles the task may invoke. No wildcards.           |
-| `code_interpreter`             | `false`        | Adds an AgentCore Code Interpreter with no network access.                 |
-| `cui_profile`                  | `false`        | The CUI profile: AgentCore only, no public Session links or Google plugin. |
-| `database.multi_az`            | `false`        | A standby in a second Availability Zone.                                   |
-| `database.instance_class`      | `db.t4g.small` | The RDS instance size.                                                     |
-| `database.deletion_protection` | `true`         | Set `false` and apply before destroying.                                   |
-| `task.cpu`, `task.memory`      | `1024`, `2048` | The Fargate task size.                                                     |
-| `login_banner`                 | none           | A system use notification acknowledged before sign-in.                     |
-| `setup_token`                  | generated      | Your own Setup token instead of the generated one.                         |
+| Variable                       | Default        | Effect                                                                                     |
+| ------------------------------ | -------------- | ------------------------------------------------------------------------------------------ |
+| `internal`                     | `true`         | `false` makes the load balancer internet-facing; give it public subnets.                   |
+| `allowed_cidrs`                | required       | Who may reach the load balancer on 80 and 443.                                             |
+| `bedrock_model_arns`           | `[]`           | Models and inference profiles the task may invoke. No wildcards.                           |
+| `code_interpreter`             | `false`        | Adds an AgentCore Code Interpreter that opens no network connections (DNS still resolves). |
+| `cui_profile`                  | `false`        | The CUI profile: AgentCore only, no public Session links or Google plugin.                 |
+| `database.multi_az`            | `false`        | A standby in a second Availability Zone.                                                   |
+| `database.instance_class`      | `db.t4g.small` | The RDS instance size.                                                                     |
+| `database.deletion_protection` | `true`         | Set `false` and apply before destroying.                                                   |
+| `task.cpu`, `task.memory`      | `1024`, `2048` | The Fargate task size.                                                                     |
+| `login_banner`                 | none           | A system use notification acknowledged before sign-in.                                     |
+| `setup_token`                  | generated      | Your own Setup token instead of the generated one.                                         |
 
 ## Upgrade
 
@@ -133,6 +133,11 @@ becomes healthy is rolled back. To go back after a release that added migrations
 Set `database.deletion_protection = false` and apply. Empty the storage bucket (the S3 console's **Empty** removes
 every version), then `terraform destroy`. RDS keeps a final snapshot, and the KMS key waits 30 days before it is
 deleted. Keep the key until you no longer need that snapshot.
+
+With `code_interpreter = true`, `terraform destroy` can wait a long time on the Code Interpreter's security group:
+AgentCore keeps its network interfaces attached after the interpreter is deleted and releases them on its own
+schedule (more than 40 minutes in the sandbox test). Nothing else is left running while it waits, the interfaces cost
+nothing, and the destroy finishes once AWS releases them. Re-run `terraform destroy` if it times out.
 
 ## What it leaves to you
 

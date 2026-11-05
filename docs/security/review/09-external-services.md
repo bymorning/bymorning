@@ -115,7 +115,7 @@ Restricted if pointed outside the boundary.
 On AWS the only ingress is the load balancer (443, with 80 redirecting to
 443), internal by default. Its security group admits only `allowed_cidrs`;
 the task admits 3210 only from the load balancer, PostgreSQL admits 5432 only
-from the task, and the Code Interpreter security group has no rules. On Azure
+from the task, and the Code Interpreter security group has no rules, though DNS names still resolve (§2.9). On Azure
 the only ingress is the customer's ingress controller in front of the
 Gateway Service. PostgreSQL has no public access and is reachable only in its
 delegated subnet. Key Vault and Blob Storage accept only their private
