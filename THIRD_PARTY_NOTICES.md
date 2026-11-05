@@ -45,14 +45,19 @@ vendored and scoped. License text: `packages/session-ui/LICENSES/KaTeX.txt`.
 Each family's license text sits beside its files in
 `packages/ui/src/assets/fonts/` and `packages/web/public/assets/fonts/`.
 
-## File-type icon sprite
+## Material Icon Theme (MIT)
 
 `packages/ui/src/assets/file-icons/sprite.svg` (and the copy under
-`packages/web/src/ui/assets/file-icons/`) is a file-type icon set. Its symbols
-appear to derive from the Material Icon Theme (MIT,
-<https://github.com/material-extensions/vscode-material-icon-theme>); the
-maintainers should confirm the origin before relying on this notice. Brand
-marks inside the sprite belong to their respective owners.
+`packages/web/src/ui/assets/file-icons/`) is a sprite of file-type icons from
+the Material Icon Theme (<https://github.com/material-extensions/vscode-material-icon-theme>).
+Its symbols carry that project's icon names (for example `Zeabur`, `Wxt`, and
+`Wrangler`) and its path data: the `Zip` symbol is identical to the project's
+`icons/zip.svg`. Brand marks inside the sprite belong to their respective
+owners.
+
+> MIT License. Copyright (c) 2025 Material Extensions
+
+The full MIT permission notice is the one in `LICENSE`.
 
 ## Patched dependencies
 

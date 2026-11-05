@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.bymorning/bymorning",
+  "title": "ByMorning",
+  "description": "Self-hosted AI gateway. Your installation's Tools, under its permissions and audit, over OAuth.",
+  "websiteUrl": "https://bymorning.ai/docs/use/clients#tools",
+  "repository": {
+    "url": "https://github.com/bymorning/bymorning",
+    "source": "github"
+  },
+  "version": "1.3.2",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://{host}/mcp",
+      "variables": {
+        "host": {
+          "description": "Host name of your ByMorning installation, such as bymorning.example.com",
+          "isRequired": true
+        }
+      }
+    }
+  ]
+}

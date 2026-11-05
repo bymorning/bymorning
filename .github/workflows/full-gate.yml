@@ -401,6 +401,8 @@ jobs:
           kubeconform -v
       - name: Azure installer offline checks (validate, test, kustomize, kubeconform, policy, create-secret)
         run: sh installers/azure/test.sh
+      - name: Release version files agree (package.json, app/host, server.json, Chart.yaml)
+        run: sh script/release/versions.sh
       - name: AWS installer offline checks (fmt, validate, terraform test with a mocked provider)
         run: sh installers/aws/test.sh
       - name: Install helm (checksum-verified)
