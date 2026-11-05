@@ -28,7 +28,7 @@ Every release image is signed keylessly by this repository's release workflow an
   OpenAI-, Anthropic-, and Google-compatible endpoints with a Service Account key. Spend limits, routing, and usage
   apply to every call. See [Connect coding agents](https://bymorning.ai/docs/use/clients).
 - **Tools.** Add `https://<your host>/mcp` to the agent as a remote MCP server. The agent signs in with OAuth as a
-  Workspace member and gets the Tools that member may use, under the Workspace's permissions and audit. See
+  Workspace member and gets the Tools that member may use, under the Workspace's permissions. See
   [Use ByMorning's Tools from an agent](https://bymorning.ai/docs/use/clients#tools). [`server.json`](server.json)
   describes it for the MCP Registry as `io.github.bymorning/bymorning`.
 
