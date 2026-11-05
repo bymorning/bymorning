@@ -138,7 +138,11 @@ Cutting a release:
    The two evidence folders hold files with the same names (`SHA256SUMS`, `signer.txt`, ...), and release assets must
    have unique names, so the evidence ships as one archive. The release notes of v1.3.1 show the verification steps.
 
-5. Render the security review package for the release and attach the PDF to the GitHub release. First update
+5. Mirror the AWS module to the Terraform Registry: run `sh script/release/terraform-module.sh <directory>` into a
+   clone of `bymorning/terraform-aws-bymorning`, commit, and tag the same `v<version>`; the Registry picks up the tag.
+   Do not run `terraform init` inside the export before committing (the script writes a `.gitignore` as a guard).
+
+6. Render the security review package for the release and attach the PDF to the GitHub release. First update
    `docs/security/review/release.json` (its `VERSION`, date, test result, and scan summaries from the evidence):
 
    ```bash
@@ -147,7 +151,7 @@ Cutting a release:
    gh release upload v<version> build/security/<version>/bymorning-security-review-<version>.pdf
    ```
 
-6. Package the Azure installer from the manifest:
+7. Package the Azure installer from the manifest:
    `bun installers/azure/export.ts --out <directory>` (`bymorning-azure-<version>.zip`). It runs from the release
    build or a descendant that changes only `release/`, `CHANGELOG.md`, `docs/security/evidence/`, `docs/security/review/release.json`, and package
    versions (`--force` overrides), refuses evidence that was not signed by a release signer or whose signatures do not
