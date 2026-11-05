@@ -15,6 +15,8 @@ application carries the version from the root `package.json`
   installers job, and `charts/bymorning/test/kind.sh` installs the signed release image into a kind cluster. From the
   first release after 1.3.2, the `publish` job pushes the chart to `oci://ghcr.io/bymorning/charts/bymorning` and signs
   it keylessly.
+- `script/release/terraform-module.sh` exports the AWS module in the Terraform Registry layout (module at the root,
+  README, LICENSE, `examples/basic`) for the `bymorning/terraform-aws-bymorning` mirror.
 
 ## [1.3.2] — 2026-11-04
 

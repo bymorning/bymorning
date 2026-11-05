@@ -34,6 +34,10 @@ they are off, because FIPS endpoints don't exist there.
 
 ## Install
 
+The module is also published to the Terraform Registry as `bymorning/bymorning/aws` (source
+`github.com/bymorning/terraform-aws-bymorning`, a mirror of this directory), so a root module can use
+`source = "bymorning/bymorning/aws"` with a `version`. The steps below use the copy in this repository.
+
 ### 1. Choose and verify the image
 
 Every release image is published to `ghcr.io/bymorning/bymorning` and signed by the release workflow. Look up the
