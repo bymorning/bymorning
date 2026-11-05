@@ -160,7 +160,7 @@ export namespace Delivery {
    * from: the documented flow commits the manifest and evidence after the build,
    * and the next version bump touches the changelog and package versions.
    */
-  export const RELEASE_PATHS = ["release/", "CHANGELOG.md", "docs/security/evidence/"] as const
+  export const RELEASE_PATHS = ["release/", "CHANGELOG.md", "docs/security/evidence/", "docs/security/review/release.json"] as const
   /** package.json files whose `version` line alone may change. */
   export const VERSION_FILES = ["package.json", "app/host/package.json"] as const
 

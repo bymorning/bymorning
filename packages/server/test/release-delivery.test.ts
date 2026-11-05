@@ -355,6 +355,7 @@ describe("delivery lineage", () => {
       "release/manifest.json": "{}",
       "release/1.2.0/gateway/SHA256SUMS": "",
       "docs/security/evidence/vulnerability-triage.md": "triage",
+      "docs/security/review/release.json": "{}",
       "CHANGELOG.md": "# 1.2.1\n# 1.2.0\n",
     })
     commit(root, { "package.json": pkg("1.2.1"), "app/host/package.json": pkg("1.2.1") })
@@ -368,6 +369,11 @@ describe("delivery lineage", () => {
       expect.stringContaining("installers/azure/main.tf changed since"),
       expect.stringContaining("script/new.ts changed since"),
     ])
+    // Only release.json of the security review is release-scoped; its chapters are not.
+    commit(root, { "docs/security/review/01-executive-summary.md": "changed" })
+    expect(Delivery.lineage(root, revision)).toContainEqual(
+      expect.stringContaining("docs/security/review/01-executive-summary.md changed since"),
+    )
   })
 
   test("refuses package.json changes beyond the version line", () => {

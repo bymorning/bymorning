@@ -5,16 +5,18 @@
 Please do not open a public issue for a security problem.
 
 Report it privately through GitHub: **Security → Report a vulnerability** on
-this repository. If you cannot use that, email security@bymorning.ai.
+this repository. There is no other private channel.
 
-Include the affected version or commit, a description, reproduction steps, and
-the impact you expect. You will get an acknowledgement within three business
-days. We will keep you informed while we investigate, tell you when a fix
-ships, and credit you if you want to be named.
+ByMorning is provided as-is and community maintained (see the README). Reports
+are handled by the maintainers on a best-effort basis, with no guaranteed
+response time or fix. Include the affected version or commit, a description,
+reproduction steps, and the impact you expect. If a fix ships, the advisory
+will say so and credit you if you want to be named. Because no one is obliged to
+respond, anyone running ByMorning should be prepared to patch their own fork.
 
 ## Supported versions
 
-Security fixes go to the latest release and the `dev` branch.
+Security fixes, when maintainers make them, go to the `dev` branch and the next release. Earlier releases are not patched.
 
 ## Scope
 

@@ -147,7 +147,7 @@ completes in software through bucket lifecycle rules and the Project purge
 | -- | ----------- | ----- | ------ | ------------------------- | ----- |
 | 3.11.1 | Periodically assess risk | Shared | Implemented | The threat model (§10), this mapping, and the POA&M (§12) are the software-side inputs. | — |
 | 3.11.2 | Scan for vulnerabilities | Shared | Implemented | CI runs secret scanning, SAST, and dependency scanning; each release ships SBOMs, grype scans, OpenVEX dispositions, signatures, and provenance (§8, §11.4). | — |
-| 3.11.3 | Remediate within risk-based timeframes | Shared | Partially (POA&M-13) | Remediation targets are Critical 7 days, High 30, Medium 90 (§13.4), on a best-effort basis with no support agreement. Two pre-release dependencies are tracked to GA. | — |
+| 3.11.3 | Remediate within risk-based timeframes | Shared | Partially (POA&M-13) | Remediation targets are Critical 7 days, High 30, Medium 90 (§13.4), on a best-effort basis; ByMorning is provided as-is with no support agreement. Two pre-release dependencies are tracked to GA. | — |
 | 3.12.2 | Plans of action | Shared | Implemented | The software-side POA&M is §12, with owners and target dates. | — |
 
 Organizational (duties in §5.8): 3.12.1, 3.12.3, 3.12.4.
