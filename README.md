@@ -121,9 +121,10 @@ Cutting a release:
 
    On a `v*` tag the run's last job, `publish`, then pushes both images to `ghcr.io/bymorning/bymorning` and
    `ghcr.io/bymorning/bymorning-code-interpreter` under the version tag, checks each pushed digest against the
-   manifest, signs them keylessly with the same identity, and attaches the SBOM and provenance
-   (`script/release/publish.sh`). The first push creates the packages as private: make each one public once under the
-   organization's **Packages** settings.
+   manifest, signs them keylessly with the same identity, and attaches the SBOM to both and the
+   provenance to the Gateway (`script/release/publish.sh`). A first push can create a package as private (1.3.2 came up public): check each one is public under the
+   organization's **Packages** settings. If a package name was used before by another repository, delete the old
+   package first; the new repository cannot write to it (`permission_denied: write_package`).
 
 4. Commit `release/manifest.json`, `release/signer.txt`, `release/trusted_root.json` and `release/<version>/`, and
    publish the GitHub Release:

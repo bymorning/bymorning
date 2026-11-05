@@ -31,7 +31,7 @@ you lose it, the stored secrets cannot be read again.
 
 ## Verify the image
 
-Each release image is signed keylessly by the release workflow, with its SBOM and SLSA provenance attached. With
+Each release image is signed keylessly by the release workflow, with its SBOM attached; the Gateway also carries its SLSA provenance. With
 [cosign](https://docs.sigstore.dev/cosign/system_config/installation/):
 
 ```sh
