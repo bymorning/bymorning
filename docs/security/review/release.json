@@ -5,6 +5,6 @@
   "RESULT": "Pass",
   "VULN_SUMMARY": "Gateway image: 0 Critical, 50 High, 252 Medium, 131 Low. Source: 0 Critical, 8 High, 25 Medium, 6 Low. Execution image: 0 Critical, 60 High, 73 Medium, 13 Low, 47 Negligible. Every Critical and High finding in both images and the source has a statement in openvex.json; the vulnerability triage gives the position on each",
   "GITLEAK_SUMMARY": "0 findings",
-  "SEMGREP_SUMMARY": "49 warning-level findings, each triaged in the vulnerability triage",
-  "BUN_AUDIT_SUMMARY": "29 advisories in the lockfile: 7 High, 18 Moderate, 4 Low; the vulnerability triage states which reach the shipped bundle"
+  "SEMGREP_SUMMARY": "50 findings (50 warning-level), each triaged in the vulnerability triage",
+  "BUN_AUDIT_SUMMARY": "31 advisories in the lockfile: 7 High, 20 Moderate, 4 Low; the vulnerability triage states which reach the shipped bundle"
 }
