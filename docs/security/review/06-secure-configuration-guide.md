@@ -62,6 +62,7 @@ needs each one, added with the customer's account standards:
 | CloudWatch alarms and notifications | Alerting on task failure, health, and audit signals |
 | S3 Object Lock or an immutable log archive | Tamper resistance for exported logs and backups |
 | VPC endpoints and egress filtering | The task security group allows HTTPS to any address; a firewall, proxy, or endpoints restrict it to the destinations in §9.2 |
+| DNS firewalling | Code in the Code Interpreter resolves public DNS names through the VPC resolver, which a security group does not govern; a DNS firewall on the interpreter's subnets blocks the channel (§2.9) |
 | KMS key administrators | The key policy delegates to the account; name key administrator roles and restrict who can use or schedule deletion of the key |
 | Log retention and export beyond the default | CloudWatch keeps 90 days unless changed; export to the customer's log archive |
 | VPC flow logs, AWS Config, Security Hub, AWS Backup | Account-level monitoring and backup vaulting |
@@ -139,7 +140,7 @@ ConfigMap.
 | Share plugin | Not loaded: the CUI profile omits `@bymorning/plugin-share`, so the share Tool does not exist (SEC-CFG) | The default document enables unauthenticated public links |
 | WebSearch | Off | Third-party search providers are outside the boundary |
 | WebFetch | Permission effect `ask` or `deny` | Indirect prompt-injection vector (§10); the SSRF guard screens destinations (SEC-SSRF) |
-| Code Interpreter | AgentCore on AWS; Kubernetes sandbox on Azure | Both run code with no network access (§2.9) |
+| Code Interpreter | AgentCore on AWS; Kubernetes sandbox on Azure | Neither can open network connections; on AWS DNS names still resolve (§2.9) |
 | Outbound MCP | Admin-approved internal servers only; enablement off by default | Only Workspace administrators can enable it |
 | Third-party plugins | None | Plugins run in-process (§12) |
 | Permission rules | Add a catch-all `deny` for unmatched sensitive actions such as `webfetch` and shell execution | Unmatched actions are allowed by default |
