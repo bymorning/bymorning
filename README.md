@@ -5,10 +5,34 @@
 > publish releases. The project is community maintained: fork it, open pull requests, and run your own builds. Read
 > [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
-To try the release image without a cloud account or identity provider, use the
-[Docker Compose evaluation](installers/docker/README.md). It is not for production.
+ByMorning is a self-hosted AI gateway. It connects your people, coding agents, and internal systems to the models you
+approve, under your permissions, budgets, and audit, inside your own cloud account. Documentation:
+<https://bymorning.ai/docs>.
 
-To run it on Kubernetes, use the [Helm chart](charts/bymorning/README.md).
+## Install
+
+Every release image is signed keylessly by this repository's release workflow and published to
+`ghcr.io/bymorning/bymorning`, with signed evidence (SBOMs, scans, provenance) on the
+[GitHub release](https://github.com/bymorning/bymorning/releases/latest).
+
+| Where                    | Use                                                                                                        |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| One machine, to try it   | [Docker Compose evaluation](installers/docker/README.md). Not for production.                              |
+| AWS or AWS GovCloud (US) | [Terraform module](installers/aws/README.md), also on the Terraform Registry as `bymorning/bymorning/aws`. |
+| Azure (AKS)              | [Azure installer](installers/azure/README.md): Terraform and Kubernetes manifests.                         |
+| Any Kubernetes cluster   | [Helm chart](charts/bymorning/README.md), with your own database, object storage, and key.                 |
+
+## Connect coding agents
+
+- **Models.** Point Claude Code, Codex, Cursor, VS Code Copilot, OpenCode, or Gemini CLI at your installation's
+  OpenAI-, Anthropic-, and Google-compatible endpoints with a Service Account key. Spend limits, routing, and usage
+  apply to every call. See [Connect coding agents](https://bymorning.ai/docs/use/clients).
+- **Tools.** Add `https://<your host>/mcp` to the agent as a remote MCP server. The agent signs in with OAuth as a
+  Workspace member and gets the Tools that member may use, under the Workspace's permissions. See
+  [Use ByMorning's Tools from an agent](https://bymorning.ai/docs/use/clients#tools). [`server.json`](server.json)
+  describes it for the MCP Registry as `io.github.bymorning/bymorning`.
+
+## Develop
 
 To develop, with Bun and Node 22+, run from the repository root:
 
@@ -100,9 +124,10 @@ compare digests: the build is reproducible.
 
 Cutting a release:
 
-1. Set the version in the root `package.json`, `app/host/package.json`, and `charts/bymorning/Chart.yaml` (both
-   `version` and `appVersion`, and the image in its Artifact Hub annotation; `sh charts/bymorning/test.sh` checks they
-   agree), and date its section in `CHANGELOG.md`; merge to `dev`.
+1. Set the version in the root `package.json`, `app/host/package.json`, `server.json`, and
+   `charts/bymorning/Chart.yaml` (both `version` and `appVersion`, and the image in its Artifact Hub annotation).
+   `sh script/release/versions.sh` and `sh charts/bymorning/test.sh` check they agree. Date its section in
+   `CHANGELOG.md`; merge to `dev`.
 2. Tag that commit `v<version>` and push the tag. The tag must match the `package.json` version.
 3. Dispatch the signed build on the tag, then download its `release` artifact:
 
@@ -142,6 +167,8 @@ Cutting a release:
 5. Mirror the AWS module to the Terraform Registry: run `sh script/release/terraform-module.sh <directory>` into a
    clone of `bymorning/terraform-aws-bymorning`, commit, and tag the same `v<version>`; the Registry picks up the tag.
    Do not run `terraform init` inside the export before committing (the script writes a `.gitignore` as a guard).
+   Publish `server.json` to the MCP Registry: `mcp-publisher validate`, then `mcp-publisher login github` as a
+   member of the `bymorning` organization and `mcp-publisher publish`.
 
 6. Render the security review package for the release and attach the PDF to the GitHub release. First update
    `docs/security/review/release.json` (its `VERSION`, date, test result, and scan summaries from the evidence):

@@ -9,6 +9,11 @@ application carries the version from the root `package.json`
 
 ### Added
 
+- `server.json` lists the Tool Gateway in the MCP Registry as `io.github.bymorning/bymorning`: a remote Streamable
+  HTTP server at `https://{host}/mcp`, where `host` is your installation. `script/release/versions.sh` checks that
+  `package.json`, `app/host/package.json`, `server.json`, and the Helm chart state one version, in the full gate's
+  installers job.
+
 - A Helm chart (`charts/bymorning`): one Gateway pod with its migrations in an init container, pinned by image digest,
   with the same pod hardening as the Azure manifests. It takes your database, object storage, and key, supports IRSA and
   workload identity, listener TLS, an ingress, and an evaluation mode. Its offline checks run in the full gate's
