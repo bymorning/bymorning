@@ -12,9 +12,9 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://{host}/mcp",
+      "url": "https://{bymorning_host}/mcp",
       "variables": {
-        "host": {
+        "bymorning_host": {
           "description": "Host name of your ByMorning installation, such as bymorning.example.com",
           "isRequired": true
         }

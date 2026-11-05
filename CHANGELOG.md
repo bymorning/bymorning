@@ -10,7 +10,8 @@ application carries the version from the root `package.json`
 ### Added
 
 - `server.json` lists the Tool Gateway in the MCP Registry as `io.github.bymorning/bymorning`: a remote Streamable
-  HTTP server at `https://{host}/mcp`, where `host` is your installation. `script/release/versions.sh` checks that
+  HTTP server at `https://{bymorning_host}/mcp`, where `bymorning_host` is your installation. (The registry requires
+  each remote URL template to be unique, so the placeholder is named for ByMorning.) `script/release/versions.sh` checks that
   `package.json`, `app/host/package.json`, `server.json`, and the Helm chart state one version, in the full gate's
   installers job.
 
