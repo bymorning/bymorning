@@ -20,7 +20,9 @@
 #                  pod environment: workload identity exchange, Key Vault
 #                  resolution and wrapping, Blob against real Azurite, inventory,
 #                  log hygiene, cloud-endpoint refusals).
-#     kind         installers/azure/test/kind-e2e.sh: the signed tarballs imported
+#     kind         charts/bymorning/test/kind.sh runs after the Azure suite: the Helm chart
+#                  installed with the signed Gateway tarball (evaluation mode).
+#                  installers/azure/test/kind-e2e.sh: the signed tarballs imported
 #                  into a kind node by digest, the installer's own manifests,
 #                  Entra/Key Vault/STS/Bedrock emulators behind CoreDNS rewrites,
 #                  sign-in, Blob, Key Vault rotation, sandbox code execution; then
@@ -33,7 +35,8 @@
 #     installers   offline installer checks: the Azure installer's terraform
 #                  validate/test, kustomize, kubeconform, policy and
 #                  create-secret checks; the AWS installer's terraform fmt,
-#                  validate, and mocked-provider tests.
+#                  validate, and mocked-provider tests; the Helm chart's lint,
+#                  render, schema, pod-policy, and guard checks.
 #     publish      release only (sign=true on a v* tag, after every job above
 #                  passed): script/release/publish.sh pushes both images to
 #                  ghcr.io/<owner> under the version tag, checks each digest
@@ -278,9 +281,21 @@ jobs:
           kubectl get pods -A -o wide
           kubectl get events -A --sort-by=.lastTimestamp | tail -40
           kubectl -n bymorning logs deploy/bymorning -c gateway --tail=80 || true
-      - name: Delete the end-to-end cluster before the plugin suite creates its own
+      - name: Delete the end-to-end cluster before the next suites create their own
         if: ${{ !cancelled() }}
         run: kind delete cluster --name bymorning-azure-e2e || true
+      - name: Install helm (checksum-verified)
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          curl -fsSLo helm.tar.gz https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz
+          echo "86584a54def73570558f66f5111cc53dfed56689637ae32c1201205d494f54fb  helm.tar.gz" | sha256sum -c -
+          tar -xzf helm.tar.gz linux-amd64/helm
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+          helm version --short
+      - name: Helm chart end to end on kind (the signed Gateway tarball, an evaluation install)
+        if: ${{ !cancelled() }}
+        run: KIND_INTEGRATION=1 RELEASE_DIR="$RUNNER_TEMP/release" sh charts/bymorning/test/kind.sh
       - name: Kubernetes Code Interpreter against kind
         if: ${{ !cancelled() }}
         run: KIND_INTEGRATION=1 bun run --cwd plugins/code-interpreter-kubernetes test
@@ -388,6 +403,17 @@ jobs:
         run: sh installers/azure/test.sh
       - name: AWS installer offline checks (fmt, validate, terraform test with a mocked provider)
         run: sh installers/aws/test.sh
+      - name: Install helm (checksum-verified)
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          curl -fsSLo helm.tar.gz https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz
+          echo "86584a54def73570558f66f5111cc53dfed56689637ae32c1201205d494f54fb  helm.tar.gz" | sha256sum -c -
+          tar -xzf helm.tar.gz linux-amd64/helm
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+          helm version --short
+      - name: Helm chart offline checks (lint, render, schema, pod policy, guards)
+        run: sh charts/bymorning/test.sh
 
   publish:
     # Release only: a sign=true dispatch on a v* tag, after every gate job passed.
@@ -423,5 +449,31 @@ jobs:
           [ "$recorded" = "$expected" ] || { echo "::error::signer.txt names $recorded, expected $expected"; exit 1; }
           echo "$GITHUB_TOKEN" | crane auth login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
           sh script/release/publish.sh "$RUNNER_TEMP/release" "ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install helm (checksum-verified)
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          curl -fsSLo helm.tar.gz https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz
+          echo "86584a54def73570558f66f5111cc53dfed56689637ae32c1201205d494f54fb  helm.tar.gz" | sha256sum -c -
+          tar -xzf helm.tar.gz linux-amd64/helm
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+          helm version --short
+      - name: Push and sign the Helm chart on ghcr.io
+        run: |
+          set -eu
+          version=$(jq -er .version "$RUNNER_TEMP/release/manifest.json")
+          owner="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
+          helm package charts/bymorning --version "$version" --app-version "$version" --destination "$RUNNER_TEMP/chart"
+          echo "$GITHUB_TOKEN" | helm registry login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          helm push "$RUNNER_TEMP/chart/bymorning-$version.tgz" "oci://$owner/charts" 2>&1 | tee "$RUNNER_TEMP/push.log"
+          digest=$(sed -n 's/^Digest: *//p' "$RUNNER_TEMP/push.log" | head -1)
+          [ -n "$digest" ] || { echo "::error::helm push printed no digest"; exit 1; }
+          cosign sign --yes "$owner/charts/bymorning@$digest"
+          cosign verify "$owner/charts/bymorning@$digest" \
+            --certificate-identity "https://github.com/${GITHUB_REPOSITORY}/.github/workflows/full-gate.yml@${GITHUB_REF}" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com >/dev/null
+          echo "chart: $owner/charts/bymorning:$version@$digest (signed)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

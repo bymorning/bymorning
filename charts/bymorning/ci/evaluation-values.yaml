@@ -1,0 +1,10 @@
+# Render fixture and the values the kind test installs: an evaluation installation.
+image:
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+appOrigin: http://localhost:3210
+evaluation:
+  enabled: true
+secrets:
+  DATABASE_URL: postgresql://bymorning:bymorning@postgres:5432/bymorning
+  WEB_COOKIE_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  CIPHER_KEY: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
