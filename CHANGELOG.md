@@ -24,6 +24,26 @@ application carries the version from the root `package.json`
 - `script/release/terraform-module.sh` exports the AWS module in the Terraform Registry layout (module at the root,
   README, LICENSE, `examples/basic`) for the `bymorning/terraform-aws-bymorning` mirror.
 
+- `script/security/prerelease.ts` derives the pre-release packages that ship from `bun.lock` and fails the static CI job
+  when the security review's POA&M-13 does not name each family and version, so the document cannot drift from the
+  lockfile again.
+- The image boot suite (`packages/server/test/image-boot.sh`) runs on a Docker network with no route out, and each leg
+  ends with an egress check (SMK-41 on AWS, SMK-59 on Azure): the serving Gateway's log must show no failed lookup or
+  connection to an outside host. This turns the "no call-home" statement in the security review (§9.1) into a test.
+
+### Changed
+
+- The UBI `nodejs-22-minimal` base is re-pinned to the 2026-11-02 build (two fewer Medium advisories, CVE-2026-8932
+  fixed) and the execution image's `python:3.12-slim` to the 2026-11-05 build (two fixable High advisories fewer). Node
+  and Python versions are unchanged.
+- `@azure/identity` 4.14.1, which moves `@azure/msal-node` from 6.0.1 to 7.2.0 and clears the High GHSA-xcx6-jx8p-x3h5
+  that 1.3.2 triaged as not affected. It also moves `open` to 11 and adds two small transitive packages (`is-in-ssh`,
+  `powershell-utils`) used only by the interactive credential path.
+- The security review's POA&M-13 now names every pre-release dependency that ships: six Effect RC packages, Drizzle
+  ORM, and the `@opencode-ai/ai`, `codemode`, and `schema` betas, whose upstream line is no longer published. It had
+  listed only "Effect RC, Drizzle RC". The remaining "provided as-is" phrases in the POA&M and control mapping now say
+  "community maintained".
+
 ### Fixed
 
 - The Models, Gateway, server runtime, and Plugins documentation no longer list a Bymorning Provider (`BYMORNING_API_KEY`)
@@ -39,6 +59,14 @@ application carries the version from the root `package.json`
   `@opencode-ai/ai` patch now treats an HTTP 429, a `throttlingException`, or the text "ThrottlingException" as a
   throttle before it looks for overflow wording; an explicit overflow code, and real overflows such as "Input is too
   long for requested model", are classified as before (#35).
+
+### Security
+
+- The OAuth consent page for MCP clients shows where an approval will be sent. A dynamically registered client names
+  itself, so a client called "Claude Code" looked identical to the real one whatever redirect it had registered.
+  `GET /api/oauth/request` now also returns `redirectOrigins` (scheme and host of the client's registered redirect URIs,
+  with credentials, path, and query removed), and the page lists them and says the name is chosen by the app. The
+  field is additive, and no core interface changes. Tested as `SEC-OAUTH-01`.
 
 ## [1.3.2] — 2026-11-04
 
