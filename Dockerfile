@@ -38,8 +38,8 @@ RUN cat /certs/commercial.pem /certs/govcloud.pem > /certs/rds-global-bundle.pem
 # RHEL's Node build refuses --enable-fips/--force-fips; OPENSSL_CONF activation
 # is the supported mechanism and fails closed when the module cannot load.
 # registry.access.redhat.com/ubi9/nodejs-22-minimal:latest (manifest-list digest, 2026-11-02; re-pinned for 1.3.3:
-# two fewer Medium advisories than the 2026-10-27 pin, including a fixed CVE-2026-8932; the 1.3.1 re-pin cleared a
-# Critical ca-certificates advisory)
+# one fewer Medium advisory than the 2026-10-27 pin (CVE-2026-8932, curl-minimal and libcurl-minimal); the 1.3.1
+# re-pin cleared a Critical ca-certificates advisory)
 FROM registry.access.redhat.com/ubi9/nodejs-22-minimal@sha256:e32a0985811efc5bbadbe3bf67b8ea71c9d8ea5d0cfcfc9f1264a8e3a428cf5d AS base
 
 # Release identity, stamped by script/release.ts from the root

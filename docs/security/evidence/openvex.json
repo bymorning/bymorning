@@ -1,10 +1,10 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/bymorning/enterprise/security/1.2.0/openvex",
+  "@id": "https://github.com/bymorning/bymorning/security/1.3.3/openvex",
   "author": "ByMorning Security",
-  "timestamp": "2026-11-04T00:00:00Z",
-  "last_updated": "2026-10-29T00:00:00Z",
-  "version": 7,
+  "timestamp": "2026-11-06T00:00:00Z",
+  "last_updated": "2026-11-06T00:00:00Z",
+  "version": 8,
   "statements": [
     {
       "vulnerability": {
@@ -12,7 +12,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -21,37 +21,11 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2026-9496"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "component_not_present",
-      "impact_statement": "pacote is npm's package fetcher. npm and its entire dependency tree (including pacote) are removed from the runtime image; the match is a residual RPM-metadata association with the RHEL nodejs module. No package resolution, git fetch, or npm operation occurs at runtime."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-19534"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "The flaw is in the WebSocket client of the undici copy vendored inside Node 22 (globalThis.WebSocket): a malicious server crashes the process during the opening handshake. No shipped composition constructs that client. The Gateway's only WebSocket client is the Kubernetes Code Interpreter's pods/exec channel to the operator-configured Kubernetes API server, which uses the separate ws library (8.21.3), not undici. The model SDK's optional WebSocket transport needs a WebSocket constructor layer that no shipped composition provides (source-audited)."
-    },
-    {
-      "vulnerability": {
         "name": "CVE-2026-84961"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -64,7 +38,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -73,50 +47,11 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2026-86145"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "The pcre2_dfa_match out-of-bounds write is reachable only through PCRE2 consumers. Node.js executes regular expressions on V8's own engine; node and libnode do not link PCRE2 (verified with ldd in the image). The image's only PCRE2 consumer is libselinux, used by OS utilities the runtime never executes: the container runs a single non-root Node process."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-89161"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "The pcre2_jit_match memory corruption is reachable only through PCRE2 consumers. Node.js uses V8's RegExp engine and does not link PCRE2; the only PCRE2 consumer in the image (libselinux, for OS utilities) is never executed at runtime."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-103111"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "The out-of-bounds write requires an application that compiles an attacker-controlled regular expression with PCRE2's JIT interfaces. Node.js compiles regular expressions with V8, not PCRE2; node and libnode do not link PCRE2 (verified with ldd in the image), and the only PCRE2 consumer in the image (libselinux, for OS utilities) is never executed by the single non-root Node process. Red Hat has not published a fixed RHEL 9 build."
-    },
-    {
-      "vulnerability": {
         "name": "CVE-2026-53613"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -125,50 +60,11 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2026-75804"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "The flaw is missing connection-level flow control in OpenSSL's QUIC implementation. The runtime serves TLS over TCP only and uses no QUIC listener or client, so the vulnerable path is never exercised. Matched against the RHEL 9 OpenSSL RPM; no fix is published yet."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-84782"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "The flaw is in OpenSSL's DTLS handshake retransmission. The runtime uses TLS over TCP only and never initiates or accepts DTLS, so the vulnerable path is never exercised. Matched against the RHEL 9 OpenSSL RPM; no fix is published yet."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-93748"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "component_not_present",
-      "impact_statement": "The flaw is in the http-cache-semantics package, which the Node 22 RPM carries only inside npm's vendored tree. npm and /usr/lib/node_modules are removed from the image at build time (no http-cache-semantics file is on the image filesystem), and the application does not use http-cache-semantics (source-audited). Residual RPM-metadata match."
-    },
-    {
-      "vulnerability": {
         "name": "GHSA-9wv6-86v2-598j"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -177,24 +73,11 @@
     },
     {
       "vulnerability": {
-        "name": "GHSA-ch52-4w7c-c8xp"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "component_not_present",
-      "impact_statement": "http-cache-semantics 4.2.0 enters the lockfile only through astro, the documentation-site generator (packages/docs). It is not imported by the server bundle and is absent from the image. No patched version is published."
-    },
-    {
-      "vulnerability": {
         "name": "GHSA-qhr7-859c-m2p7"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -206,7 +89,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -218,7 +101,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -230,7 +113,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -242,7 +125,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -254,7 +137,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -266,7 +149,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -278,7 +161,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -290,7 +173,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -302,7 +185,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -314,7 +197,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -326,7 +209,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -339,7 +222,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -352,7 +235,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -365,7 +248,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -374,24 +257,11 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2026-109855"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The WebSocket-over-HTTP/2 failed-handshake crash (GHSA-qq8j-7v2v-3rwp) affects only undici 8.11.0 and 8.11.1. Node 22.23.2 vendors undici 6.28.0 (process.versions in the image), which does not contain the vulnerable code."
-    },
-    {
-      "vulnerability": {
         "name": "CVE-2026-109869"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -404,7 +274,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -413,24 +283,11 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2026-88647"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "GnuTLS Common Name fallback hostname-verification bypass. Node.js uses OpenSSL for TLS: node and libnode do not link GnuTLS (verified with ldd and the running process's /proc/self/maps in the image). The image's only GnuTLS consumer is /usr/bin/dirmngr (GnuPG), which the single non-root Node process never executes. Red Hat has not published a fixed RHEL 9 build."
-    },
-    {
-      "vulnerability": {
         "name": "CVE-2026-53615"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -439,24 +296,11 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2026-103111"
-      },
-      "products": [
-        {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
-        }
-      ],
-      "status": "affected",
-      "action_statement": "libpcre2-8-0 10.46-1~deb13u2: an attacker-controlled regular expression compiled with PCRE2's JIT can write out of bounds in the calling process. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. Debian fixed it in 10.46-1~deb13u3, which the pinned base does not yet carry; picked up by the next base re-pin.",
-      "action_statement_timestamp": "2026-10-05T00:00:00Z"
-    },
-    {
-      "vulnerability": {
         "name": "CVE-2026-102010"
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -469,7 +313,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -482,7 +326,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -495,7 +339,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -508,7 +352,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -521,7 +365,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -534,7 +378,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -547,7 +391,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -560,7 +404,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -573,7 +417,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -586,7 +430,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -599,7 +443,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -612,7 +456,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -625,7 +469,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -638,7 +482,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -651,7 +495,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -664,7 +508,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -676,12 +520,11 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "@azure/msal-node 6.0.1 (via @azure/identity 4.13.3) can disclose authorization-code-flow parameters to an attacker-controlled endpoint. The code path is MsalClient.getTokenByAuthorizationCode, whose only caller in @azure/identity is AuthorizationCodeCredential. The Gateway constructs only DefaultAzureCredential (backends/azure and app/host/src/azure.ts), whose chain is VS Code, Azure CLI, Azure PowerShell, azd, broker, environment, workload identity and managed identity: none uses the authorization-code flow. The fix is 7.1.0, a major version that @azure/identity 4.13.3 (^6) does not accept; move with the next @azure/identity release."
+      "status": "fixed",
+      "status_notes": "1.3.2 shipped @azure/msal-node 6.0.1 through @azure/identity 4.13.3 and triaged it as not affected (the Gateway constructs only DefaultAzureCredential, never AuthorizationCodeCredential). 1.3.3 moves to @azure/identity 4.14.1, which requires @azure/msal-node 7.1.0 or later and resolves 7.2.0, so the vulnerable range is no longer in the lockfile."
     },
     {
       "vulnerability": {
@@ -689,7 +532,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -701,7 +544,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -713,7 +556,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -725,7 +568,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -737,7 +580,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -749,7 +592,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "fixed",
@@ -761,7 +604,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -774,7 +617,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -787,7 +630,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -800,7 +643,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
@@ -813,7 +656,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -826,7 +669,7 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-gateway?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
         }
       ],
       "status": "not_affected",
@@ -839,12 +682,64 @@
       },
       "products": [
         {
-          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.2"
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
         }
       ],
       "status": "affected",
       "action_statement": "Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled, all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. glibc 2.41: gettext accepts LANGUAGE entries containing '/' and can load a message catalog from an arbitrary path. Setting LANGUAGE requires control of the process environment, which model-generated code in the sandbox already has, and the catalog must be a file the sandbox can already write. Debian has published no fix; picked up by the first base-image refresh that carries one.",
       "action_statement_timestamp": "2026-11-04T00:00:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-118131"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "The flaw is in GnuPG for Windows: default DACL inheritance on C:\\ProgramData lets low-privileged local users plant configuration files in a shared directory. The scanner matches the Linux gnupg2 RPM in the UBI base by name and version only. The Linux build has no Windows ACL handling and no C:\\ProgramData directory, the runtime image is Linux only, and nothing in the Gateway invokes gpg (the RPM is present for package signature verification). No vendor action is needed."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-119374"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Heap overflow in SQLite's FTS5 secure-delete handling of a corrupted search index, reached through the SQLite built into Node 22 (node:sqlite). Nothing constructs it: in the shipped bundle node:sqlite appears only in the bundler's list of Node built-in module names, DatabaseSync and every SQLite API are absent from all of the image's application chunks, the image has no sqlite3 command-line tool, and PostgreSQL is the only database. No vendor fix exists yet for Node 22.23.2; revisit with the first base-image update that carries one."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-119379"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-gateway?tag=1.3.3"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Heap overflow in SQLite's session extension when applying a crafted changeset, reached through the SQLite built into Node 22 (node:sqlite). Nothing constructs it: in the shipped bundle node:sqlite appears only in the bundler's list of Node built-in module names, DatabaseSync and every SQLite API are absent from all of the image's application chunks, the image has no sqlite3 command-line tool, and PostgreSQL is the only database. No vendor fix exists yet for Node 22.23.2; revisit with the first base-image update that carries one."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-76844"
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/bymorning-code-interpreter?tag=1.3.3"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "zlib1g 1.3.1: heap overflow in gz_write after an underlying write() fails, in the calling process. Accepted with compensating controls: the execution image runs model-generated code by design, as uid 1000 in a fresh single-use pod with privilege escalation disabled (setuid binaries confer nothing), all capabilities dropped, a read-only root filesystem, RuntimeDefault seccomp, no service-account token, and a deny-all NetworkPolicy, so the flaw grants nothing beyond the code execution the sandbox already allows. No fixed Debian 13 package is published; picked up by the first base-image refresh that carries one.",
+      "action_statement_timestamp": "2026-11-06T00:00:00Z"
     }
   ]
 }
