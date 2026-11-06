@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest"
 import { createPromptState } from "../../context/prompt-state"
 import { createComposerSubmit, createComposerSubmitState } from "./composer-submit"
 
+const bymorning = Provider.Name.make("bymorning")
+
 describe("composer submission presentation", () => {
   it("validates selection without sending or clearing the draft", async () => {
     const mounted = createRoot((dispose) => {
@@ -40,7 +42,7 @@ describe("composer submission presentation", () => {
         state: createComposerSubmitState(),
         adapter: {
           state: prompt,
-          selection: () => ({ agent: Agent.DefaultID, model: { provider: Provider.Bymorning, id: "model" } }),
+          selection: () => ({ agent: Agent.DefaultID, model: { provider: bymorning, id: "model" } }),
           pending: () => false,
           error: () => undefined,
           submit,

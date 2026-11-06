@@ -10,13 +10,15 @@ import { User } from "@bymorning/schema/user"
 import { SessionError } from "@bymorning/schema/session-error"
 import { PluginHooks } from "../src/plugin/hooks.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const event = {
   tool: "read",
   sessionID: Session.ID.make("00000000-0000-4000-8000-000000000001"),
   agent: Agent.ID.make("build"),
   messageID: Message.ID.make("00000000-0000-4000-8000-000000000002"),
-  requestedModel: { provider: Provider.Bymorning, id: "gpt-5.6-sol" },
-  model: { provider: Provider.Bymorning, id: "gpt-5.6-sol" },
+  requestedModel: { provider: bymorning, id: "gpt-5.6-sol" },
+  model: { provider: bymorning, id: "gpt-5.6-sol" },
   id: "call_test" as Tool.CallID,
   input: {},
 }

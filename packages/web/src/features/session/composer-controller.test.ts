@@ -11,13 +11,15 @@ import { directoryFixture } from "../../test/directory"
 import { createController as createComposerController } from "./composer-controller"
 import type { PromptSubmissionState } from "./prompt-submission-state"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const commands = () => ({
   register: vi.fn(),
   slash: { search: () => undefined, select: () => false },
 })
 const initialSelection = {
   agent: Agent.DefaultID,
-  model: { provider: Provider.Bymorning, id: "model", variant: "fast" },
+  model: { provider: bymorning, id: "model", variant: "fast" },
 }
 
 function createController(source: Parameters<typeof createComposerController>[0]) {

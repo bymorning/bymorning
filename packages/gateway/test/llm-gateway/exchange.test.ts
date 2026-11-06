@@ -12,9 +12,11 @@ import { StreamError } from "../../src/llm-gateway.js"
 import { Usage } from "@bymorning/core/usage"
 import { Plugin } from "@bymorning/core/plugin"
 
+const bymorning = ProviderSchema.Name.make("bymorning")
+
 const model = ModelSchema.Info.make({
   id: "gpt-5.6-luna",
-  provider: ProviderSchema.Bymorning,
+  provider: bymorning,
   apiID: "upstream-luna",
   name: "Luna",
   description: "",

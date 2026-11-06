@@ -14,6 +14,8 @@ import { Limiter } from "../src/limiter.js"
 import { Plugin } from "../src/plugin.js"
 import { plugin as limiterPlugin } from "../src/plugin/internal/limiter.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const workspaceID = Workspace.ID.make("wrk_limit_enforcement_test")
 const unused = () => Effect.die("unused")
 
@@ -23,7 +25,7 @@ const sessionEvent = {
   sessionID: Session.ID.make("00000000-0000-4000-8000-000000000001"),
   agent: Agent.ID.make("build"),
   purpose: "assistant" as const,
-  model: { provider: Provider.Bymorning, id: "gpt-5.6-sol" },
+  model: { provider: bymorning, id: "gpt-5.6-sol" },
   publicModel: "bymorning/gpt-5.6-sol",
   stream: true,
 } as const
@@ -31,7 +33,7 @@ const sessionEvent = {
 const gatewayEvent = {
   id: "attempt-2",
   workspaceID,
-  model: { provider: Provider.Bymorning, id: "gpt-5.6-sol" },
+  model: { provider: bymorning, id: "gpt-5.6-sol" },
   publicModel: "bymorning/gpt-5.6-sol",
   stream: false,
   protocol: "openai-chat" as const,

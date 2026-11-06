@@ -20,6 +20,8 @@ import { Storage } from "../../src/storage.js"
 import { ToolOutput } from "../../src/tool-output.js"
 import { recorderDatabase } from "./recorder-database.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const sessionID = Session.ID.make("00000000-0000-4000-8000-000000000811")
 const workspaceID = Workspace.ID.make("wrk_recorder_output")
 
@@ -57,7 +59,7 @@ describe("Session Recorder ToolOutput integration", () => {
         createdAt: new Date(0),
         type: "assistant",
         agent: Agent.DefaultID,
-        model: { provider: Provider.Bymorning, id: "test" },
+        model: { provider: bymorning, id: "test" },
         content: [],
         usage: Usage.make({ cost: 0, costComplete: true, tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } } }),
         time: { created: new Date(0) },
@@ -156,7 +158,7 @@ describe("Session Recorder ToolOutput integration", () => {
           createdAt: new Date(0),
           type: "assistant",
           agent: Agent.DefaultID,
-          model: { provider: Provider.Bymorning, id: "test" },
+          model: { provider: bymorning, id: "test" },
           content: [
             {
               type: "tool",
@@ -231,7 +233,7 @@ describe("Session Recorder ToolOutput integration", () => {
         })
         const assistant = Assistant.make({
           id: ID.make("00000000-0000-4000-8000-000000000814"), sessionID, sequence: 1, createdAt: new Date(0), type: "assistant",
-          agent: Agent.DefaultID, model: { provider: Provider.Bymorning, id: "test" }, content: [],
+          agent: Agent.DefaultID, model: { provider: bymorning, id: "test" }, content: [],
           usage: Usage.make({ cost: 0, costComplete: true, tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } } }), time: { created: new Date(0) },
         })
         const retainedMessage = recorderDatabase(assistant)

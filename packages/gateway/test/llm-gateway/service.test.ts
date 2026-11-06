@@ -26,6 +26,8 @@ import { LLMGateway } from "../../src/llm-gateway.js"
 import type { GatewayInvocation } from "@bymorning/plugin/effect/model"
 import * as Compatible from "@opencode-ai/ai/providers/openai-compatible"
 
+const bymorning = ProviderSchema.Name.make("bymorning")
+
 const workspaceID = Workspace.ID.make("wrk_llm_gateway_service")
 const principal = { type: "user", userID: User.ID.make("usr_llm_gateway_caller") } as const
 const publicModel = "bymorning/gpt-5.6-luna"
@@ -34,7 +36,7 @@ const googleChat = "https://gateway.example/inference/google/v1beta/models/bymor
 
 const model = ModelSchema.Info.make({
   id: "gpt-5.6-luna",
-  provider: ProviderSchema.Bymorning,
+  provider: bymorning,
   apiID: "upstream-luna",
   name: "Luna",
   description: "",

@@ -11,6 +11,8 @@ import { directoryFixture } from "../../test/directory"
 import { createComposerSubmitState } from "./composer-submit"
 import { Composer } from "./ui/session-composer"
 
+const bymorning = Provider.Name.make("bymorning")
+
 describe("createComposerModel", () => {
   it("coordinates deferred semantic focus through the opaque Composer", async () => {
     const model = createRoot(() => {
@@ -22,7 +24,7 @@ describe("createComposerModel", () => {
         adapter: {
           pending: () => false,
           error: () => undefined,
-          selection: () => ({ agent: Agent.DefaultID, model: { provider: Provider.Bymorning, id: "model" } }),
+          selection: () => ({ agent: Agent.DefaultID, model: { provider: bymorning, id: "model" } }),
           submit: async () => {},
           interrupt: async () => {},
         },

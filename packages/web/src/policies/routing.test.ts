@@ -4,12 +4,14 @@ import { describe, expect, test } from "vitest"
 import type { RoutingRule } from "./rule-dialog"
 import { conflictCount, conflicts, insertRoute, isStrictRefinement, overlaps, PlacementError, sameMatcher } from "./routing"
 
-const ref = (id: string, variant?: string) => ({ provider: Provider.Bymorning, id, ...(variant === undefined ? {} : { variant }) })
+const bymorning = Provider.Name.make("bymorning")
+
+const ref = (id: string, variant?: string) => ({ provider: bymorning, id, ...(variant === undefined ? {} : { variant }) })
 const model = (from: string, to: string, variant?: string): RoutingRule => ({ match: { model: ref(from, variant) }, to: ref(to) })
 const tool = (when: string, to: string): RoutingRule => ({ match: { tool: when }, to: ref(to) })
 const combined = (from: string, when: string, to: string, variant?: string): RoutingRule => ({ match: { model: ref(from, variant), tool: when }, to: ref(to) })
 const tiers = (default_: string): RoutingRule => ({
-  match: { model: { provider: "auto" as typeof Provider.Bymorning, id: "general" } },
+  match: { model: { provider: "auto" as Provider.Name, id: "general" } },
   to: {
     tiers: [
       { name: "fast", model: ref("small"), description: "Short questions" },

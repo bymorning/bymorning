@@ -39,6 +39,8 @@ import type { Context as PluginContext } from "@bymorning/plugin/effect/plugin"
 import { configFixture, configService } from "../service-fixtures.js"
 import { workspaceFixture } from "./workspace-fixture.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 if (process.env.DATABASE_URL === undefined) throw new Error("DATABASE_URL is required for Core integration tests")
 
 const { workspaceID } = workspaceFixture()
@@ -196,7 +198,7 @@ it.effect("Agent updates persisted profiles and publishes only successful lifecy
 
 it.effect("Agent rejects unavailable models before create or update persistence", () => {
   const name = AgentSchema.ID.make(`model-${crypto.randomUUID()}`)
-  const unavailable = { provider: Provider.Bymorning, id: "missing-model" }
+  const unavailable = { provider: bymorning, id: "missing-model" }
   return Effect.gen(function* () {
     const agents = yield* Agent.Service
     const created = yield* agents.create(makeAgent(name))

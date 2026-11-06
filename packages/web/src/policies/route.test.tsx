@@ -14,11 +14,13 @@ import { PoliciesPage } from "./route"
 import type { CatalogModel } from "./model-picker"
 import type { RoutingRule } from "./rule-dialog"
 
+const bymorning = Provider.Name.make("bymorning")
+
 afterEach(() => { cleanup(); toaster.dismiss(); vi.restoreAllMocks() })
 
 const workspaceID = Workspace.ID.make("wrk_06689145a001WPprT0zKiRAQWn")
-const sol: CatalogModel = { id: "gpt-5.6-sol", name: "GPT-5 Mini", provider: Provider.Bymorning, variants: [] }
-const luna: CatalogModel = { id: "gpt-5.6-luna", name: "GPT-5", provider: Provider.Bymorning, variants: ["thinking"] }
+const sol: CatalogModel = { id: "gpt-5.6-sol", name: "GPT-5 Mini", provider: bymorning, variants: [] }
+const luna: CatalogModel = { id: "gpt-5.6-luna", name: "GPT-5", provider: bymorning, variants: ["thinking"] }
 const tools: McpToolsListOutput = [
   { server: "jira", name: "Jira search", action: "jira_search", description: "Search Jira issues" },
   { server: "filesystem", name: "Read file", action: "read" },
@@ -110,7 +112,7 @@ test("shows the minimal routing page", async () => {
 
 test("adds a model route and preserves writable Config fields", async () => {
   const user = userEvent.setup()
-  const config = emptyConfig({ default_agent: Agent.ID.make("build"), default_model: { provider: Provider.Bymorning, id: sol.id }, plugins: ["keep-me", { package: "fixture" }] })
+  const config = emptyConfig({ default_agent: Agent.ID.make("build"), default_model: { provider: bymorning, id: sol.id }, plugins: ["keep-me", { package: "fixture" }] })
   const client = mount({ config })
   await user.click(await screen.findByRole("button", { name: "Add route" }))
   const dialog = screen.getByRole("dialog", { name: "Add route" })
@@ -125,7 +127,7 @@ test("adds a model route and preserves writable Config fields", async () => {
   expect(screen.getByRole("list", { name: "Routes" })).toHaveTextContent("GPT-5 Mini → GPT-5")
   expect(client.update).toHaveBeenCalledWith(expect.objectContaining({
     default_agent: "build", plugins: config.plugins,
-    routing: [{ match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } }],
+    routing: [{ match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } }],
   }))
   expect(client.update.mock.calls[0]?.[0]).not.toHaveProperty("default_model")
   expect(client.update.mock.calls[0]?.[0]).not.toHaveProperty("model_policy")
@@ -176,8 +178,8 @@ test("adds a combined route with variants and a searchable stacked tool", async 
   await user.click(within(dialog).getByRole("button", { name: "Add route" }))
   await waitFor(() => expect(client.update).toHaveBeenCalled())
   expect(client.update.mock.calls.at(-1)?.[0].routing).toEqual([{
-    match: { model: { provider: Provider.Bymorning, id: luna.id, variant: "thinking" }, tool: "jira_search" },
-    to: { provider: Provider.Bymorning, id: luna.id, variant: "thinking" },
+    match: { model: { provider: bymorning, id: luna.id, variant: "thinking" }, tool: "jira_search" },
+    to: { provider: bymorning, id: luna.id, variant: "thinking" },
   }])
 })
 
@@ -186,8 +188,8 @@ test("names a route on a registered Tool outside the MCP catalog instead of call
     tools: [],
     registered: [{ action: "write", name: "Write file" }],
     config: emptyConfig({ routing: [
-      { match: { tool: "write" }, to: { provider: Provider.Bymorning, id: luna.id } },
-      { match: { tool: "retired_action" }, to: { provider: Provider.Bymorning, id: sol.id } },
+      { match: { tool: "write" }, to: { provider: bymorning, id: luna.id } },
+      { match: { tool: "retired_action" }, to: { provider: bymorning, id: sol.id } },
     ] }),
   })
   const list = await screen.findByRole("list", { name: "Routes" })
@@ -198,7 +200,7 @@ test("names a route on a registered Tool outside the MCP catalog instead of call
 test("keeps unavailable configured values understandable and round-trips them", async () => {
   const user = userEvent.setup()
   const client = mount({ models: () => [luna], tools: [], config: emptyConfig({ routing: [{
-    match: { model: { provider: Provider.Bymorning, id: "retired-model" }, tool: "retired_action" }, to: { provider: Provider.Bymorning, id: luna.id },
+    match: { model: { provider: bymorning, id: "retired-model" }, tool: "retired_action" }, to: { provider: bymorning, id: luna.id },
   }] }) })
   const list = await screen.findByRole("list", { name: "Routes" })
   expect(list).toHaveTextContent("retired-model (bymorning/retired-model) + retired_action (unavailable) completed → GPT-5")
@@ -212,7 +214,7 @@ test("keeps unavailable configured values understandable and round-trips them", 
 
 test("asks for precedence only for ambiguous conflicts", async () => {
   const user = userEvent.setup()
-  const existing = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const existing = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [existing] }) })
   await user.click(await screen.findByRole("button", { name: "Add route" }))
   const dialog = screen.getByRole("dialog", { name: "Add route" })
@@ -225,7 +227,7 @@ test("asks for precedence only for ambiguous conflicts", async () => {
   await user.click(within(dialog).getByRole("radio", { name: "This route" }))
   await user.click(within(dialog).getByRole("button", { name: "Add route" }))
   await waitFor(() => expect(client.update).toHaveBeenCalled())
-  expect(client.update.mock.calls.at(-1)?.[0].routing).toEqual([existing, { match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id } }])
+  expect(client.update.mock.calls.at(-1)?.[0].routing).toEqual([existing, { match: { tool: "jira_search" }, to: { provider: bymorning, id: sol.id } }])
 })
 
 test("refuses a stale-dialog conflict until the fresh precedence is reviewed", async () => {
@@ -241,8 +243,8 @@ test("refuses a stale-dialog conflict until the fresh precedence is reviewed", a
   await choose(user, when, "Tool", "Jira search")
 
   const fresh = emptyConfig({ routing: [{
-    match: { model: { provider: Provider.Bymorning, id: sol.id } },
-    to: { provider: Provider.Bymorning, id: luna.id },
+    match: { model: { provider: bymorning, id: sol.id } },
+    to: { provider: bymorning, id: luna.id },
   }] })
   client.get.mockResolvedValue(fresh)
   await user.click(within(dialog).getByRole("button", { name: "Add route" }))
@@ -259,14 +261,14 @@ test("refuses a stale-dialog conflict until the fresh precedence is reviewed", a
   await waitFor(() => expect(client.update).toHaveBeenCalledOnce())
   expect(client.update.mock.calls[0]?.[0].routing).toEqual([
     fresh.routing![0],
-    { match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id } },
+    { match: { tool: "jira_search" }, to: { provider: bymorning, id: sol.id } },
   ])
 })
 
 test("clears a reviewed priority when concurrent conflicts change", async () => {
   const user = userEvent.setup()
-  const existing = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
-  const added = { match: { model: { provider: Provider.Bymorning, id: luna.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const existing = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
+  const added = { match: { model: { provider: bymorning, id: luna.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [existing] }) })
   await user.click(await screen.findByRole("button", { name: "Add route" }))
   const dialog = screen.getByRole("dialog", { name: "Add route" })
@@ -289,7 +291,7 @@ test("clears a reviewed priority when concurrent conflicts change", async () => 
 
 test("inserts a strict combined refinement after its broad route", async () => {
   const user = userEvent.setup()
-  const broad = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const broad = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [broad] }) })
   await user.click(await screen.findByRole("button", { name: "Add route" }))
   const dialog = screen.getByRole("dialog", { name: "Add route" })
@@ -303,17 +305,17 @@ test("inserts a strict combined refinement after its broad route", async () => {
   await user.click(within(dialog).getByRole("button", { name: "Add route" }))
   await waitFor(() => expect(client.update).toHaveBeenCalled())
   expect(client.update.mock.calls.at(-1)?.[0].routing).toEqual([broad, {
-    match: { model: { provider: Provider.Bymorning, id: sol.id }, tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id },
+    match: { model: { provider: bymorning, id: sol.id }, tool: "jira_search" }, to: { provider: bymorning, id: sol.id },
   }])
 })
 
 test("keeps an unsatisfiable mixed-priority route open for review", async () => {
   const user = userEvent.setup()
   const combined = {
-    match: { model: { provider: Provider.Bymorning, id: sol.id }, tool: "jira_search" },
-    to: { provider: Provider.Bymorning, id: luna.id },
+    match: { model: { provider: bymorning, id: sol.id }, tool: "jira_search" },
+    to: { provider: bymorning, id: luna.id },
   } as const
-  const read = { match: { tool: "read" }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const read = { match: { tool: "read" }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [combined, read] }) })
   await user.click(await screen.findByRole("button", { name: "Add route" }))
   const dialog = screen.getByRole("dialog", { name: "Add route" })
@@ -334,8 +336,8 @@ test("keeps an unsatisfiable mixed-priority route open for review", async () => 
 test("preserves an unchanged edited route's position", async () => {
   const user = userEvent.setup()
   const routing: Array<RoutingRule> = [
-    { match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: luna.id } },
-    { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } },
+    { match: { tool: "jira_search" }, to: { provider: bymorning, id: luna.id } },
+    { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } },
   ]
   const client = mount({ config: emptyConfig({ routing: routing as ApiConfigGetOutput["routing"] }) })
   await screen.findByRole("list", { name: "Routes" })
@@ -349,8 +351,8 @@ test("preserves an unchanged edited route's position", async () => {
 
 test("edits a uniquely matched route after it moves", async () => {
   const user = userEvent.setup()
-  const original = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
-  const other = { match: { tool: "read" }, to: { provider: Provider.Bymorning, id: sol.id } } as const
+  const original = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
+  const other = { match: { tool: "read" }, to: { provider: bymorning, id: sol.id } } as const
   const client = mount({ config: emptyConfig({ routing: [other, original] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 2, "Edit")
@@ -367,8 +369,8 @@ test("edits a uniquely matched route after it moves", async () => {
 test("edits a later duplicate matcher instead of rejecting the first matcher's destination", async () => {
   const user = userEvent.setup()
   const routing: Array<RoutingRule> = [
-    { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: sol.id } },
-    { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } },
+    { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: sol.id } },
+    { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } },
   ]
   const client = mount({ config: emptyConfig({ routing: routing as ApiConfigGetOutput["routing"] }) })
   await screen.findByRole("list", { name: "Routes" })
@@ -385,8 +387,8 @@ test("edits a later duplicate matcher instead of rejecting the first matcher's d
 
 test("reviews duplicate matchers as precedence conflicts and saves the selected winner", async () => {
   const user = userEvent.setup()
-  const first = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: sol.id } } as const
-  const second = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const first = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: sol.id } } as const
+  const second = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [first, second] }) })
 
   await user.click(await screen.findByRole("button", { name: "1 routing conflict needs review" }))
@@ -402,8 +404,8 @@ test("reviews duplicate matchers as precedence conflicts and saves the selected 
 test("restores focus to the conflict review button after closing Edit", async () => {
   const user = userEvent.setup()
   mount({ config: emptyConfig({ routing: [
-    { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } },
-    { match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id } },
+    { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } },
+    { match: { tool: "jira_search" }, to: { provider: bymorning, id: sol.id } },
   ] }) })
   const review = await screen.findByRole("button", { name: "1 routing conflict needs review" })
 
@@ -416,7 +418,7 @@ test("restores focus to the conflict review button after closing Edit", async ()
 
 test("edits the selected occurrence of exact duplicate rules", async () => {
   const user = userEvent.setup()
-  const duplicate = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const duplicate = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [duplicate, duplicate] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 2, "Edit")
@@ -429,13 +431,13 @@ test("edits the selected occurrence of exact duplicate rules", async () => {
   await waitFor(() => expect(client.update).toHaveBeenCalledOnce())
   expect(client.update.mock.calls[0]?.[0].routing).toEqual([
     duplicate,
-    { match: { model: duplicate.match.model }, to: { provider: Provider.Bymorning, id: sol.id } },
+    { match: { model: duplicate.match.model }, to: { provider: bymorning, id: sol.id } },
   ])
 })
 
 test("saves the selected exact duplicate when the opening snapshot is unchanged", async () => {
   const user = userEvent.setup()
-  const duplicate = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const duplicate = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [duplicate, duplicate] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 2, "Edit")
@@ -448,8 +450,8 @@ test("saves the selected exact duplicate when the opening snapshot is unchanged"
 
 test("rejects an edit when reordered exact duplicates make the occurrence ambiguous", async () => {
   const user = userEvent.setup()
-  const duplicate = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
-  const other = { match: { tool: "read" }, to: { provider: Provider.Bymorning, id: sol.id } } as const
+  const duplicate = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
+  const other = { match: { tool: "read" }, to: { provider: bymorning, id: sol.id } } as const
   const client = mount({ config: emptyConfig({ routing: [other, duplicate, duplicate] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 3, "Edit")
@@ -465,7 +467,7 @@ test("rejects an edit when reordered exact duplicates make the occurrence ambigu
 
 test("rejects an edit when the route was concurrently deleted", async () => {
   const user = userEvent.setup()
-  const original = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const original = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [original] }) })
   await screen.findByRole("list", { name: "Routes" })
   await user.click(screen.getByRole("button", { name: "Actions for routing rule 1" }))
@@ -488,8 +490,8 @@ test("rejects an edit when the route was concurrently deleted", async () => {
 
 test("rejects an edit when the route was concurrently replaced", async () => {
   const user = userEvent.setup()
-  const original = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
-  const replacement = { match: { model: original.match.model }, to: { provider: Provider.Bymorning, id: sol.id } } as const
+  const original = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
+  const replacement = { match: { model: original.match.model }, to: { provider: bymorning, id: sol.id } } as const
   const client = mount({ config: emptyConfig({ routing: [original] }) })
   await screen.findByRole("list", { name: "Routes" })
   await user.click(screen.getByRole("button", { name: "Actions for routing rule 1" }))
@@ -512,8 +514,8 @@ test("rejects an edit when the route was concurrently replaced", async () => {
 
 test("removes a uniquely matched route after it moves", async () => {
   const user = userEvent.setup()
-  const original = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
-  const other = { match: { tool: "read" }, to: { provider: Provider.Bymorning, id: sol.id } } as const
+  const original = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
+  const other = { match: { tool: "read" }, to: { provider: bymorning, id: sol.id } } as const
   const client = mount({ config: emptyConfig({ routing: [other, original] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 2, "Remove")
@@ -528,8 +530,8 @@ test("removes a uniquely matched route after it moves", async () => {
 
 test("rejects removal when reordered duplicates make the occurrence ambiguous", async () => {
   const user = userEvent.setup()
-  const duplicate = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
-  const other = { match: { tool: "read" }, to: { provider: Provider.Bymorning, id: sol.id } } as const
+  const duplicate = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
+  const other = { match: { tool: "read" }, to: { provider: bymorning, id: sol.id } } as const
   const client = mount({ config: emptyConfig({ routing: [other, duplicate, duplicate] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 3, "Remove")
@@ -545,7 +547,7 @@ test("rejects removal when reordered duplicates make the occurrence ambiguous", 
 
 test("removes the selected occurrence when the opening duplicate snapshot is unchanged", async () => {
   const user = userEvent.setup()
-  const duplicate = { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } } as const
+  const duplicate = { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } } as const
   const client = mount({ config: emptyConfig({ routing: [duplicate, duplicate] }) })
   await screen.findByRole("list", { name: "Routes" })
   await chooseAction(user, 2, "Remove")
@@ -577,8 +579,8 @@ test("Escape closes the nested Model picker and restores its trigger focus", asy
 test("shows conflict review and edit/remove actions", async () => {
   const user = userEvent.setup()
   const client = mount({ config: emptyConfig({ routing: [
-    { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } },
-    { match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id } },
+    { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } },
+    { match: { tool: "jira_search" }, to: { provider: bymorning, id: sol.id } },
   ] }) })
   const review = await screen.findByRole("button", { name: "1 routing conflict needs review" })
   await user.click(review)
@@ -596,14 +598,14 @@ test("shows conflict review and edit/remove actions", async () => {
   expect(confirm).toHaveTextContent("GPT-5 Mini → GPT-5")
   await user.click(within(confirm).getByRole("button", { name: "Remove" }))
   expect(await screen.findByText("Route removed")).toBeInTheDocument()
-  expect(client.update).toHaveBeenLastCalledWith(expect.objectContaining({ routing: [{ match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id } }] }))
+  expect(client.update).toHaveBeenLastCalledWith(expect.objectContaining({ routing: [{ match: { tool: "jira_search" }, to: { provider: bymorning, id: sol.id } }] }))
 })
 
 test("pluralizes multiple routing conflicts", async () => {
   mount({ config: emptyConfig({ routing: [
-    { match: { model: { provider: Provider.Bymorning, id: sol.id } }, to: { provider: Provider.Bymorning, id: luna.id } },
-    { match: { tool: "jira_search" }, to: { provider: Provider.Bymorning, id: sol.id } },
-    { match: { tool: "read" }, to: { provider: Provider.Bymorning, id: luna.id } },
+    { match: { model: { provider: bymorning, id: sol.id } }, to: { provider: bymorning, id: luna.id } },
+    { match: { tool: "jira_search" }, to: { provider: bymorning, id: sol.id } },
+    { match: { tool: "read" }, to: { provider: bymorning, id: luna.id } },
   ] }) })
 
   expect(await screen.findByRole("button", { name: "2 routing conflicts need review" })).toBeInTheDocument()
@@ -624,12 +626,12 @@ test("retries a failed tool catalog without blocking model routes", async () => 
 test("lists Auto models separately and keeps config-only tier rules read-only", async () => {
   const user = userEvent.setup()
   const tiers = {
-    tiers: [{ name: "fast", model: { provider: Provider.Bymorning, id: sol.id }, description: "Short questions" }],
+    tiers: [{ name: "fast", model: { provider: bymorning, id: sol.id }, description: "Short questions" }],
     default: "fast",
-    judge: { model: { provider: Provider.Bymorning, id: sol.id } },
+    judge: { model: { provider: bymorning, id: sol.id } },
   }
   mount({ config: emptyConfig({ routing: [
-    { match: { model: { provider: "auto" as typeof Provider.Bymorning, id: "general" } }, to: tiers },
+    { match: { model: { provider: "auto" as Provider.Name, id: "general" } }, to: tiers },
     { match: { text: { pattern: "urgent" } }, to: tiers },
   ] as ApiConfigGetOutput["routing"] }) })
   const auto = await screen.findByRole("list", { name: "Auto models" })
@@ -645,10 +647,10 @@ test("lists Auto models separately and keeps config-only tier rules read-only", 
 test("matches a requested Auto model through the same model picker", async () => {
   const user = userEvent.setup()
   const client = mount({ config: emptyConfig({ routing: [
-    { match: { model: { provider: "auto" as typeof Provider.Bymorning, id: "general" } }, to: {
-      tiers: [{ name: "fast", model: { provider: Provider.Bymorning, id: sol.id }, description: "Short questions" }],
+    { match: { model: { provider: "auto" as Provider.Name, id: "general" } }, to: {
+      tiers: [{ name: "fast", model: { provider: bymorning, id: sol.id }, description: "Short questions" }],
       default: "fast",
-      judge: { model: { provider: Provider.Bymorning, id: sol.id } },
+      judge: { model: { provider: bymorning, id: sol.id } },
     } },
   ] as ApiConfigGetOutput["routing"] }) })
   await user.click(await screen.findByRole("button", { name: "Add route" }))
@@ -660,6 +662,6 @@ test("matches a requested Auto model through the same model picker", async () =>
   await waitFor(() => expect(client.update).toHaveBeenCalled())
   expect((client.update.mock.calls.at(-1)?.[0].routing as ReadonlyArray<unknown>).at(-1)).toEqual({
     match: { model: { provider: "auto", id: "general" } },
-    to: { provider: Provider.Bymorning, id: luna.id },
+    to: { provider: bymorning, id: luna.id },
   })
 })

@@ -6,6 +6,8 @@ import { Effect, Layer } from "effect"
 import { Catalog } from "../../src/llm-gateway/catalog.js"
 import * as Compatible from "@opencode-ai/ai/providers/openai-compatible"
 
+const bymorning = ProviderSchema.Name.make("bymorning")
+
 const model = ModelSchema.Info.make({
   id: "custom-model",
   provider: ProviderSchema.Name.make("custom"),
@@ -70,7 +72,7 @@ const catalog = Layer.succeed(
 const luna = ModelSchema.Info.make({
   ...model,
   id: "gpt-5.6-luna",
-  provider: ProviderSchema.Bymorning,
+  provider: bymorning,
   apiID: "upstream-luna",
   name: "Luna",
 })

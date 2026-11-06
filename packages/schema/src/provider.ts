@@ -15,8 +15,6 @@ export const Name = NameValue.pipe(Schema.brand("Provider.Name"))
 /** Workspace-scoped Provider name. */
 export type Name = typeof Name.Type
 
-/** Legacy identity retained so persisted references decode as unavailable. */
-export const Bymorning = Name.make("bymorning")
 export const OpenAI = Name.make("openai")
 export const DeepSeek = Name.make("deepseek")
 export const Anthropic = Name.make("anthropic")

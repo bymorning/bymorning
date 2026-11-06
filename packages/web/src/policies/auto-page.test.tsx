@@ -11,12 +11,14 @@ import { renderForm as render } from "../ui/form-query.test-support"
 import { AutoModelPage } from "./auto-page"
 import type { CatalogModel } from "./model-picker"
 
+const bymorning = Provider.Name.make("bymorning")
+
 afterEach(() => { cleanup(); toaster.dismiss(); vi.restoreAllMocks() })
 
 const workspaceID = Workspace.ID.make("wrk_06689145a001WPprT0zKiRAQWn")
-const sol: CatalogModel = { id: "gpt-5.6-sol", name: "GPT-5 Mini", provider: Provider.Bymorning, variants: [] }
-const luna: CatalogModel = { id: "gpt-5.6-luna", name: "GPT-5", provider: Provider.Bymorning, variants: [] }
-const general = { provider: "auto" as typeof Provider.Bymorning, id: "general" }
+const sol: CatalogModel = { id: "gpt-5.6-sol", name: "GPT-5 Mini", provider: bymorning, variants: [] }
+const luna: CatalogModel = { id: "gpt-5.6-luna", name: "GPT-5", provider: bymorning, variants: [] }
+const general = { provider: "auto" as Provider.Name, id: "general" }
 const ref = (model: CatalogModel) => ({ provider: model.provider, id: model.id })
 const autoRule = {
   match: { model: general },
