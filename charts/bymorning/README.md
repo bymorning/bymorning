@@ -18,9 +18,10 @@ and the runtime default seccomp profile. The image is pinned by digest, and the 
 
 ## Install
 
-The chart is published to `oci://ghcr.io/bymorning/charts/bymorning` from the first release after 1.3.2, signed like the
-images. Until then, install from a checkout of this repository (`helm install bymorning ./charts/bymorning`); it runs
-the 1.3.2 image. Verify the image first, and use its digest (see [the download page](https://bymorning.ai/download)):
+The chart is published to `oci://ghcr.io/bymorning/charts/bymorning` with every release from 1.3.3, signed like the
+images; its version is the release version, and it runs that release's image. A checkout of this repository works too
+(`helm install bymorning ./charts/bymorning`). Verify the image first, and use its digest (see
+[the download page](https://bymorning.ai/download)):
 
 ```sh
 version=<version>
@@ -30,7 +31,13 @@ cosign verify ghcr.io/bymorning/bymorning:$version \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
 
-Once the chart is published, verify it the same way (`cosign verify ghcr.io/bymorning/charts/bymorning:<version>`).
+Then verify the chart the same way, before you install it:
+
+```sh
+cosign verify ghcr.io/bymorning/charts/bymorning:$version \
+  --certificate-identity https://github.com/bymorning/bymorning/.github/workflows/full-gate.yml@refs/tags/v$version \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
 
 ### A cloud installation
 
@@ -62,7 +69,7 @@ ingress:
 ```
 
 ```sh
-helm install bymorning ./charts/bymorning -f values.yaml
+helm install bymorning oci://ghcr.io/bymorning/charts/bymorning --version $version -f values.yaml
 ```
 
 For Azure (AKS with workload identity), set `STORAGE_PROVIDER: azure-blob`, `STORAGE_ACCOUNT_URL`,
