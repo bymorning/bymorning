@@ -61,7 +61,8 @@ it("renders the client and workspaces and approves the selected workspace", asyn
   const get = vi.fn().mockResolvedValue({
     clientName: "Example MCP",
     clientID: "ocl_test" as ApiOauthRequestGetOutput["clientID"],
-  })
+    redirectOrigins: ["http://127.0.0.1:33418"],
+  } satisfies ApiOauthRequestGetOutput)
   const approve = vi.fn().mockResolvedValue({ url: "#approved" })
   mount({ get, approve })
 
@@ -77,6 +78,25 @@ it("renders the client and workspaces and approves the selected workspace", asyn
     } satisfies ApiOauthApproveInput),
   )
   await waitFor(() => expect(window.location.hash).toBe("#approved"))
+})
+
+it("shows where the approval will be sent, and that the client chose its own name", async () => {
+  const get = vi.fn().mockResolvedValue({
+    clientName: "Claude Code",
+    clientID: "ocl_test" as ApiOauthRequestGetOutput["clientID"],
+    redirectOrigins: ["http://127.0.0.1:33418", "https://attacker.example"],
+  } satisfies ApiOauthRequestGetOutput)
+  mount({ get })
+
+  await screen.findByRole("heading", { name: "Claude Code wants access to a workspace" })
+  const destination = document.querySelector("[data-oauth-destination]")
+  expect(destination).not.toBeNull()
+  expect(destination!.textContent).toContain("After you approve, the result is sent to")
+  expect([...destination!.querySelectorAll("code")].map((node) => node.textContent)).toEqual([
+    "http://127.0.0.1:33418",
+    "https://attacker.example",
+  ])
+  expect(destination!.textContent).toContain("The name above is chosen by the app itself")
 })
 
 it("renders an unavailable state when the authorization request is not found", async () => {
@@ -95,7 +115,10 @@ it("renders an unavailable state when the authorization request is not found", a
 
 it("re-enables denial after a rejected request and redirects only after a successful retry", async () => {
   const deny = vi.fn().mockRejectedValueOnce(new Error("Cancellation failed")).mockResolvedValue({ url: "#denied" })
-  mount({ get: vi.fn().mockResolvedValue({ clientName: "Example", clientID: "ocl_test" }), deny })
+  mount({
+    get: vi.fn().mockResolvedValue({ clientName: "Example", clientID: "ocl_test", redirectOrigins: [] }),
+    deny,
+  })
   await userEvent.click(await screen.findByRole("button", { name: "Cancel" }))
   expect(await screen.findByRole("alert")).toHaveTextContent("Cancellation failed")
   expect(window.location.hash).toBe("")
@@ -110,7 +133,7 @@ it("does not redirect a newer request when the old approval completes", async ()
   const approve = vi.fn(() => gate.promise)
   const deny = vi.fn().mockResolvedValue({ url: "#new-request" })
   const { history } = mount({
-    get: vi.fn().mockResolvedValue({ clientName: "Example", clientID: "ocl_test" }),
+    get: vi.fn().mockResolvedValue({ clientName: "Example", clientID: "ocl_test", redirectOrigins: [] }),
     approve,
     deny,
   })

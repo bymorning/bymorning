@@ -652,6 +652,7 @@ export type Endpoint7_0Input = { readonly id: string & Brand.Brand<"OAuthAuthori
 export type Endpoint7_0Output = {
   readonly clientName: string
   readonly clientID: string & Brand.Brand<"OAuthClient.ID">
+  readonly redirectOrigins: ReadonlyArray<string>
 }
 export type ApiOauthRequestGetOperation<E = never> = (input: Endpoint7_0Input) => Effect.Effect<Endpoint7_0Output, E>
 

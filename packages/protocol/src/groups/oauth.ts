@@ -8,7 +8,14 @@ import { ForbiddenError, OAuthRequestNotFoundError } from "../errors.js"
 export const OAuthGroup = HttpApiGroup.make("api.oauth")
   .add(HttpApiEndpoint.get("oauth.request.get", "/oauth/request", {
     query: Schema.Struct({ id: OAuthAuthorization.ID }),
-    success: Schema.Struct({ clientName: Schema.String, clientID: OAuthClient.ID }),
+    // `clientName` is whatever the client registered itself as, so it proves nothing. `redirectOrigins` is where the
+    // client's registered redirect URIs send the result of an approval (scheme and host only), which the consent
+    // page shows so a member can tell a local app from someone else's server.
+    success: Schema.Struct({
+      clientName: Schema.String,
+      clientID: OAuthClient.ID,
+      redirectOrigins: Schema.Array(Schema.String),
+    }),
     error: OAuthRequestNotFoundError,
   }))
   .add(HttpApiEndpoint.post("oauth.approve", "/oauth/approve", {
