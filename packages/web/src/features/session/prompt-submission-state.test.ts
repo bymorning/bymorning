@@ -10,6 +10,8 @@ import { createDraftPromptSession, createPromptSession } from "../../context/pro
 import type { SyncStorage } from "../../runtime/persistence/storage"
 import { createPromptSubmissionState } from "./prompt-submission-state"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const storage: SyncStorage = {
   getItem: () => null,
   setItem: () => undefined,
@@ -39,7 +41,7 @@ describe("createPromptSubmissionState", () => {
       const draft = createDraftPromptSession("draft", { text: "Plan" }, storage)
       const selection = {
         agent: Agent.DefaultID,
-        model: { provider: Provider.Bymorning, id: "fallback", variant: "fast" },
+        model: { provider: bymorning, id: "fallback", variant: "fast" },
       }
 
       const submission = createPromptSubmissionState({ target: draft, selection })
@@ -56,7 +58,7 @@ describe("createPromptSubmissionState", () => {
           text: "Plan the morning",
           cursor: 8,
           agent: Agent.DefaultID,
-          model: { provider: Provider.Bymorning, id: "model", variant: null },
+          model: { provider: bymorning, id: "model", variant: null },
         },
         storage,
       )
@@ -67,7 +69,7 @@ describe("createPromptSubmissionState", () => {
       expect(submission.cursor).toBe(8)
       expect(submission.selection).toEqual({
         agent: Agent.DefaultID,
-        model: { provider: Provider.Bymorning, id: "model", variant: null },
+        model: { provider: bymorning, id: "model", variant: null },
       })
       expect(submission.current(draft)).toBe(true)
 
@@ -106,7 +108,7 @@ describe("createPromptSubmissionState", () => {
         {
           text: "submitted",
           agent: Agent.DefaultID,
-          model: { provider: Provider.Bymorning, id: "old" },
+          model: { provider: bymorning, id: "old" },
         },
         storage,
       )
@@ -115,7 +117,7 @@ describe("createPromptSubmissionState", () => {
       submission.clear()
       session.selection.set({
         agent: Agent.ID.make("review"),
-        model: { provider: Provider.Bymorning, id: "new", variant: "fast" },
+        model: { provider: bymorning, id: "new", variant: "fast" },
       })
 
       const restored = submission.restore()
@@ -124,7 +126,7 @@ describe("createPromptSubmissionState", () => {
       expect(session.current()).toBe("submitted")
       expect(session.selection.current()).toEqual({
         agent: Agent.ID.make("review"),
-        model: { provider: Provider.Bymorning, id: "new", variant: "fast" },
+        model: { provider: bymorning, id: "new", variant: "fast" },
       })
       dispose()
     }))

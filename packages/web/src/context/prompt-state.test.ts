@@ -9,6 +9,8 @@ import { describe, expect, it } from "vitest"
 import type { AsyncStorage, SyncStorage } from "../runtime/persistence/storage"
 import { createDraftPromptSession, createPromptSession, createPromptState, promptStorageKey } from "./prompt-state"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const workspaceID = Workspace.ID.create()
 const projectID = Project.ID.create()
 const sessionID = Session.ID.make("00000000-0000-4000-8000-000000000001")
@@ -22,7 +24,7 @@ const syncStorage = (values: Map<string, string>): SyncStorage => ({
 describe("prompt state", () => {
   it("initializes text, cursor, Agent, and a cloned Model selection", () =>
     createRoot((dispose) => {
-      const model = { provider: Provider.Bymorning, id: "model", variant: "fast" }
+      const model = { provider: bymorning, id: "model", variant: "fast" }
       const prompt = createPromptState({ text: "hello", agent: Agent.DefaultID, model })
 
       expect(prompt.current()).toBe("hello")
@@ -58,7 +60,7 @@ describe("prompt state", () => {
 
       prompt.selection.set({
         agent: Agent.ID.make("review"),
-        model: { provider: Provider.Bymorning, id: "new" },
+        model: { provider: bymorning, id: "new" },
       })
       expect(prompt.contentRevision()).toBe(content)
       expect(prompt.revision()).not.toBe(revision)
@@ -77,10 +79,10 @@ describe("prompt state", () => {
       expect(prompt.cursor()).toBeUndefined()
       expect(prompt.model.current()).toBeUndefined()
 
-      prompt.model.set({ provider: Provider.Bymorning, id: "model", variant: null })
-      expect(prompt.model.current()).toEqual({ provider: Provider.Bymorning, id: "model", variant: null })
-      prompt.model.set({ provider: Provider.Bymorning, id: "model" })
-      expect(prompt.model.current()).toEqual({ provider: Provider.Bymorning, id: "model" })
+      prompt.model.set({ provider: bymorning, id: "model", variant: null })
+      expect(prompt.model.current()).toEqual({ provider: bymorning, id: "model", variant: null })
+      prompt.model.set({ provider: bymorning, id: "model" })
+      expect(prompt.model.current()).toEqual({ provider: bymorning, id: "model" })
       expect(prompt.model.current()).not.toHaveProperty("variant")
       dispose()
     }))
@@ -147,7 +149,7 @@ describe("prompt state", () => {
           version: 1,
           text: "legacy names",
           agent: Agent.DefaultID,
-          model: { provider: Provider.Bymorning, id: "model" },
+          model: { provider: bymorning, id: "model" },
         }),
       )
       expect(createDraftPromptSession("old-names", { text: "safe names" }, storage).current()).toBe("safe names")

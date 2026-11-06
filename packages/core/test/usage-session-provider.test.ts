@@ -21,12 +21,14 @@ import { Provider } from "../src/provider.js"
 import { Usage } from "../src/usage.js"
 import { Service as UserService } from "../src/user.js"
 
+const bymorning = ProviderSchema.Name.make("bymorning")
+
 const workspaceID = Workspace.ID.create()
 const accountID = Account.ID.create()
 const userID = User.ID.create()
 const actor = new UserActor({ type: "user", properties: { workspaceID, accountID, userID, role: "admin" } })
 const model = Model.Info.make({
-  id: "model", provider: ProviderSchema.Bymorning, apiID: "upstream", name: "Test", description: "",
+  id: "model", provider: bymorning, apiID: "upstream", name: "Test", description: "",
   status: "active", releaseDate: "2026-01-01", lastUpdated: "2026-01-01", openWeights: false,
   capabilities: { temperature: true, reasoning: false, attachment: false, tools: false, input: [], output: [] },
   variants: [], limit: { context: 1000, output: 100 }, cost: { cache: {} },

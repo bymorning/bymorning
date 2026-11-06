@@ -15,12 +15,14 @@ import { Context, Deferred, Effect, Exit, Fiber, Layer, PubSub, Schema, Stream }
 import { expect, test } from "vitest"
 import { database } from "./graph.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 if (process.env.DATABASE_URL === undefined) throw new Error("DATABASE_URL is required for Core integration tests")
 
 const resolved = (input: ConfigSchema.Stored) => Schema.decodeUnknownSync(ConfigSchema.Info)(input)
-const fast = Model.Ref.make({ provider: Provider.Bymorning, id: "fast" })
-const careful = Model.Ref.make({ provider: Provider.Bymorning, id: "careful" })
-const secondModel = Model.Ref.make({ provider: Provider.Bymorning, id: "second" })
+const fast = Model.Ref.make({ provider: bymorning, id: "fast" })
+const careful = Model.Ref.make({ provider: bymorning, id: "careful" })
+const secondModel = Model.Ref.make({ provider: bymorning, id: "second" })
 const permissions = [
   { action: "read", resource: "*", effect: "deny" as const },
   { action: "linear_*", resource: "*", effect: "allow" as const },
@@ -452,7 +454,7 @@ test("Config persists custom Models as server-owned state and removes their enab
         )
         const actor = system(workspaceID)
         const custom = Model.Custom.make({
-          provider: Provider.Bymorning,
+          provider: bymorning,
           id: "custom",
           name: "Custom",
           apiID: "upstream-v1",

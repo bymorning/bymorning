@@ -8,7 +8,9 @@ import { Headers, HttpClientRequest, HttpClientResponse } from "effect/unstable/
 import { PluginHooks } from "../../src/plugin/hooks.js"
 import { SessionHttp } from "../../src/session/http.js"
 
-const model = Model.Ref.make({ provider: Provider.Bymorning, id: "gpt-5.6-sol" })
+const bymorning = Provider.Name.make("bymorning")
+
+const model = Model.Ref.make({ provider: bymorning, id: "gpt-5.6-sol" })
 const context = {
   purpose: "assistant" as const,
   sessionID: Session.ID.make("00000000-0000-4000-8000-000000000801"),

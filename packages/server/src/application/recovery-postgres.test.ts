@@ -24,6 +24,8 @@ import { postgres } from "../../test/postgres.js"
 import { WorkspaceMap } from "../workspace-map.js"
 import { WorkspaceRecovery } from "./recovery.js"
 
+const bymorning = ProviderSchema.Name.make("bymorning")
+
 const database = postgres()
 
 it("acquires only Workspaces with durable work requiring recovery", async () => {
@@ -103,7 +105,7 @@ it("acquires only Workspaces with durable work requiring recovery", async () => 
                 userID,
                 projectID,
                 agent,
-                model: { id: "recovery", provider: ProviderSchema.Bymorning },
+                model: { id: "recovery", provider: bymorning },
                 timeCreated: now,
                 timeUpdated: now,
               })
@@ -114,7 +116,7 @@ it("acquires only Workspaces with durable work requiring recovery", async () => 
               projectID,
               ...(workspaceID === childOnlyWorkspace ? { parentID: childParentID } : {}),
               agent,
-              model: { id: "recovery", provider: ProviderSchema.Bymorning },
+              model: { id: "recovery", provider: bymorning },
               timeCreated: now,
               timeUpdated: now,
             })
@@ -159,7 +161,7 @@ it("acquires only Workspaces with durable work requiring recovery", async () => 
               createdAt: now,
               type: "assistant",
               agent,
-              model: { id: "recovery", provider: ProviderSchema.Bymorning },
+              model: { id: "recovery", provider: bymorning },
               content:
                 fixture.finish === "tool-error"
                   ? [

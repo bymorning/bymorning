@@ -20,6 +20,8 @@ import { SubagentTool } from "../src/plugin/internal/tool/subagent.js"
 import { PluginRuntime } from "../src/plugin/runtime.js"
 import { agentService } from "./service-fixtures.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const parentID = Session.ID.make("00000000-0000-4000-8000-000000000801")
 const childID = Session.ID.make("00000000-0000-4000-8000-000000000802")
 const otherID = Session.ID.make("00000000-0000-4000-8000-000000000803")
@@ -27,8 +29,8 @@ const messageID = MessageSchema.ID.make("00000000-0000-4000-8000-000000000804")
 const callerID = Agent.ID.make("caller")
 const reviewerID = Agent.ID.make("reviewer")
 const fallbackID = Agent.ID.make("fallback")
-const parentModel = { provider: Provider.Bymorning, id: "parent" }
-const childModel = { provider: Provider.Bymorning, id: "child" }
+const parentModel = { provider: bymorning, id: "parent" }
+const childModel = { provider: bymorning, id: "child" }
 type CatalogContext = SessionContext & { readonly permissions: PermissionSchema.Ruleset }
 
 const caller = makeAgent(callerID, "primary", {

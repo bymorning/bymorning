@@ -64,6 +64,8 @@ import { WorkspaceMap } from "./workspace-map.js"
 import { WebCookie } from "./web-cookie.js"
 import { WebProvider } from "./web-provider.js"
 
+const bymorning = ProviderSchema.Name.make("bymorning")
+
 const accountID = AccountSchema.ID.create()
 const workspaceID = Workspace.ID.create()
 const otherWorkspaceID = Workspace.ID.create()
@@ -164,7 +166,7 @@ let commandAttemptStatus = Integration.CommandAttemptStatus.make({
   time: { created: 1, expires: 2 },
 })
 const providerInfo = ProviderSchema.Info.make({
-  name: ProviderSchema.Bymorning,
+  name: bymorning,
   displayName: "Bymorning",
   api: ProviderSchema.API.make("https://bymorning.ai/gateway/v1"),
   format: "oa-compat",
@@ -204,7 +206,7 @@ const unavailableModel = ModelSchema.Ref.make({
 })
 const routeModel = ModelSchema.Info.make({
   id: "route-model",
-  provider: ProviderSchema.Bymorning,
+  provider: bymorning,
   apiID: "route-model",
   name: "Route model",
   description: "",
@@ -1010,7 +1012,7 @@ const workspaceMapNode = WorkspaceMap.node({
             const visible = () =>
               Effect.sync(() =>
                 list
-                  .filter((info) => info.provider === ProviderSchema.Bymorning)
+                  .filter((info) => info.provider === bymorning)
                   .map((info, index) =>
                     ModelSchema.Management.make({
                       info,
@@ -1035,7 +1037,7 @@ const workspaceMapNode = WorkspaceMap.node({
                   Effect.succeed({ ...providerInfo, status: input.status }),
               },
               model: {
-                available: () => Effect.succeed(list.filter((info) => info.provider === ProviderSchema.Bymorning)),
+                available: () => Effect.succeed(list.filter((info) => info.provider === bymorning)),
                 visible,
                 toggle: (input: ModelSchema.ToggleInput) =>
                   visible().pipe(
@@ -2210,7 +2212,7 @@ describe("HTTP authentication admission", () => {
       const models = await fetch(`${baseURL}/api/models`, { headers: cookie })
       expect(models.status).toBe(200)
       const discovered = Schema.decodeUnknownSync(Schema.Array(ModelSchema.Management))(await models.json())
-      expect(discovered[0]?.info).toHaveProperty("provider", ProviderSchema.Bymorning)
+      expect(discovered[0]?.info).toHaveProperty("provider", bymorning)
       expect(discovered[0]?.info).not.toHaveProperty("providerID")
 
       expect((await fetch(`${baseURL}/api/providers?workspace=${workspaceID}`, { headers: cookie })).status).toBe(200)

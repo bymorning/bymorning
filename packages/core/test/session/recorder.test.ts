@@ -16,6 +16,8 @@ import { SessionRecorder } from "../../src/session/recorder.js"
 import { ToolOutput } from "../../src/tool-output.js"
 import { recorderDatabase } from "./recorder-database.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const sessionID = Session.ID.make("00000000-0000-4000-8000-000000000821")
 const workspaceID = Workspace.ID.make("wrk_recorder")
 const assistant = Assistant.make({
@@ -25,7 +27,7 @@ const assistant = Assistant.make({
   createdAt: new Date(0),
   type: "assistant",
   agent: Agent.DefaultID,
-  model: { provider: Provider.Bymorning, id: "test" },
+  model: { provider: bymorning, id: "test" },
   content: [],
   usage: Usage.make({
     cost: 0,

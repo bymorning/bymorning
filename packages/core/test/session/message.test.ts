@@ -6,6 +6,8 @@ import { Session } from "@bymorning/schema/session"
 import { empty } from "@bymorning/schema/usage"
 import { SessionMessage } from "../../src/session/message.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const base = {
   id: MessageSchema.ID.make("00000000-0000-4000-8000-000000000901"),
   sessionID: Session.ID.make("00000000-0000-4000-8000-000000000902"),
@@ -13,7 +15,7 @@ const base = {
   createdAt: new Date(0),
   type: "assistant" as const,
   agent: Agent.ID.make("general"),
-  model: { provider: Provider.Bymorning, id: "model" },
+  model: { provider: bymorning, id: "model" },
   finish: "unknown" as const,
   time: { created: new Date(0), completed: new Date(1) },
   usage: empty,

@@ -14,9 +14,11 @@ import { createController } from "../features/session/timeline-controller"
 import { parseTimeline } from "../features/session/session-presenter"
 import { createSessionProjection, type SessionReadiness } from "./session-state"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const sessionID = Session.ID.make("00000000-0000-4000-8000-000000000001")
 const id = (n: number) => MessageID.make(`00000000-0000-4000-8000-${String(n).padStart(12, "0")}`)
-const model = { provider: Provider.Bymorning, id: "model" }
+const model = { provider: bymorning, id: "model" }
 const usage = {
   cost: 0,
   costComplete: true,

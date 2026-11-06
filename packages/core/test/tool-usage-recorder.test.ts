@@ -12,10 +12,12 @@ import { it } from "@effect/vitest"
 import { Effect, Layer } from "effect"
 import { describe, expect } from "vitest"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const workspaceID = Workspace.ID.make("wrk_tool_usage_recorder")
 const userID = User.ID.make("usr_tool_usage_recorder")
 const sessionID = Session.ID.make("00000000-0000-4000-8000-000000000101")
-const model = { provider: Provider.Bymorning, id: "test" }
+const model = { provider: bymorning, id: "test" }
 const sessionEvent = {
   tool: "read",
   sessionID,

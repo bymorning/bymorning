@@ -13,11 +13,13 @@ import { Project } from "@bymorning/schema/project"
 import { Model } from "@bymorning/schema/model"
 import { Provider } from "@bymorning/schema/provider"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const sessionID = Session.ID.make("00000000-0000-4000-8000-000000000901")
 const projectID = Project.ID.make("prj_00000000000000000000000901")
 const agent = Agent.ID.make("build")
 const messageID = MessageID.make("00000000-0000-4000-8000-000000000902")
-const model = Model.Ref.make({ provider: Provider.Bymorning, id: "model" })
+const model = Model.Ref.make({ provider: bymorning, id: "model" })
 
 describe("SessionTools prepared snapshots", () => {
   it.effect("executes the captured definition and executor with the real Session caller", () => {

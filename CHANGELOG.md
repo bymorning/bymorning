@@ -24,6 +24,13 @@ application carries the version from the root `package.json`
 - `script/release/terraform-module.sh` exports the AWS module in the Terraform Registry layout (module at the root,
   README, LICENSE, `examples/basic`) for the `bymorning/terraform-aws-bymorning` mirror.
 
+### Fixed
+
+- The Models, Gateway, server runtime, and Plugins documentation no longer list a Bymorning Provider (`BYMORNING_API_KEY`)
+  or a `core.provider.bymorning` built-in. Neither exists. The bundled Providers are OpenAI, Anthropic, Google,
+  OpenCode Zen, Fireworks, and Amazon Bedrock. The unused `Provider.Bymorning` name is removed from
+  `@bymorning/schema`; Provider names are plain strings, so persisted references still decode.
+
 ## [1.3.2] — 2026-11-04
 
 Adds evaluation installations, the Docker Compose evaluation, an AWS installer, the security review package, and

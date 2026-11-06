@@ -34,6 +34,8 @@ import { Session } from "../src/session.js"
 import { SessionOperations } from "../src/session-operations.js"
 import { InstructionDiscovery } from "../src/instruction-discovery.js"
 
+const bymorning = Provider.Name.make("bymorning")
+
 const workspaceA = Workspace.ID.make("wrk_host_a")
 const workspaceB = Workspace.ID.make("wrk_host_b")
 const storageLayer = Storage.layer({
@@ -200,7 +202,7 @@ describe("PluginHost", () => {
     Effect.gen(function* () {
       const storage = yield* Storage.Service
       const provider = Provider.Info.make({
-        name: Provider.Bymorning,
+        name: bymorning,
         displayName: "ByMorning",
         api: Provider.API.make("https://api.example.com"),
         format: "openai",
@@ -208,7 +210,7 @@ describe("PluginHost", () => {
       })
       const info = Model.Info.make({
         id: "usable",
-        provider: Provider.Bymorning,
+        provider: bymorning,
         apiID: "usable",
         name: "Usable",
         description: "Usable model",
@@ -658,7 +660,7 @@ describe("PluginHost", () => {
         const storage = yield* Storage.Service
         const hooks = yield* PluginHooks.Service
         const host = PluginHost.make(services(workspaceA, storage, { shellHooks: hooks }), "promise-policy")
-        const requestedModel = Model.Ref.make({ provider: Provider.Bymorning, id: "gpt-5.6-sol" })
+        const requestedModel = Model.Ref.make({ provider: bymorning, id: "gpt-5.6-sol" })
         let effectObserved: unknown
         let promiseObserved: unknown
         let incorrectlyMatched = false
@@ -669,14 +671,14 @@ describe("PluginHost", () => {
             await context.session.hook(
               "model.request",
               (event) => {
-                event.model = { provider: Provider.Bymorning, id: "gpt-5.6-terra" }
+                event.model = { provider: bymorning, id: "gpt-5.6-terra" }
                 promiseObserved = {
                   requestedModel: event.requestedModel,
                   model: event.model,
                   purpose: event.purpose,
                 }
               },
-              { providerID: Provider.Bymorning },
+              { providerID: bymorning },
             )
             await context.session.hook(
               "model.request",
@@ -697,7 +699,7 @@ describe("PluginHost", () => {
                 purpose: event.purpose,
               }
             }),
-          { providerID: Provider.Bymorning },
+          { providerID: bymorning },
         )
 
         const routed = yield* hooks.trigger("session", "model.request", {
