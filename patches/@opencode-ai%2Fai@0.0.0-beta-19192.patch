@@ -186,3 +186,43 @@ index 627dcbf81c738fa45bb95992c1f6e44bf1128b78..f23b5174749c890bd9ffff3b65aa8f4c
              requireFinishReason: request.model.compatibility?.requireFinishReason ?? true,
          }),
          step: (state, event) => (event === DONE ? Effect.succeed([state, []]) : step(state, event)),
+diff --git a/dist/provider-error.js b/dist/provider-error.js
+index 061caf6ea762d712ab4b934d8a5116fa47950f36..9a7e5d9c888921b8feb1dddd91b2022e0d178337 100644
+--- a/dist/provider-error.js
++++ b/dist/provider-error.js
+@@ -30,7 +30,7 @@ const patterns = [
+     /request_too_large/i,
+ ];
+ const payloadPatterns = [/request entity too large/i, /payload too large/i, /request too large/i];
+-const exclusions = [/^(throttling error|service unavailable):/i, /rate limit/i, /too many requests/i];
++const exclusions = [/^(throttling error|service unavailable):/i, /rate limit/i, /too many requests/i, /throttling[-_\s]?exception/i];
+ export const isContextOverflow = (message) => !exclusions.some((pattern) => pattern.test(message)) &&
+     (patterns.some((pattern) => pattern.test(message)) || /^4(?:00|13)\s*(status code)?\s*\(no body\)/i.test(message));
+ export const isPayloadTooLarge = (message) => payloadPatterns.some((pattern) => pattern.test(message));
+@@ -52,7 +52,7 @@ const SERVER_CODES = new Set([
+     "serviceunavailableexception",
+ ]);
+ const INVALID_REQUEST_CODES = new Set(["invalid_prompt", "invalid_request_error", "validationexception"]);
+-const RATE_LIMIT_TEXT = /rate increased too quickly|rate[-_\s]?limit|too[_\s]?many[_\s]?requests/i;
++const RATE_LIMIT_TEXT = /rate increased too quickly|rate[-_\s]?limit|too[_\s]?many[_\s]?requests|throttling[-_\s]?exception/i;
+ const QUOTA_TEXT = /insufficient[-_\s]?quota|quota[-_\s]?exceeded/i;
+ const CONTENT_POLICY_TEXT = /content[-_\s]?policy|content_filter|safety/i;
+ const SERVER_ERROR_TEXT = /\b(?:try again|(?:please |you can )?retry (?:the |this |your )?request|try (?:the |this |your )?request again|(?:currently |temporarily )?at capacity|overloaded|temporarily unavailable|service[-_\s]?unavailable|(?:server|internal)[-_\s]?error|server (?:is )?busy|provider returned (?:an )?error|resource[-_\s]?exhausted|upstream (?:connect|connection|request)|request buffer limit while retrying upstream)\b/i;
+@@ -70,11 +70,16 @@ export function classifyProviderFailure(input) {
+     // (e.g. overflow phrases nested in a JSON error body) still classify.
+     const text = [input.message, body].filter((value) => value.length > 0).join("\n");
+     const clientScoped = input.status === undefined || (input.status >= 400 && input.status < 500);
++    // A throttle is not an overflow even when its wording matches an overflow phrase: Bedrock reports an
++    // exhausted token quota as "Too many tokens per day, please wait before trying again", with HTTP 429 or a
++    // throttlingException event on an open stream. An explicit overflow code still wins.
++    const throttled = input.status === 429 ||
++        codes.some((code) => code.includes("rate_limit") || code === "too_many_requests" || code === "throttlingexception");
+     if (clientScoped &&
+         (codes.includes("context_length_exceeded") ||
+             codes.includes("model_context_window_exceeded") ||
+             codes.includes("request_too_large") ||
+-            isContextOverflow(text)))
++            (!throttled && isContextOverflow(text))))
+         return new InvalidRequestError({ ...details, classification: "context-overflow" });
+     if (input.status === 413 || isPayloadTooLarge(text))
+         return new InvalidRequestError({ ...details, classification: "payload-too-large" });
