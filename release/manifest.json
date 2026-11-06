@@ -1,31 +1,31 @@
 {
   "schema": 1,
-  "version": "1.3.2",
-  "commit": "4d91e166e8f2",
-  "revision": "4d91e166e8f27e016673be449fa5939ddfdf812c",
-  "created": "2026-11-05T02:23:54Z",
+  "version": "1.3.3",
+  "commit": "922f80e17953",
+  "revision": "922f80e179531e8a0a451aec54adb7e3c347dece",
+  "created": "2026-11-06T23:09:13Z",
   "artifacts": {
     "gateway": {
-      "tarball": "bymorning-4d91e166e8f2.tar",
-      "digest": "sha256:806c34c8dca83052d60e2910f81ab15aa1522a9e618e421bf300b96147f1e48b",
+      "tarball": "bymorning-922f80e17953.tar",
+      "digest": "sha256:a93fc4b61a1fe671c2e6a8c5f7e306f41adb7cab5e6dd0980356ddb55ac3db65",
       "platform": "linux/amd64",
       "dockerfile": "Dockerfile",
-      "evidence": "1.3.2/gateway",
+      "evidence": "1.3.3/gateway",
       "signing": {
         "kind": "keyless",
-        "identity": "https://github.com/bymorning/bymorning/.github/workflows/full-gate.yml@refs/tags/v1.3.2",
+        "identity": "https://github.com/bymorning/bymorning/.github/workflows/full-gate.yml@refs/tags/v1.3.3",
         "issuer": "https://token.actions.githubusercontent.com"
       }
     },
     "execution": {
-      "tarball": "bymorning-code-interpreter-4d91e166e8f2.tar",
-      "digest": "sha256:a636e209c45c6df3b3be384cf1351423f4dbd12f360f232e64e58a8aba903e21",
+      "tarball": "bymorning-code-interpreter-922f80e17953.tar",
+      "digest": "sha256:7636e2c345ecc2d5ae66d637ab1a28b4b71c6babe98b332ce7192dcea44a9827",
       "platform": "linux/amd64",
       "dockerfile": "app/host/Dockerfile.execution",
-      "evidence": "1.3.2/execution",
+      "evidence": "1.3.3/execution",
       "signing": {
         "kind": "keyless",
-        "identity": "https://github.com/bymorning/bymorning/.github/workflows/full-gate.yml@refs/tags/v1.3.2",
+        "identity": "https://github.com/bymorning/bymorning/.github/workflows/full-gate.yml@refs/tags/v1.3.3",
         "issuer": "https://token.actions.githubusercontent.com"
       }
     }
