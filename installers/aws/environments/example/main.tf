@@ -50,4 +50,7 @@ module "bymorning" {
   setup_token        = var.setup_token
   login_banner       = var.login_banner
   database           = var.database
+  task               = var.task
+  fips_endpoints     = var.fips_endpoints
+  log_retention_days = var.log_retention_days
 }

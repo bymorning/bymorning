@@ -30,6 +30,9 @@ application carries the version from the root `package.json`
   or a `core.provider.bymorning` built-in. Neither exists. The bundled Providers are OpenAI, Anthropic, Google,
   OpenCode Zen, Fireworks, and Amazon Bedrock. The unused `Provider.Bymorning` name is removed from
   `@bymorning/schema`; Provider names are plain strings, so persisted references still decode.
+- The AWS example environment passes `task`, `fips_endpoints`, and `log_retention_days` through to the module, so an
+  operator who starts from it can set them. `installers/aws/test.sh` now fails if the example stops exposing any
+  module variable or its `log_retention_days` default drifts from the module's (#36).
 
 ## [1.3.2] — 2026-11-04
 

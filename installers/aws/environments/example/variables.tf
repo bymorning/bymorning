@@ -87,6 +87,25 @@ variable "database" {
   default = {}
 }
 
+variable "task" {
+  description = "Task size: cpu in units (1024 = 1 vCPU) and memory in MiB, a valid Fargate combination. Defaults to the module's."
+  type        = any
+  default     = {}
+}
+
+variable "fips_endpoints" {
+  description = "Route S3, KMS, and Bedrock calls to FIPS endpoints. Null follows the module: always on in AWS GovCloud, on in US commercial Regions, off elsewhere."
+  type        = bool
+  default     = null
+}
+
+# Keep this default equal to the module's; test.sh checks it.
+variable "log_retention_days" {
+  description = "How long CloudWatch keeps the application logs."
+  type        = number
+  default     = 90
+}
+
 variable "tags" {
   description = "Tags added to every resource."
   type        = map(string)
