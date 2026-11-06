@@ -15,8 +15,8 @@ SBOMs, vulnerability scans, the SLSA provenance statement, the OpenVEX statement
 ## Licensing and support
 
 ByMorning is free and open source under the MIT License (<https://github.com/bymorning/bymorning>). Every
-installation has every capability, with no license key, trial period, or expiry. The software is provided as-is and is
-community maintained: there is no vendor, support commitment, or service level.
+installation has every capability, with no license key, trial period, or expiry. ByMorning is community maintained;
+see `SECURITY.md` in the repository before reporting a vulnerability.
 
 ## Sign-in with Microsoft Entra
 

@@ -82,8 +82,8 @@ Accounts; their management is admin-only (SEC-AUTHZ).
 Own the incident response plan, including the DFARS 252.204-7012 obligation to
 report cyber incidents to DoD via DIBNet within 72 hours and to preserve
 forensic images for 90 days. Evidence preservation, emergency session
-revocation, and integration shutdown are documented in §14.8, and the vendor
-compromise notification channel in §13. Schedule and control maintenance
+revocation, and integration shutdown are documented in §14.8, and the advisory
+channel in §13. Schedule and control maintenance
 through the upgrade runbook (§14.3): snapshot the database, verify the new
 image, set its digest, and apply. Migrations only move forward, so returning
 to an earlier release means restoring that snapshot. Require MFA for console,

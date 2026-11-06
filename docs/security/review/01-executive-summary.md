@@ -4,9 +4,10 @@ title: Executive Summary
 
 # Executive Summary
 
-ByMorning is a self-hosted AI gateway that connects the customer's internal
-systems to Claude Code, agents, and the models the customer approves. It is
-made for aerospace, defense, and other teams that work with controlled data.
+ByMorning is an open source, self-hosted MCP and model gateway that connects the
+customer's internal systems to Claude Code, agents, and the models the customer
+approves. It is built to run where data is controlled, and this package is
+written for security reviews of that kind.
 People and agents get the same access and the same record; every request is
 logged with who asked, what was read, and what came back. ByMorning is open
 source, and its releases are reproducible builds. Terms are defined in §2.1.

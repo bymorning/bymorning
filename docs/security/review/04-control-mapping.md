@@ -107,8 +107,8 @@ passwords; these are identity provider policies).
 
 Incident response (3.6.1–3.6.3) is organizational (duties in §5.6). Runbooks
 for evidence preservation and emergency revocation ship in §14, and the
-ByMorning team notifies users of vendor-side compromise through the channel in
-§13. DFARS 252.204-7012 requires reporting to DoD via DIBNet within 72 hours.
+maintainers publish advisories about a compromised ByMorning release through the
+channel in §13. DFARS 252.204-7012 requires reporting to DoD via DIBNet within 72 hours.
 
 Maintenance (3.7.1–3.7.6) is organizational or inherited (duties in §5.6).
 Maintenance is a Terraform apply or an image upgrade. The AWS installer offers

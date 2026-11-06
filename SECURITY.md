@@ -7,12 +7,11 @@ Please do not open a public issue for a security problem.
 Report it privately through GitHub: **Security → Report a vulnerability** on
 this repository. There is no other private channel.
 
-ByMorning is provided as-is and community maintained (see the README). Reports
-are handled by the maintainers on a best-effort basis, with no guaranteed
-response time or fix. Include the affected version or commit, a description,
-reproduction steps, and the impact you expect. If a fix ships, the advisory
-will say so and credit you if you want to be named. Because no one is obliged to
-respond, anyone running ByMorning should be prepared to patch their own fork.
+ByMorning is community maintained. Reports are handled by the maintainers on a
+best-effort basis, with no guaranteed response time or fix. Include the affected
+version or commit, a description, reproduction steps, and the impact you
+expect. If a fix ships, the advisory will say so and credit you if you want to
+be named.
 
 ## Supported versions
 

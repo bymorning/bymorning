@@ -50,9 +50,8 @@ procedure deploys the image by the digest printed when it is mirrored.
 This package is public. It carries no proprietary marking, requires no
 non-disclosure agreement, and contains no CUI.
 
-ByMorning is provided as-is and is community maintained: the company that
-built it has closed, and there is no vendor, support commitment, or service
-level (§13). Security patches and vulnerability notifications depend on the
+ByMorning is open source under the MIT License and community maintained, with
+no support commitment or service level (§13). Security patches and vulnerability notifications depend on the
 maintainers of the public repository. Vulnerabilities are reported privately
 through GitHub Security, Report a vulnerability. Questions and requests for
 further evidence go to the issue tracker.
