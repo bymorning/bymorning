@@ -24,3 +24,6 @@ allowed_cidrs            = ["10.0.0.0/8"]
 # code_interpreter = true             # check AgentCore availability in your Region first
 # cui_profile      = true             # the CUI profile; needs code_interpreter
 # database         = { multi_az = true, instance_class = "db.t4g.medium" }
+# task             = { cpu = 2048, memory = 4096 }   # the Fargate task size (default 1024 CPU units, 2048 MiB)
+# fips_endpoints   = false            # turn FIPS endpoints off in a US commercial Region (GovCloud always uses them)
+# log_retention_days = 365            # CloudWatch log retention (default 90)

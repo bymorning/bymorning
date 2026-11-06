@@ -118,6 +118,8 @@ The example's `terraform.tfvars.example` lists every setting. The ones you are m
 | `database.instance_class`      | `db.t4g.small` | The RDS instance size.                                                                     |
 | `database.deletion_protection` | `true`         | Set `false` and apply before destroying.                                                   |
 | `task.cpu`, `task.memory`      | `1024`, `2048` | The Fargate task size.                                                                     |
+| `log_retention_days`           | `90`           | How long CloudWatch keeps the application logs.                                            |
+| `fips_endpoints`               | by Region      | On in GovCloud and US commercial Regions, off elsewhere; `false` turns it off in the US.   |
 | `login_banner`                 | none           | A system use notification acknowledged before sign-in.                                     |
 | `setup_token`                  | generated      | Your own Setup token instead of the generated one.                                         |
 
