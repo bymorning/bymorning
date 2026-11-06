@@ -30,9 +30,8 @@ Adds evaluation installations, the Docker Compose evaluation, an AWS installer, 
 ghcr.io image publishing. No database migrations and no dependency changes. The Gateway image differs from 1.3.1 only
 in the host's evaluation mode.
 
-**Project status.** ByMorning is provided as-is and is community maintained: the company that built it has closed, so
-there is no vendor, support commitment, or service level. `SECURITY.md` and the security review package say so, and
-GitHub private vulnerability reporting is the only security contact.
+**Project status.** ByMorning is community maintained. `SECURITY.md` and the security review package describe the
+support model, and GitHub private vulnerability reporting is the security contact.
 
 ### Added
 
@@ -777,4 +776,4 @@ Covers everything since the previous exported release commit
   after activation; the Setup token copy is clearer; dialogs behave correctly
   under stacking and outside clicks.
 
-[Unreleased]: https://github.com/bymorning/enterprise/compare/0c338296ceb3...HEAD
+[Unreleased]: https://github.com/bymorning/bymorning/compare/v1.3.2...dev

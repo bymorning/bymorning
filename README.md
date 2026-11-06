@@ -1,11 +1,9 @@
 # ByMorning
 
-> **Project status.** ByMorning is provided as-is under the [MIT License](LICENSE). The company that built it has
-> closed, so there is no vendor, support, SLA, or maintenance commitment, and no one is obliged to review issues or
-> publish releases. The project is community maintained: fork it, open pull requests, and run your own builds. Read
-> [SECURITY.md](SECURITY.md) before reporting a vulnerability.
+> ByMorning is open source under the [MIT License](LICENSE) and community maintained: fork it, open pull requests,
+> and run your own builds. Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
-ByMorning is a self-hosted AI gateway. It connects your people, coding agents, and internal systems to the models you
+ByMorning is a self-hosted MCP and model gateway. It connects your people, coding agents, and internal systems to the models you
 approve, under your permissions, budgets, and audit, inside your own cloud account. Documentation:
 <https://bymorning.ai/docs>.
 

@@ -32,7 +32,7 @@ printf '%s\n' '.terraform/' '.terraform.lock.hcl' '*.tfstate' '*.tfstate.*' >"$o
 cat >"$out/README.md" <<README
 # terraform-aws-bymorning
 
-A Terraform module that deploys [ByMorning](https://github.com/bymorning/bymorning), a self-hosted AI gateway, into a VPC
+A Terraform module that deploys [ByMorning](https://github.com/bymorning/bymorning), an open source, self-hosted MCP and model gateway, into a VPC
 you already have, in commercial AWS or AWS GovCloud (US). It runs one ECS Fargate task (migrations, then the Gateway)
 behind an Application Load Balancer, with RDS PostgreSQL 17, an S3 bucket, one KMS key, and Secrets Manager.
 
