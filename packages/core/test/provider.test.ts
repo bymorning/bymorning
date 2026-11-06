@@ -18,12 +18,14 @@ import {
   HttpContext,
   RateLimitError,
 } from "@opencode-ai/ai/schema/errors"
+import { classifyProviderFailure } from "@opencode-ai/ai/provider-error"
 import { Message, type LLMRequest } from "@opencode-ai/ai/schema/messages"
 import type { Interface } from "@opencode-ai/ai/route/client"
 import { Effect, Layer, Stream } from "effect"
 import { Headers } from "effect/unstable/http"
 import { expect, test } from "vitest"
 import { Database } from "../src/database.js"
+import { providerSessionError } from "../src/session/provider-error.js"
 import { Usage } from "../src/usage.js"
 
 const modelRef = ModelSchema.Ref.make({ provider: ProviderSchema.DeepSeek, id: "deepseek-v4-pro" })
@@ -277,6 +279,91 @@ test("preserves classified AI failures for the Session retry policy", async () =
       model: "deepseek-v4-pro",
     }),
   )
+})
+
+const bedrockQuota = "Too many tokens per day, please wait before trying again."
+const classified = (input: Parameters<typeof classifyProviderFailure>[0]) => {
+  const reason = classifyProviderFailure(input)
+  return { tag: reason._tag, classification: "classification" in reason ? reason.classification : undefined }
+}
+
+test("classifies a Bedrock token quota as a rate limit, not a context overflow", () => {
+  // Non-streaming Converse: HTTP 429 with a message-only body.
+  expect(
+    classified({ message: bedrockQuota, status: 429, rawBody: JSON.stringify({ message: bedrockQuota }) }),
+  ).toEqual({ tag: "RateLimit", classification: undefined })
+  // Streaming Converse: an exception event on an open stream, with no HTTP status.
+  expect(
+    classified({
+      message: bedrockQuota,
+      rawBody: JSON.stringify({ exception: { type: "throttlingException", details: { message: bedrockQuota } } }),
+    }),
+  ).toEqual({ tag: "RateLimit", classification: undefined })
+  // The exception name alone, in a client-error status.
+  expect(classified({ message: `ThrottlingException: ${bedrockQuota}`, status: 400 })).toEqual({
+    tag: "RateLimit",
+    classification: undefined,
+  })
+})
+
+test("still classifies real context overflows, including one worded like a throttle", () => {
+  expect(
+    classified({
+      message: "Input is too long for requested model.",
+      status: 400,
+      rawBody: JSON.stringify({ message: "Input is too long for requested model." }),
+    }),
+  ).toEqual({ tag: "InvalidRequest", classification: "context-overflow" })
+  expect(classified({ message: "prompt is too long: 250000 tokens > 200000 maximum", status: 400 })).toEqual({
+    tag: "InvalidRequest",
+    classification: "context-overflow",
+  })
+  // An explicit overflow code wins over wording that looks like a throttle.
+  expect(
+    classified({
+      message: "Too many tokens",
+      status: 429,
+      rawBody: JSON.stringify({ error: { code: "context_length_exceeded" } }),
+    }),
+  ).toEqual({ tag: "InvalidRequest", classification: "context-overflow" })
+})
+
+test("a Bedrock token quota reaches the Session as a rate limit with the provider's message", async () => {
+  const failure = new AIError({
+    reason: classifyProviderFailure({
+      message: bedrockQuota,
+      status: 429,
+      rawBody: JSON.stringify({ message: bedrockQuota }),
+    }),
+  })
+  const client: Interface = {
+    stream: () => Stream.fail(failure),
+    compact: () => Effect.die("unused"),
+    generate: () => Effect.die("unused"),
+  }
+  const error = await Effect.runPromise(
+    Effect.gen(function* () {
+      const models = yield* Model.Service
+      const providers = yield* Provider.Service
+      const model = yield* models.get(modelRef)
+      return yield* providers
+        .stream({
+          context,
+          http,
+          selection: model,
+          runtimeModel: runtimeModel(model.info.apiID),
+          authentication: http,
+          messages: [Message.user("prompt")],
+        })
+        .pipe(Stream.runDrain)
+    }).pipe(Effect.provide(Layer.merge(Model.layer, Provider.layerWith(client))), Effect.flip),
+  )
+
+  // Not a ContextOverflowError, so the runner does not compact the conversation and retry.
+  expect(error).toBeInstanceOf(Provider.FailureError)
+  if (!(error instanceof Provider.FailureError)) throw error
+  expect(error.category).toBe("rate-limit")
+  expect(providerSessionError(error).message).toBe(`Deepseek: rate limit exceeded: ${bedrockQuota}`)
 })
 
 test("preserves redacted HTTP provider failure details with a local body cap", async () => {

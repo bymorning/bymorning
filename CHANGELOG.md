@@ -33,6 +33,12 @@ application carries the version from the root `package.json`
 - The AWS example environment passes `task`, `fips_endpoints`, and `log_retention_days` through to the module, so an
   operator who starts from it can set them. `installers/aws/test.sh` now fails if the example stops exposing any
   module variable or its `log_retention_days` default drifts from the module's (#36).
+- An exhausted Amazon Bedrock token quota ("Too many tokens per day, please wait before trying again") is reported as
+  a rate limit, with Bedrock's message, instead of "Provider context window exceeded". The overflow phrase list
+  matched its wording, so the Session also compacted the conversation and retried against the exhausted quota. The
+  `@opencode-ai/ai` patch now treats an HTTP 429, a `throttlingException`, or the text "ThrottlingException" as a
+  throttle before it looks for overflow wording; an explicit overflow code, and real overflows such as "Input is too
+  long for requested model", are classified as before (#35).
 
 ## [1.3.2] — 2026-11-04
 
