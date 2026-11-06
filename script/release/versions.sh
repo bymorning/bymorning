@@ -10,5 +10,8 @@ check app/host/package.json "$(jq -er .version app/host/package.json)"
 check "server.json version" "$(jq -er .version server.json)"
 check "charts/bymorning/Chart.yaml version" "$(sed -n 's/^version: *//p' charts/bymorning/Chart.yaml)"
 check "charts/bymorning/Chart.yaml appVersion" "$(sed -n 's/^appVersion: *"\(.*\)"$/\1/p' charts/bymorning/Chart.yaml)"
+# The MCP Registry refuses a description over 100 characters, and `mcp-publisher validate` does not check it.
+length=$(jq -er '.description|length' server.json)
+[ "$length" -le 100 ] || { echo "FAIL: server.json description is $length characters; the MCP Registry allows 100" >&2; status=1; }
 [ "$status" = 0 ] && echo "versions: every release version file states $want"
 exit "$status"
