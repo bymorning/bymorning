@@ -2609,9 +2609,15 @@
                     "clientID": {
                       "type": "string",
                       "pattern": "^ocl_"
+                    },
+                    "redirectOrigins": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
                     }
                   },
-                  "required": ["clientName", "clientID"],
+                  "required": ["clientName", "clientID", "redirectOrigins"],
                   "additionalProperties": false
                 }
               }
