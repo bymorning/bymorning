@@ -7,6 +7,13 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+## [1.3.3] — 2026-11-06
+
+Adds the Helm chart and publishes it, with the images, to ghcr.io; hardens the OAuth consent page for MCP clients;
+refreshes both base images and `@azure/identity`; and discloses every pre-release dependency in the security review.
+No database migrations. The Gateway image differs from 1.3.2 in the Bedrock quota fix, the `@azure/identity` update,
+the OAuth consent field, and the re-pinned base.
+
 ### Added
 
 - `server.json` lists the Tool Gateway in the MCP Registry as `io.github.bymorning/bymorning`: a remote Streamable
@@ -18,9 +25,8 @@ application carries the version from the root `package.json`
 - A Helm chart (`charts/bymorning`): one Gateway pod with its migrations in an init container, pinned by image digest,
   with the same pod hardening as the Azure manifests. It takes your database, object storage, and key, supports IRSA and
   workload identity, listener TLS, an ingress, and an evaluation mode. Its offline checks run in the full gate's
-  installers job, and `charts/bymorning/test/kind.sh` installs the signed release image into a kind cluster. From the
-  first release after 1.3.2, the `publish` job pushes the chart to `oci://ghcr.io/bymorning/charts/bymorning` and signs
-  it keylessly.
+  installers job, and `charts/bymorning/test/kind.sh` installs the signed release image into a kind cluster. From
+  1.3.3, the `publish` job pushes the chart to `oci://ghcr.io/bymorning/charts/bymorning` and signs it keylessly.
 - `script/release/terraform-module.sh` exports the AWS module in the Terraform Registry layout (module at the root,
   README, LICENSE, `examples/basic`) for the `bymorning/terraform-aws-bymorning` mirror.
 
@@ -33,9 +39,10 @@ application carries the version from the root `package.json`
 
 ### Changed
 
-- The UBI `nodejs-22-minimal` base is re-pinned to the 2026-11-02 build (two fewer Medium advisories, CVE-2026-8932
-  fixed) and the execution image's `python:3.12-slim` to the 2026-11-05 build (two fixable High advisories fewer). Node
-  and Python versions are unchanged.
+- The UBI `nodejs-22-minimal` base is re-pinned to the 2026-11-02 build (one fewer Medium advisory, CVE-2026-8932 in
+  `curl-minimal`) and the execution image's `python:3.12-slim` to the 2026-11-05 build (one fewer High advisory,
+  CVE-2026-109518 in `apt`). Node and Python versions are unchanged. The vulnerability triage compares the 1.3.2 and
+  1.3.3 images like for like.
 - `@azure/identity` 4.14.1, which moves `@azure/msal-node` from 6.0.1 to 7.2.0 and clears the High GHSA-xcx6-jx8p-x3h5
   that 1.3.2 triaged as not affected. It also moves `open` to 11 and adds two small transitive packages (`is-in-ssh`,
   `powershell-utils`) used only by the interactive credential path.
@@ -820,4 +827,4 @@ Covers everything since the previous exported release commit
   after activation; the Setup token copy is clearer; dialogs behave correctly
   under stacking and outside clicks.
 
-[Unreleased]: https://github.com/bymorning/bymorning/compare/v1.3.2...dev
+[Unreleased]: https://github.com/bymorning/bymorning/compare/v1.3.3...dev
