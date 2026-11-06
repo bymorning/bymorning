@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@azure/identity": "^4.13.3",
+    "@azure/identity": "^4.14.1",
     "@azure/storage-blob": "^12.34.0",
     "@bymorning/backend-aws": "workspace:*",
     "@bymorning/backend-azure": "workspace:*",
