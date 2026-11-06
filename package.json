@@ -84,7 +84,8 @@
     "local": "bun run --cwd app/host start",
     "test:solid": "bun run --cwd packages/client test:solid",
     "security:render": "bun script/security/render.ts",
-    "security:lint": "bun script/security/render.ts --lint"
+    "security:lint": "bun script/security/render.ts --lint",
+    "security:prerelease": "bun script/security/prerelease.ts"
   },
   "devDependencies": {
     "@ast-grep/cli": "catalog:",

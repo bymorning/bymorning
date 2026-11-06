@@ -168,6 +168,7 @@ PostgreSQL container. `image-security.sh` asserts the FIPS, user, toolchain, lab
 an AWS ECS task runs it: verify-full database TLS, the HTTPS listener, KMS and S3 through the FIPS hostnames
 (emulated), the plugin and document inventory, and the startup refusals above. `LEG=azure` boots it the way the AKS
 pod runs it instead: plain-HTTP health, the workload-identity token exchange and Key Vault (emulated at the production
-hostnames), Blob Storage against Azurite, inventory, log hygiene, and the cloud-endpoint refusals. Both scripts take
+hostnames), Blob Storage against Azurite, inventory, log hygiene, and the cloud-endpoint refusals. Both legs run on a
+Docker network with no route out and fail if the Gateway logs a failed lookup or connection to an outside host. Both scripts take
 `TARBALL=` (with `RELEASE_DIR=`) to test the exact release artifact after verifying it against the manifest. The
 emulators prove no IAM, Azure RBAC, network, or deployment behavior, and AgentCore is not exercised.

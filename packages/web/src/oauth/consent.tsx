@@ -109,6 +109,21 @@ export function OAuthConsent(): JSX.Element {
             <>
               <CardPage.Title>{current().request.clientName} wants access to a workspace</CardPage.Title>
               <CardPage.Description>Choose the workspace this MCP client can access.</CardPage.Description>
+              <Show when={current().request.redirectOrigins.length > 0}>
+                <CardPage.Description data-oauth-destination>
+                  After you approve, the result is sent to{" "}
+                  <For each={current().request.redirectOrigins}>
+                    {(origin, index) => (
+                      <>
+                        <Show when={index() > 0}>, </Show>
+                        <code>{origin}</code>
+                      </>
+                    )}
+                  </For>
+                  . Continue only if you started this connection from that app. The name above is chosen by the app
+                  itself.
+                </CardPage.Description>
+              </Show>
               <CardPage.Body>
                 <Show
                   when={(workspaces.data?.length ?? 0) > 0}

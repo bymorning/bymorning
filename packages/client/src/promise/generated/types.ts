@@ -3196,7 +3196,11 @@ export type ApiOauthRequestGetInput = {
   readonly id: { readonly id: string & Brand.Brand<"OAuthAuthorization.ID"> }["id"]
 }
 
-export type ApiOauthRequestGetOutput = { clientName: string; clientID: string & Brand.Brand<"OAuthClient.ID"> }
+export type ApiOauthRequestGetOutput = {
+  clientName: string
+  clientID: string & Brand.Brand<"OAuthClient.ID">
+  redirectOrigins: Array<string>
+}
 
 export type ApiOauthApproveInput = {
   readonly requestID: {

@@ -72,6 +72,9 @@ jobs:
       - if: matrix.typecheck == 'packages'
         run: bun run security:lint
       - if: matrix.typecheck == 'packages'
+        name: The security review names every pre-release dependency that ships (POA&M-13)
+        run: bun run security:prerelease
+      - if: matrix.typecheck == 'packages'
         run: bun run check:models
       - if: matrix.typecheck == 'packages'
         run: bun run --cwd packages/protocol check:generated
