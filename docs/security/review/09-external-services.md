@@ -20,7 +20,9 @@ No analytics, crash reporting, or usage beacon exists in the code. OTLP export i
 the boundary. Provider and Model definitions ship inside the bundle, so
 nothing is fetched from a model registry at runtime. The production image
 disables plugin package installation and plugin update checks, so it never
-contacts a package registry.
+contacts a package registry. The release gate checks this: it boots the image on
+a Docker network with no route out and fails if the Gateway logs a failed lookup
+or connection to any host outside the test (image boot checks SMK-41 and SMK-59).
 
 The image is pulled by the container runtime, not by the application. The
 ECS agent or the kubelet contacts `ghcr.io`, and the hosts it redirects layer

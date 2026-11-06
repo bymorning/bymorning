@@ -102,9 +102,9 @@ wi_subject=system:serviceaccount:bymorning:bymorning-gateway
 
 checks=0
 failures=0
-# AWS leg: 32 startup, serving, evaluation, and dependency checks. Azure leg: 5 shared
-# startup checks plus 9 wiring checks. Plus SMK-00 in tarball mode.
-if [ "$leg" = aws ]; then expected_checks=32; else expected_checks=14; fi
+# AWS leg: 33 startup, serving, evaluation, dependency, and egress checks. Azure leg: 5
+# shared startup checks plus 10 wiring and egress checks. Plus SMK-00 in tarball mode.
+if [ "$leg" = aws ]; then expected_checks=33; else expected_checks=15; fi
 [ -z "${TARBALL:-}" ] || expected_checks=$((expected_checks + 1))
 
 report() { # id outcome detail
@@ -187,7 +187,9 @@ if [ "$leg" = aws ]; then
 else
   emulator_san="DNS:login.microsoftonline.com,DNS:$vault.vault.azure.net,DNS:$account.blob.core.windows.net"
 fi
-docker network create "$network" >/dev/null
+# The network has no route out: an internal network resolves only the containers and aliases on it. Everything below
+# therefore also proves the image needs no outside host to start and serve (see egress_check).
+docker network create --internal "$network" >/dev/null
 docker volume create "$volume" >/dev/null
 node_run -i --user 0 -v "$volume:/smoke" -e LEG="$leg" -e EMULATOR_SAN="$emulator_san" -e WI_SUBJECT="$wi_subject" --entrypoint sh "$image" -c '
   set -eu
@@ -297,6 +299,17 @@ wait_for_log() { # container needle label
     [ "$attempt" -le 60 ] || { diagnose "$3 did not start"; exit 1; }
     sleep 1
   done
+}
+# The boot network is internal (no route out), so a Gateway that needed or tried to reach a host that is not part of the
+# suite would log a failed lookup or connection. After it has served, its log must show none. A refused connection is
+# not counted: it can come from an in-network dependency that is still starting, and says nothing about outside hosts.
+egress_check() { # id
+  outside=$(docker logs "boot-gateway-$suffix" 2>&1 | grep -E 'ENOTFOUND|EAI_AGAIN|ENETUNREACH|EHOSTUNREACH|ETIMEDOUT' || true)
+  if [ -z "$outside" ]; then
+    report "$1" ok "booted and served on a network with no route out; no failed lookup or connection to an outside host"
+  else
+    report "$1" fail "the Gateway tried to reach an outside host: $(echo "$outside" | head -3 | tr '\n' ' ')"
+  fi
 }
 # Each failure path must exit non-zero, name the culprit, and leak nothing.
 expect_failure() { # id label needle env-file-line-to-remove-or-"" docker-args...
@@ -490,6 +503,9 @@ ENV
   # [SMK-40] The seeded Auth Provider is in the database as ciphertext.
   provider_row_check SMK-40 issuer.smoke.test
 
+  # [SMK-41] No outside host was needed or tried.
+  egress_check SMK-41
+
   not_covered="AgentCore code execution; IAM, KMS key policy, SigV4; VPC endpoints, security groups, ALB; a real RDS certificate chain."
 }
 
@@ -635,6 +651,9 @@ ENV
 
   # [SMK-56] The seeded Microsoft Auth Provider is in the database as ciphertext.
   provider_row_check SMK-56 "login.microsoftonline.com/$tenant/v2.0"
+
+  # [SMK-59] No outside host was needed or tried.
+  egress_check SMK-59
 
   # --- Failure paths: the cloud selector and its endpoint rule -----------------
   expect_failure SMK-57 "absent AZURE_CLOUD" "AZURE_CLOUD" AZURE_CLOUD

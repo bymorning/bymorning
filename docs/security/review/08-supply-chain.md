@@ -57,7 +57,7 @@ the built tarballs:
 | Job | What it checks |
 | --- | -------------- |
 | build | The image security gate on the exact Gateway tarball (SEC-IMG) |
-| image-boot (aws, azure) | The tarball booted with each installer's task or pod environment against emulated cloud services, including startup refusals |
+| image-boot (aws, azure) | The tarball booted with each installer's task or pod environment against emulated cloud services, on a network with no route out, including startup refusals |
 | kind | The Azure installer's manifests on a kind cluster with the signed tarballs imported by digest; sign-in, Blob Storage, Key Vault rotation, and sandboxed code execution |
 | browser | The application and component browser suites in Chromium against the real UI build |
 | installers | The Azure and AWS installers' offline Terraform and manifest checks (SEC-AZ, SEC-TF) |
