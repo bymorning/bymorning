@@ -7,6 +7,12 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+### Fixed
+
+- The `server.json` description was 121 characters, and the MCP Registry refuses more than 100 (`mcp-publisher validate`
+  does not check it), so publishing 1.3.3 failed until it was shortened. `script/release/versions.sh` now checks the
+  limit in CI.
+
 ## [1.3.3] — 2026-11-06
 
 Adds the Helm chart and publishes it, with the images, to ghcr.io; hardens the OAuth consent page for MCP clients;
