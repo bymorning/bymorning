@@ -37,7 +37,7 @@ you already have, in commercial AWS or AWS GovCloud (US). It runs one ECS Fargat
 behind an Application Load Balancer, with RDS PostgreSQL 17, an S3 bucket, one KMS key, and Secrets Manager.
 
 This repository is a mirror of \`installers/aws/modules/bymorning\` in the ByMorning repository, exported for the Terraform
-Registry. Report issues and send changes there. ByMorning is provided as-is and community maintained, under the MIT
+Registry. Report issues and send changes there. ByMorning is open source and community maintained, under the MIT
 License. This module passed offline tests and one end-to-end test in a commercial AWS account; Bedrock model calls and
 AWS GovCloud were not tested. Run the sandbox checklist in the ByMorning repository before you rely on it.
 

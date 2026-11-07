@@ -1,7 +1,7 @@
 # ByMorning Helm chart
 
 Runs ByMorning on a Kubernetes cluster you operate: one Gateway pod, with its database migrations in an init container.
-ByMorning is provided as-is and community maintained; read [SECURITY.md](../../SECURITY.md) first.
+ByMorning is open source and community maintained; read [SECURITY.md](../../SECURITY.md) first.
 
 The chart installs the same hardened image as every other installer. It does not create a database, object storage, or
 a key: you point it at yours (PostgreSQL 17, S3 or Azure Blob, and KMS or Key Vault).
