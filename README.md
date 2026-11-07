@@ -1,4 +1,8 @@
+<div align="center">
+
 # ByMorning
+
+**An open source, self-hosted MCP and model gateway.**
 
 [![ci](https://github.com/bymorning/bymorning/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/bymorning/bymorning/actions/workflows/ci.yml)
 [![full-gate](https://github.com/bymorning/bymorning/actions/workflows/full-gate.yml/badge.svg?branch=dev)](https://github.com/bymorning/bymorning/actions/workflows/full-gate.yml)
@@ -9,16 +13,25 @@
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/bymorning)](https://artifacthub.io/packages/search?repo=bymorning)
 [![Terraform Registry](https://img.shields.io/badge/Terraform_Registry-bymorning%2Fbymorning%2Faws-844FBA?logo=terraform&logoColor=white)](https://registry.terraform.io/modules/bymorning/bymorning/aws/latest)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.bymorning%2Fbymorning-1F6FEB?logo=modelcontextprotocol&logoColor=white)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.bymorning/bymorning)
+
 [![Container images](https://img.shields.io/badge/ghcr.io-bymorning%2Fbymorning-2088FF?logo=github&logoColor=white)](https://github.com/orgs/bymorning/packages/container/package/bymorning)
 [![Signed with Sigstore](https://img.shields.io/badge/signed_with-Sigstore-2E8B57)](https://bymorning.ai/download#verify)
 
-> ByMorning is open source under the [MIT License](LICENSE) and community maintained: fork it, open pull requests,
-> and run your own builds. Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
+[Documentation](https://bymorning.ai/docs) · [Install](#install) · [Connect agents](#connect-coding-agents) · [Download](https://bymorning.ai/download) · [Changelog](CHANGELOG.md)
 
-ByMorning is an open source, self-hosted MCP and model gateway. It gives your team's agents access to company systems,
-each person under their own permissions, and caps what they spend: a spend limit per Workspace, member, or Service
-Account. Model routing across the providers you enable is built in, and it all runs in your own cloud account.
-Documentation: <https://bymorning.ai/docs>.
+</div>
+
+ByMorning gives your team's agents access to company systems, and caps what they spend.
+
+- **Company systems as Tools.** People and agents reach your internal systems through Plugins and MCP servers, each
+  person under their own permissions.
+- **Spend limits.** A limit per Workspace, member, or Service Account, applied to every model call.
+- **Models and routing.** OpenAI-, Anthropic-, and Google-compatible endpoints, with routing across the providers you
+  enable.
+- **Your cloud.** It runs in your own cloud account or Kubernetes cluster.
+
+**Status.** ByMorning is open source under the [MIT License](LICENSE) and community maintained: fork it, open pull
+requests, and run your own builds. Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
 ## Install
 
@@ -58,7 +71,7 @@ Interpreter and the application tests.
 
 - The development host keeps Postgres-compatible data with PGlite under `.bymorning/local/pglite`.
 - `bun run dev` runs the API watcher (port 3210) and Vite (port 3000) together, and the API runs migrations at startup.
-  Choose ports with `PORT=4001 WEB_PORT=4000 bun run dev`: `PORT` is the API, and `WEB_PORT` is Vite and the default
+- Choose ports with `PORT=4001 WEB_PORT=4000 bun run dev`: `PORT` is the API, and `WEB_PORT` is Vite and the default
   login callback origin.
 - `bun run local` is the bundled, one-origin development host instead.
 - Build the execution image with `bun run --cwd app/host setup` when you need the Code Interpreter.
