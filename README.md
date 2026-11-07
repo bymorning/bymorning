@@ -1,5 +1,17 @@
 # ByMorning
 
+[![ci](https://github.com/bymorning/bymorning/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/bymorning/bymorning/actions/workflows/ci.yml)
+[![full-gate](https://github.com/bymorning/bymorning/actions/workflows/full-gate.yml/badge.svg?branch=dev)](https://github.com/bymorning/bymorning/actions/workflows/full-gate.yml)
+[![Release](https://img.shields.io/github/v/release/bymorning/bymorning)](https://github.com/bymorning/bymorning/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/bymorning/bymorning)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/bymorning/bymorning/dev)](https://github.com/bymorning/bymorning/commits/dev)
+
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/bymorning)](https://artifacthub.io/packages/search?repo=bymorning)
+[![Terraform Registry](https://img.shields.io/badge/Terraform_Registry-bymorning%2Fbymorning%2Faws-844FBA?logo=terraform&logoColor=white)](https://registry.terraform.io/modules/bymorning/bymorning/aws/latest)
+[![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.bymorning%2Fbymorning-1F6FEB?logo=modelcontextprotocol&logoColor=white)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.bymorning/bymorning)
+[![Container images](https://img.shields.io/badge/ghcr.io-bymorning%2Fbymorning-2088FF?logo=github&logoColor=white)](https://github.com/orgs/bymorning/packages/container/package/bymorning)
+[![Signed with Sigstore](https://img.shields.io/badge/signed_with-Sigstore-2E8B57)](https://bymorning.ai/download#verify)
+
 > ByMorning is open source under the [MIT License](LICENSE) and community maintained: fork it, open pull requests,
 > and run your own builds. Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
