@@ -8,6 +8,7 @@
 [![full-gate](https://github.com/bymorning/bymorning/actions/workflows/full-gate.yml/badge.svg?branch=dev)](https://github.com/bymorning/bymorning/actions/workflows/full-gate.yml)
 [![Release](https://img.shields.io/github/v/release/bymorning/bymorning)](https://github.com/bymorning/bymorning/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/bymorning/bymorning)](LICENSE)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16474/badge)](https://www.bestpractices.dev/projects/16474)
 [![Last commit](https://img.shields.io/github/last-commit/bymorning/bymorning/dev)](https://github.com/bymorning/bymorning/commits/dev)
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/bymorning)](https://artifacthub.io/packages/search?repo=bymorning)
