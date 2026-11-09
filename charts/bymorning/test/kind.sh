@@ -66,6 +66,23 @@ docker exec "$node" ctr -n k8s.io images ls -q | grep -qx "ghcr.io/bymorning/bym
   && report CHART-02 ok "image imported into the kind node by digest" || { report CHART-02 fail "image import"; exit 1; }
 
 # 3. A PostgreSQL for the chart to use.
+# A registry that throttles the shared CI runners (Docker Hub answers 429) must not fail the run: pull with
+# retries on the host, then load the image into the kind node, because the kubelet pulls for itself otherwise.
+preload() { # cluster image...
+  _cluster=$1; shift
+  for _image in "$@"; do
+    _try=1
+    until docker pull -q "$_image" >/dev/null 2>&1; do
+      [ "$_try" -lt 5 ] || { echo "preload: could not pull $_image; the kubelet will try" >&2; continue 2; }
+      sleep $((_try * 15)); _try=$((_try + 1))
+    done
+    # Import only the node's own platform: `kind load` passes --all-platforms, which fails when Docker's
+    # containerd image store has pulled one platform of a multi-platform image.
+    docker save "$_image" | docker exec -i "$_cluster-control-plane" ctr -n k8s.io images import - >/dev/null 2>&1 \
+      || echo "preload: could not load $_image into $_cluster; the kubelet will pull it" >&2
+  done
+}
+preload "$cluster" "$postgres_image"
 kubectl apply -f - >/dev/null <<YAML
 apiVersion: v1
 kind: Pod
