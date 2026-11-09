@@ -30,6 +30,10 @@ ByMorning gives your team's agents access to company systems, and caps what they
   enable.
 - **Your cloud.** It runs in your own cloud account or Kubernetes cluster.
 
+<p align="center">
+  <img src="docs/images/console-budgets.png" width="860" alt="The Budgets page of the ByMorning console, with a monthly spend limit for the workspace, for one member, and for a service account named Claude Code.">
+</p>
+
 **Status.** ByMorning is open source under the [MIT License](LICENSE) and community maintained: fork it, open pull
 requests, and run your own builds. Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
