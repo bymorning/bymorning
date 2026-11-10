@@ -7,11 +7,33 @@ application carries the version from the root `package.json`
 
 ## [Unreleased]
 
+## [1.3.4] — 2026-11-10
+
+Documentation, wording, and CI only: no runtime code, dependency, base image, or database migration changes. The
+Gateway and execution images are built from the same code and base pins as 1.3.3, so they differ only in the version
+string. The chart, the security review PDF, and the repository carry the changes below.
+
 ### Fixed
 
+- The security review's executive summary and the documentation source (`packages/docs`) said every request is logged with who asked,
+  what was read, and what came back. ByMorning does not record that. The review and the documentation source now say what is recorded: a tamper-evident
+  audit trail for security-relevant changes, a request log for Tool requests (time, Tool, status), and usage records
+  for model usage and spend. Conversation content stays in Session history.
 - The `server.json` description was 121 characters, and the MCP Registry refuses more than 100 (`mcp-publisher validate`
   does not check it), so publishing 1.3.3 failed until it was shortened. `script/release/versions.sh` now checks the
   limit in CI.
+- The kind end-to-end checks (Azure installer and Helm chart) pull `postgres:17-alpine` on the host with retries and
+  load it into the kind node, so a Docker Hub rate limit (HTTP 429) no longer fails the full gate.
+
+### Changed
+
+- The chart README and the Terraform mirror README describe ByMorning as open source and community maintained.
+- The README is shorter and shows a console screenshot. The release procedure moved to `docs/releasing.md` and the
+  SST app notes to `docs/sst.md`.
+
+### Added
+
+- An OpenSSF Scorecard workflow (`.github/workflows/scorecard.yml`) and the OpenSSF Best Practices badge.
 
 ## [1.3.3] — 2026-11-06
 
@@ -833,4 +855,5 @@ Covers everything since the previous exported release commit
   after activation; the Setup token copy is clearer; dialogs behave correctly
   under stacking and outside clicks.
 
-[Unreleased]: https://github.com/bymorning/bymorning/compare/v1.3.3...dev
+[Unreleased]: https://github.com/bymorning/bymorning/compare/v1.3.4...dev
+[1.3.4]: https://github.com/bymorning/bymorning/compare/v1.3.3...v1.3.4
