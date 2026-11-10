@@ -10,8 +10,10 @@ application carries the version from the root `package.json`
 ## [1.3.4] — 2026-11-10
 
 Documentation, wording, and CI only: no runtime code, dependency, base image, or database migration changes. The
-Gateway and execution images are built from the same code and base pins as 1.3.3, so they differ only in the version
-string. The chart, the security review PDF, and the repository carry the changes below.
+Gateway and execution images are built from the same code, Dockerfiles, and base pins as 1.3.3: compared file by file,
+the execution image is identical and the Gateway image differs only in the package manager's history database
+(`var/lib/dnf/history.sqlite*`). Their version labels differ. The chart, the security review PDF, and the repository
+carry the changes below.
 
 ### Fixed
 
