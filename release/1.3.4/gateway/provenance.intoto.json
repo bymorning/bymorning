@@ -1,0 +1,78 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "bymorning-b1be7bfebad6.tar",
+      "digest": {
+        "sha256": "67042a41b82eb5ba79ea09d2702101ab74e650bc5ae61b2cbb755ce59a6e0614"
+      }
+    },
+    {
+      "name": "bymorning-gateway",
+      "digest": {
+        "sha256": "0c80f573812146cb483e058b53b6d3d1c42476ed1f90ad2e5efc15cf41b5eb04"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://github.com/bymorning/bymorning/release#oci-tarball",
+      "externalParameters": {
+        "version": "1.3.4",
+        "dockerfile": "Dockerfile",
+        "platform": "linux/amd64",
+        "command": "docker buildx build --platform linux/amd64 --provenance=false --sbom=false --output type=oci"
+      },
+      "internalParameters": {
+        "repository": "https://github.com/bymorning/bymorning"
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "git+https://github.com/bymorning/bymorning",
+          "digest": {
+            "gitCommit": "b1be7bfebad6c239093dcb4fab115c0d2e4225aa"
+          }
+        },
+        {
+          "uri": "pkg:oci/oven/bun:1.3.11",
+          "digest": {
+            "sha256": "0733e50325078969732ebe3b15ce4c4be5082f18c4ac1a0f0ca4839c2e4e42a7"
+          }
+        },
+        {
+          "uri": "pkg:oci/oven/bun:1.3.11",
+          "digest": {
+            "sha256": "0733e50325078969732ebe3b15ce4c4be5082f18c4ac1a0f0ca4839c2e4e42a7"
+          }
+        },
+        {
+          "uri": "pkg:oci/registry.access.redhat.com/ubi9/nodejs-22-minimal",
+          "digest": {
+            "sha256": "e32a0985811efc5bbadbe3bf67b8ea71c9d8ea5d0cfcfc9f1264a8e3a428cf5d"
+          }
+        },
+        {
+          "name": "bun.lock",
+          "digest": {
+            "sha256": "12c8e465a2490efb70caa59f9ed526204e02b14c326f53b568a8f3140bf94310"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://github.com/bymorning/bymorning/script/release.ts",
+        "version": {
+          "script/release.ts": "9088e1ad29b34c7032dc23201539c16776e71aa70e228476ae9caf14cad8694d"
+        }
+      },
+      "metadata": {
+        "invocationId": "c079d35d-185f-439e-b365-da1a796a36f0",
+        "startedOn": "2026-11-10T06:19:04.000Z",
+        "finishedOn": "2026-11-10T06:23:40.453Z"
+      },
+      "byproducts": []
+    }
+  }
+}
